@@ -6,19 +6,23 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+
 /**
  *
  * @author Tim Barber
  */
 public class Snake extends Application {
-    
-    private int WIDTH = 600;
-    private int HEIGHT = 600;
+
+    private int WIDTH = 419;
+    private int HEIGHT = 475;
 
     @Override
     public void start(Stage primaryStage) {
+        // make buttons
         Button reset = new Button();
         reset.setText("Reset");
         reset.setOnAction(new EventHandler<ActionEvent>() {
@@ -28,7 +32,7 @@ public class Snake extends Application {
                 System.out.println("Hello World!");
             }
         });
-        
+
         Button easy = new Button();
         easy.setText("Reset");
         easy.setOnAction(new EventHandler<ActionEvent>() {
@@ -38,7 +42,7 @@ public class Snake extends Application {
                 System.out.println("Hello World!");
             }
         });
-        
+
         Button hard = new Button();
         hard.setText("Hard");
         reset.setOnAction(new EventHandler<ActionEvent>() {
@@ -48,16 +52,40 @@ public class Snake extends Application {
                 System.out.println("Hello World!");
             }
         });
+        Board board = new Board(WIDTH, HEIGHT);
+
         StackPane root = new StackPane();
         root.getChildren().add(reset);
         root.getChildren().add(easy);
         root.getChildren().add(hard);
+        root.getChildren().add(board.getCanvas());
 
         Scene scene = new Scene(root, WIDTH, HEIGHT);
 
+        board.drawBlocks();
         primaryStage.setTitle("Snake");
         primaryStage.setScene(scene);
         primaryStage.show();
+        new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                board.drawBlocks();
+            }
+        }.start();
+
+        scene.setOnMousePressed(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                board.mouseClicked(event);
+                board.drawBlocks();
+            }
+        });
+
+        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent eventa) {
+                board.keyPressed(eventa);
+                board.drawBlocks();
+            }
+        });
     }
 
     /**

@@ -6,6 +6,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.input.KeyCode;
 import javafx.scene.text.*;
 
 public class Board {
@@ -15,7 +16,7 @@ public class Board {
     private Grid grid;
     private Canvas canvas;
 
-    private int margin = 2;
+    private int margin = 1;
     private int xPos = 10; // starting values for grid position on screen
     private int size = 15;
     private int yPos = 10;
@@ -23,21 +24,12 @@ public class Board {
 
     private int gridSize = 25;
 
-    private int resetButtonX;
-    private int toggleX;
-    private int buttonEdgeSpace = 3;
-    private int buttonY;
-    private int buttonW = 120;
-    private int buttonH = 30;
-
     private String blank = "74bfb0";
     private String apple = "cc1212";
     private String body = "249b0f";
     private String head = "b76309";
     private String bg = "ceceb5";
 
-    private Block reset;
-    private Block toggle;
     private boolean lost = false;
 
     public Board() {
@@ -52,7 +44,6 @@ public class Board {
         this.height = height;
         canvas = new Canvas(width, height);
         grid = new Grid(gridSize, gridSize, 13, 20);
-        this.grid.savePlayArea();
     }
 
     public Grid getGrid() {
@@ -66,8 +57,11 @@ public class Board {
     public void drawBlocks() {
         GraphicsContext gc = this.canvas.getGraphicsContext2D();
 
+        //clear background
         gc.setFill(Color.web(this.bg));
         gc.fillRect(0, 0, this.width, this.height);
+
+        //draw squares
         int xPixel = this.xPos;
         for (int x = 0; x < this.grid.getWidth(); x++) {
             int yPixel = this.yPos;
@@ -90,10 +84,12 @@ public class Board {
                 temp.setWidth(size);
                 temp.setHeight(size);
                 temp.draw(canvas);
+                yPixel += margin + size;
             }
+            xPixel += margin + size;
         }
 
-        // we've drawn all the blocks, now too check if we've lost,
+        // we've drawn all the blocks, now if we've lost we need to act on it
         if (this.lost == true) {
             // paint the background over, but add an alpha value so you can still see the mines
             Block transparentCover = new Block(0, 0, this.width, this.height, Color.web(this.bg + "D8"));
@@ -103,7 +99,19 @@ public class Board {
     }
 
     public void keyPressed(KeyEvent e) {
-
+        if (e.getCode() == KeyCode.UP || e.getCode() == KeyCode.W) {
+            // user pressed up key
+            this.grid.attemptSetDirection(1);
+        } else if (e.getCode() == KeyCode.DOWN || e.getCode() == KeyCode.S) {
+            // user pressed down key
+            this.grid.attemptSetDirection(3);
+        } else if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.A) {
+            // user pressed left key
+            this.grid.attemptSetDirection(4);
+        } else if (e.getCode() == KeyCode.RIGHT || e.getCode() == KeyCode.D) {
+            // user pressed right key
+            this.grid.attemptSetDirection(2);
+        }
     }
 
     public void mouseClicked(MouseEvent e) {

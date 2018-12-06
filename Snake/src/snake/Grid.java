@@ -23,6 +23,8 @@ public class Grid {
     private int[][] lastPlayArea;
     private static int[][] savedPlayArea;
 
+    private boolean gameOver = false;
+
     // snake vars
     private int xPos = 0;
     private int yPos = 0;
@@ -46,6 +48,8 @@ public class Grid {
         for (int i = 0; i < this.length; i++) {
             Arrays.fill(this.savedPlayArea[i], 0);
         }
+        setCell(xPos, yPos, 1); // init head
+
     }
 
     public Grid(int width, int length, int startX, int startY) {
@@ -59,6 +63,11 @@ public class Grid {
         }
         this.xPos = startX;
         this.yPos = startY;
+        setCell(xPos, yPos, 1); // init head
+    }
+
+    private boolean getGameOver() {
+        return this.gameOver;
     }
 
     public int getWidth() {
@@ -94,8 +103,10 @@ public class Grid {
         return this.direction;
     }
 
-    public void setDirection(int dir) {
-        this.direction = dir;
+    public void attemptSetDirection(int dir) {
+        if (Math.abs(this.direction - dir) != 2) {
+            this.direction = dir;
+        }
     }
 
     public int getSize() {
@@ -151,7 +162,22 @@ public class Grid {
     }
 
     public void nextGen() {
+        int nextX = nextPos()[0];
+        int nextY = nextPos()[1];
 
+        if (this.isSnake(nextX, nextY)) {
+            // self collision
+            this.gameOver = true;
+        } else {
+            if (this.isApple(nextX, nextY)) {
+                // ate an apple
+                this.length++;
+            }
+            if (this.isBlank(xPos, yPos)) {
+                // legitimate move
+                
+            }
+        }
     }
 
     public int[][] getPlayArea() {
