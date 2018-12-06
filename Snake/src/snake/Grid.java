@@ -12,19 +12,16 @@ import java.util.Random;
 public class Grid {
 
     /*
-     * 0 - Untouched - no mine
-     * 1 - Safe
-     * 2 - Mine
-     * 3 - Flagged
-     * 4 - Detonated Mine
-     * 5 - Flagged mine
+     * 0 - Blank
+     * 1 - Snake head
+     * 2 - Snake body
+     * 3 - Apple
      */
     private int width;
     private int length;
     private int[][] playArea;
     private int[][] lastPlayArea;
     private static int[][] savedPlayArea;
-    private int numberOfMines;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String deltaTime;
@@ -38,7 +35,6 @@ public class Grid {
         for (int i = 0; i < this.length; i++) {
             Arrays.fill(this.savedPlayArea[i], 0);
         }
-        this.numberOfMines = 10;
         this.startTime = null;
         this.deltaTime = "";
     }
@@ -52,8 +48,6 @@ public class Grid {
         for (int i = 0; i < this.length; i++) {
             Arrays.fill(this.savedPlayArea[i], 0);
         }
-        this.numberOfMines = numMines;
-        fillMines("Filled constructor");
         this.startTime = LocalDateTime.now();
         this.deltaTime = "";
     }
@@ -77,44 +71,6 @@ public class Grid {
         return this.deltaTime;
     }
 
-    public int numFlags() {
-        int count = this.countVal(3) + this.countVal(5);
-        return count;
-    }
-
-    public int getMinesLeft() {
-        return this.countVal(2) - this.countVal(3);
-    }
-
-    public void fillMines(String method) {
-        //System.out.println("fillMines() called from " + method); //debug
-        this.lastPlayArea = this.playArea;
-        for (int i = 0; i < this.length; i++) { // take out any old mines
-            Arrays.fill(this.playArea[i], 0);
-        }
-        int timeSeed = LocalDateTime.now().getNano();
-        Random miner = new Random(timeSeed);
-        ArrayList<int[]> positions = new ArrayList<>();
-        for (int i = 0; i < this.numberOfMines; i++) {
-            int[] position = {-1, -1};
-            boi:
-            do {
-                position[0] = miner.nextInt(this.getWidth());
-                position[1] = miner.nextInt(this.getLength());
-                for (int a = 0; a < positions.size(); a++) {
-                    if (position[0] == positions.get(a)[0] && position[1] == positions.get(a)[1]) {
-                        continue boi;
-                    }
-                }
-            } while (position[0] < 0 || position[1] < 0 || positions.contains(position));
-            positions.add(position);
-        }
-        // now we have lists of mine positions
-        for (int i = 0; i < this.numberOfMines; i++) {
-            this.playArea[positions.get(i)[1]][positions.get(i)[0]] = 2;
-        }
-    }
-
     public int getWidth() {
         return this.width;
     }
@@ -131,54 +87,28 @@ public class Grid {
         this.length = length;
     }
 
-    public void setNumMines(int amt) {
-        this.numberOfMines = amt;
+    public boolean isSnake(int xPos, int yPos) {
+        return this.playArea[yPos][xPos] == 1 || this.playArea[yPos][xPos] == 2;
     }
 
-    public int getNumMines() {
-        return this.numberOfMines;
+    public boolean isBlank(int xPos, int yPos) {
+        return this.playArea[yPos][xPos] == 0;
     }
 
-    public boolean isUntouched(int xPos, int yPos) {
-        return this.playArea[yPos][xPos] == 0 || this.playArea[yPos][xPos] == 2;
+    public boolean isApple(int xPos, int yPos) {
+        return this.playArea[yPos][xPos] == 3;
     }
 
-    public boolean isFlagged(int xPos, int yPos) {
-        return this.playArea[yPos][xPos] == 3 || this.playArea[yPos][xPos] == 5;
-    }
-
-    public boolean isMine(int xPos, int yPos) {
-        return this.playArea[yPos][xPos] == 2 || this.playArea[yPos][xPos] == 4 || this.playArea[yPos][xPos] == 5;
-    }
-
-    public boolean isDetonated(int xPos, int yPos) {
-        return this.playArea[yPos][xPos] == 4;
-    }
-
-    public boolean isInactiveMine(int xPos, int yPos) {
-        return this.playArea[yPos][xPos] == 2;
-    }
-
-    public boolean isClicked(int xPos, int yPos) {
+    public boolean isHead(int xPos, int yPos) {
         return this.playArea[yPos][xPos] == 1;
     }
 
-    public boolean isSafe(int xPos, int yPos) {
-        int val = this.playArea[yPos][xPos];
-        return val == 0 || val == 1 || val == 3;
+    public boolean isBody(int xPos, int yPos) {
+        return this.playArea[yPos][xPos] == 2;
     }
 
-    public void flag(int xPos, int yPos) {
-        this.lastPlayArea = this.playArea;
-        if (this.playArea[yPos][xPos] == 0) {// untouched
-            this.playArea[yPos][xPos] = 3; // flag
-        } else if (this.playArea[yPos][xPos] == 3) { //already flagged
-            this.playArea[yPos][xPos] = 0; // untouched
-        } else if (this.playArea[yPos][xPos] == 2) { // mine
-            this.playArea[yPos][xPos] = 5; // flagged mine
-        } else if (this.playArea[yPos][xPos] == 5) { //already flagged mine
-            this.playArea[yPos][xPos] = 2; // unflagged mine
-        }
+    public boolean isOccupied(int xPos, int yPos) {
+        return this.playArea[yPos][xPos] != 0;
     }
 
     public int[][] getPlayArea() {
@@ -252,135 +182,8 @@ public class Grid {
         return count;
     }
 
-    public void click(int x, int y) {
-        this.lastPlayArea = this.playArea;
-
-        if (isMine(x, y) && countVal(1) == 0) { // it's kinda unfair to lose right out of the box
-            int newX = 0;
-            int newY = 0;
-            while (1 == 1) {
-                if (isMine(newX, newY)) {
-                    if (newX < this.width - 1) {
-                        newX++;
-                    } else {
-                        newY++;
-                        newX = 0;
-                    }
-                } else {
-                    this.playArea[newY][newX] = 2;
-                    // System.out.println("Succesfully saved you from a mine, now at: " + newX + ", " + newY); // debug
-                    this.playArea[y][x] = 0;
-                    break;
-                }
-            }
-        }
-        switch (this.playArea[y][x]) {
-            case 0:
-                this.playArea[y][x] = 1;
-                if (getNeighbors(x, y) == 0) {
-                    if (safeCheck(x - 1, y) > -1) {
-                        click(x - 1, y);
-                    }
-                    if (safeCheck(x + 1, y) > -1) {
-                        click(x + 1, y);
-                    }
-                    if (safeCheck(x, y - 1) > -1) {
-                        click(x, y - 1);
-                    }
-                    if (safeCheck(x, y + 1) > -1) {
-                        click(x, y + 1);
-                    }
-                    if (safeCheck(x - 1, y - 1) > -1) {
-                        click(x - 1, y - 1);
-                    }
-                    if (safeCheck(x - 1, y + 1) > -1) {
-                        click(x - 1, y + 1);
-                    }
-                    if (safeCheck(x + 1, y - 1) > -1) {
-                        click(x + 1, y - 1);
-                    }
-                    if (safeCheck(x + 1, y + 1) > -1) {
-                        click(x + 1, y + 1);
-                    }
-                }
-                break;
-            case 1:
-                break;
-            case 2:
-                this.playArea[y][x] = 4;
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
-            case 5:
-                break;
-
-        }
-    }
-
     public void setPlayArea(int[][] newPlayArea) {
         this.playArea = newPlayArea;
-    }
-
-    public int getNeighbors(int xPos, int yPos) {
-        int neighbors = 0;
-        //check neighbors (with bounds checks)
-        if (xPos > 0) {
-            if (yPos > 0) {
-                if (isMine(xPos - 1, yPos - 1)) { // if upper left
-                    neighbors++;
-                }
-            }
-        }
-
-        if (yPos > 0) {
-            if (isMine(xPos, yPos - 1)) { // if upper
-                neighbors++;
-            }
-        }
-
-        if (xPos < (this.length - 1)) {
-            if (yPos > 0 && isMine(xPos + 1, yPos - 1)) { // if upper right
-                neighbors++;
-            }
-        }
-
-        if (xPos > 0 && yPos < (this.length - 1)) {
-            if (isMine(xPos - 1, yPos + 1)) { // if lower left
-                neighbors++;
-            }
-        }
-
-        if (yPos < (this.length - 1)) {
-            if (isMine(xPos, yPos + 1)) { // if lower
-                neighbors++;
-            }
-        }
-
-        if (yPos < (this.length - 1) && xPos < (this.width - 1)) {
-            if (isMine(xPos + 1, yPos + 1)) { // if lower right
-                neighbors++;
-            }
-        }
-
-        if (xPos > 0) {
-            if (isMine(xPos - 1, yPos)) {// if left
-                neighbors++;
-            }
-        }
-
-        if (xPos < (this.length - 1)) {
-            if (isMine(xPos + 1, yPos)) { // if right
-                neighbors++;
-            }
-        }
-        return neighbors;
-
-    }
-
-    public boolean isZero(int xPos, int yPos) {
-        return this.playArea[yPos][xPos] == 0;
     }
 
     @Override
@@ -403,14 +206,10 @@ public class Grid {
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
- * "Software"),
- * to deal in the Software without restriction, including without limitation
- * the
- * rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or
- * sell copies of the Software, and to permit persons to whom the Software
- * is
- * furnished to do so, subject to the following conditions:
+ * "Software"), to deal in the Software without restriction, including without
+ * limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom
+ * the Software is furnished to do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
@@ -418,11 +217,8 @@ public class Grid {
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
- * NO
- * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER
- * DEALINGS IN THE SOFTWARE.
+ * NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+ * OR OTHER DEALINGS IN THE SOFTWARE.
  */
