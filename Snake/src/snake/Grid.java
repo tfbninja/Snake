@@ -22,9 +22,20 @@ public class Grid {
     private int[][] playArea;
     private int[][] lastPlayArea;
     private static int[][] savedPlayArea;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private String deltaTime;
+
+    // snake vars
+    private int xPos = 0;
+    private int yPos = 0;
+    private int direction = 1;
+
+    /*
+     * Directions:
+     * 1 = up
+     * 2 = right
+     * 3 = down
+     * 4 = left
+     */
+    private int size = 1;
 
     public Grid() {
         this.width = 10;
@@ -35,11 +46,9 @@ public class Grid {
         for (int i = 0; i < this.length; i++) {
             Arrays.fill(this.savedPlayArea[i], 0);
         }
-        this.startTime = null;
-        this.deltaTime = "";
     }
 
-    public Grid(int width, int length, int numMines) {
+    public Grid(int width, int length, int startX, int startY) {
         this.width = width;
         this.length = length;
         this.playArea = new int[this.length][this.width];
@@ -48,27 +57,8 @@ public class Grid {
         for (int i = 0; i < this.length; i++) {
             Arrays.fill(this.savedPlayArea[i], 0);
         }
-        this.startTime = LocalDateTime.now();
-        this.deltaTime = "";
-    }
-
-    public String stopTimer() {
-        this.endTime = LocalDateTime.now();
-        return this.getTimer(endTime);
-    }
-
-    public String getTimer() {
-        String seconds = String.valueOf((LocalDateTime.now().getSecond() - this.startTime.getSecond()) % 60);
-        String minutes = String.valueOf(LocalDateTime.now().getMinute() - this.startTime.getMinute());
-        this.deltaTime = minutes + ":" + seconds;
-        return this.deltaTime;
-    }
-
-    public String getTimer(LocalDateTime endTime) {
-        String seconds = String.valueOf(endTime.now().getSecond() - this.startTime.getSecond());
-        String minutes = String.valueOf(endTime.now().getMinute() - this.startTime.getMinute());
-        this.deltaTime = minutes + ":" + seconds;
-        return this.deltaTime;
+        this.xPos = startX;
+        this.yPos = startY;
     }
 
     public int getWidth() {
@@ -85,6 +75,55 @@ public class Grid {
 
     public void setLength(int length) {
         this.length = length;
+    }
+
+    public int getHeadX() {
+        return this.xPos;
+    }
+
+    public int getHeadY() {
+        return this.yPos;
+    }
+
+    public int[] getHeadPos() {
+        int[] pos = {xPos, yPos};
+        return pos;
+    }
+
+    public int getDirection() {
+        return this.direction;
+    }
+
+    public void setDirection(int dir) {
+        this.direction = dir;
+    }
+
+    public int getSize() {
+        return this.size;
+    }
+
+    public void setSize(int amt) {
+        this.size = amt;
+    }
+
+    public void grow() {
+        this.size++;
+    }
+
+    public void move() {
+        int[] xAdd = {0, 1, 0, -1};
+        int[] yAdd = {-11, 0, 1, 0};
+        xPos += xAdd[direction - 1];
+        yPos += yAdd[direction - 1];
+    }
+
+    public int[] nextPos() {
+        int[] newPos = {xPos, yPos};
+        int[] xAdd = {0, 1, 0, -1};
+        int[] yAdd = {-11, 0, 1, 0};
+        newPos[0] += xAdd[direction - 1];
+        newPos[1] += yAdd[direction - 1];
+        return newPos;
     }
 
     public boolean isSnake(int xPos, int yPos) {
@@ -109,6 +148,10 @@ public class Grid {
 
     public boolean isOccupied(int xPos, int yPos) {
         return this.playArea[yPos][xPos] != 0;
+    }
+
+    public void nextGen() {
+
     }
 
     public int[][] getPlayArea() {
