@@ -73,7 +73,7 @@ public class Snake extends Application {
                 frame++;
                 if (board.getGrid().getGameOver() == false) {
                     board.drawBlocks();
-                    if (frame % 4 == 0) {
+                    if (frame % 5 == 0) {
                         board.getGrid().nextGen();
                     }
 

@@ -215,6 +215,11 @@ public class Grid {
         int headX = pos.get(0).getKey();
         int headY = pos.get(0).getValue();
 
+        if (this.countVal(2) + 1 > pos.size()) {
+            // if the amt of snake body + the head + the square about to be filled is more than the length, we need to chop the last part
+            this.chopTail();
+        }
+
         if (!this.edgeKills) {
             if (nextX < 0) {
                 nextX = this.width - 1;
@@ -228,24 +233,28 @@ public class Grid {
             }
         }
 
-        if (this.isApple(nextX, nextY)) {
+        if (this.edgeKills && (nextX >= this.width || nextY >= this.length || nextX < 0 || nextY < 0)) {
+            // collision with wall
+            this.gameOver = true;
+        } else if (!this.gameOver && isSnake(nextX, nextY)) {
+            // collision with self
+            this.gameOver = true;
+        } else if (!this.gameOver && this.isApple(nextX, nextY)) {
             // ate an apple
             grow();
-            this.pos.add(this.pos.get(this.pos.size() - 1));
+
+            this.pos.add(0, new Pair(nextX, nextY)); // add segment in front
+            this.setCell(nextX, nextY, 1); // update grid
+            this.removeExtra();
+            if (countVal(2) < pos.size() - 1) {
+                pos.add(new Pair(headX, headY));
+                this.setCell(headX, headY, 2);
+            } else {
+                this.setCell(headX, headY, 0);
+            }
             clearApples();
             newApple();
-        } else if (!this.edgeKills && (nextX >= this.width || nextY >= this.length || nextX < 0 || nextY < 0)) {
-            // collision with wall or self
-            this.gameOver = true;
-        } else if (isSnake(nextX, nextY)) {
-            this.gameOver = true;
-        }
-
-        if (this.isBlank(nextX, nextY)) {
-            if (this.countVal(2) + 2 > pos.size()) {
-                // if the amt of snake body + the head + the square about to be filled is more than the length, we need to chop the last part
-                this.chopTail();
-            }
+        } else if (!this.gameOver && this.isBlank(nextX, nextY)) {
 
             this.pos.add(0, new Pair(nextX, nextY)); // add segment in front
             this.setCell(nextX, nextY, 1); // update grid
