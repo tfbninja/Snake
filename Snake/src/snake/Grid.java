@@ -23,7 +23,7 @@ public class Grid {
     private int[][] lastPlayArea;
     private static int[][] savedPlayArea;
 
-    private boolean edgeKills = true;
+    private boolean edgeKills = false;
 
     private Random random = new Random();
 
@@ -31,6 +31,7 @@ public class Grid {
 
     // snake vars
     private int direction = 1;
+    private int tempDir = 1;
     private ArrayList<Pair<Integer, Integer>> pos = new ArrayList<>();
     private int snakeSize = 1;
 
@@ -69,6 +70,13 @@ public class Grid {
     public void removeExtra() {
         while (pos.size() > snakeSize) {
             pos.remove(pos.size() - 1);
+        }
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < length; y++) {
+                if (getCell(x, y) == 2 && !pos.contains(new Pair(x, y))) {
+                    setCell(x, y, 0);
+                }
+            }
         }
     }
 
@@ -150,8 +158,8 @@ public class Grid {
     }
 
     public void attemptSetDirection(int dir) {
-        if (Math.abs(this.direction - dir) != 2) {
-            this.direction = dir;
+        if (Math.abs(this.direction - dir) != 2 && Math.abs(this.tempDir - dir) != 2) {
+            this.tempDir = dir;
         }
     }
 
@@ -201,41 +209,54 @@ public class Grid {
     }
 
     public void nextGen() {
+        this.direction = this.tempDir;
         int nextX = nextPos()[0];
         int nextY = nextPos()[1];
         int headX = pos.get(0).getKey();
         int headY = pos.get(0).getValue();
 
-        if ((this.edgeKills && (nextX >= this.width || nextY >= this.length || nextX < 0 || nextY < 0))) {
-            // self collision
+        if (!this.edgeKills) {
+            if (nextX < 0) {
+                nextX = this.width - 1;
+            } else if (nextX >= this.width) {
+                nextX = 0;
+            }
+            if (nextY < 0) {
+                nextY = this.length - 1;
+            } else if (nextY >= this.length) {
+                nextY = 0;
+            }
+        }
+
+        if (this.isApple(nextX, nextY)) {
+            // ate an apple
+            grow();
+            this.pos.add(this.pos.get(this.pos.size() - 1));
+            clearApples();
+            newApple();
+        } else if (!this.edgeKills && (nextX >= this.width || nextY >= this.length || nextX < 0 || nextY < 0)) {
+            // collision with wall or self
             this.gameOver = true;
         } else if (isSnake(nextX, nextY)) {
             this.gameOver = true;
-        } else {
-            if (this.isApple(nextX, nextY)) {
-                // ate an apple
-                grow();
-                this.pos.add(this.pos.get(this.pos.size() - 1));
-                clearApples();
-                newApple();
-            }
-            if (this.isBlank(nextX, nextY)) {
-                if (this.countVal(2) + 2 > pos.size()) {
-                    // if the amt of snake body + the head + the square about to be filled is more than the length, we need to chop the last part
-                    this.chopTail();
-                }
+        }
 
-                this.pos.add(0, new Pair(nextX, nextY)); // add segment in front
-                this.setCell(nextX, nextY, 1); // update grid
-                this.removeExtra();
-                if (countVal(2) < pos.size() - 1) {
-                    pos.add(new Pair(headX, headY));
-                    this.setCell(headX, headY, 2);
-                } else {
-                    this.setCell(headX, headY, 0);
-                }
-
+        if (this.isBlank(nextX, nextY)) {
+            if (this.countVal(2) + 2 > pos.size()) {
+                // if the amt of snake body + the head + the square about to be filled is more than the length, we need to chop the last part
+                this.chopTail();
             }
+
+            this.pos.add(0, new Pair(nextX, nextY)); // add segment in front
+            this.setCell(nextX, nextY, 1); // update grid
+            this.removeExtra();
+            if (countVal(2) < pos.size() - 1) {
+                pos.add(new Pair(headX, headY));
+                this.setCell(headX, headY, 2);
+            } else {
+                this.setCell(headX, headY, 0);
+            }
+
         }
     }
 
