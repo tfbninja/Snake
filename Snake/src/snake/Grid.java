@@ -1,9 +1,9 @@
 package snake;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
+import javafx.util.Pair;
 
 /**
  *
@@ -23,12 +23,16 @@ public class Grid {
     private int[][] lastPlayArea;
     private static int[][] savedPlayArea;
 
+    private boolean edgeKills = true;
+
+    private Random random = new Random();
+
     private boolean gameOver = false;
 
     // snake vars
-    private int xPos = 0;
-    private int yPos = 0;
     private int direction = 1;
+    private ArrayList<Pair<Integer, Integer>> pos = new ArrayList<>();
+    private int snakeSize = 1;
 
     /*
      * Directions:
@@ -37,8 +41,6 @@ public class Grid {
      * 3 = down
      * 4 = left
      */
-    private int size = 1;
-
     public Grid() {
         this.width = 10;
         this.length = 10;
@@ -48,8 +50,6 @@ public class Grid {
         for (int i = 0; i < this.length; i++) {
             Arrays.fill(this.savedPlayArea[i], 0);
         }
-        setCell(xPos, yPos, 1); // init head
-
     }
 
     public Grid(int width, int length, int startX, int startY) {
@@ -61,12 +61,52 @@ public class Grid {
         for (int i = 0; i < this.length; i++) {
             Arrays.fill(this.savedPlayArea[i], 0);
         }
-        this.xPos = startX;
-        this.yPos = startY;
-        setCell(xPos, yPos, 1); // init head
+        this.pos.add(new Pair(startX, startY)); // add head to list
+        setCell(startX, startY, 1); // init head
+        newApple(); // add an apple
     }
 
-    private boolean getGameOver() {
+    public boolean getEdgeKills() {
+        return this.edgeKills;
+    }
+
+    public void setEdgeKills(boolean choice) {
+        this.edgeKills = choice;
+    }
+
+    public void clearApples() {
+        if (countVal(3) != 0) {
+            for (int x = 0; x < this.width; x++) {
+                for (int y = 0; y < this.length - 1; y++) {
+                    if (this.getCell(x, y) == 3) {
+                        this.setCell(x, y, 0);
+                    }
+                }
+            }
+        }
+    }
+
+    public int[] newApple() {
+        int[] pos = {-1, -1};
+        while (pos[0] < 0 || pos[1] < 0 || this.isSnake(pos[0], pos[1])) {
+            pos[0] = random.nextInt(this.width);
+            pos[1] = random.nextInt(this.length);
+        }
+        this.setCell(pos[0], pos[1], 3);
+        return pos;
+    }
+
+    public void setTail(int x, int y) {
+        this.pos.set(this.pos.size() - 1, new Pair(x, y));
+    }
+
+    public void chopTail() {
+        while (pos.size() > snakeSize) {
+            this.pos.remove(this.pos.size() - 1);
+        }
+    }
+
+    public boolean getGameOver() {
         return this.gameOver;
     }
 
@@ -87,15 +127,15 @@ public class Grid {
     }
 
     public int getHeadX() {
-        return this.xPos;
+        return this.pos.get(0).getKey();
     }
 
     public int getHeadY() {
-        return this.yPos;
+        return this.pos.get(0).getValue();
     }
 
     public int[] getHeadPos() {
-        int[] pos = {xPos, yPos};
+        int[] pos = {getHeadX(), getHeadY()};
         return pos;
     }
 
@@ -110,28 +150,21 @@ public class Grid {
     }
 
     public int getSize() {
-        return this.size;
+        return this.snakeSize;
     }
 
     public void setSize(int amt) {
-        this.size = amt;
+        this.snakeSize = amt;
     }
 
     public void grow() {
-        this.size++;
-    }
-
-    public void move() {
-        int[] xAdd = {0, 1, 0, -1};
-        int[] yAdd = {-11, 0, 1, 0};
-        xPos += xAdd[direction - 1];
-        yPos += yAdd[direction - 1];
+        this.snakeSize++;
     }
 
     public int[] nextPos() {
-        int[] newPos = {xPos, yPos};
+        int[] newPos = this.getHeadPos();
         int[] xAdd = {0, 1, 0, -1};
-        int[] yAdd = {-11, 0, 1, 0};
+        int[] yAdd = {-1, 0, 1, 0};
         newPos[0] += xAdd[direction - 1];
         newPos[1] += yAdd[direction - 1];
         return newPos;
@@ -164,18 +197,36 @@ public class Grid {
     public void nextGen() {
         int nextX = nextPos()[0];
         int nextY = nextPos()[1];
+        int headX = pos.get(0).getKey();
+        int headY = pos.get(0).getValue();
 
-        if (this.isSnake(nextX, nextY)) {
+        if ((this.edgeKills && (nextX >= this.width || nextY >= this.length || nextX < 0 || nextY < 0))) {
             // self collision
+            this.gameOver = true;
+        } else if (isSnake(nextX, nextY)) {
             this.gameOver = true;
         } else {
             if (this.isApple(nextX, nextY)) {
                 // ate an apple
-                this.length++;
+                grow();
+                this.pos.add(this.pos.get(this.pos.size() - 1));
+                clearApples();
+                newApple();
             }
-            if (this.isBlank(xPos, yPos)) {
-                // legitimate move
-                
+            if (this.isBlank(nextX, nextY)) {
+                if (this.countVal(2) + 2 > pos.size()) {
+                    // if the amt of snake body + the head + the square about to be filled is more than the length, we need to chop the last part
+                    this.chopTail();
+                }
+
+                this.pos.add(0, new Pair(nextX, nextY)); // add segment in front
+                this.setCell(nextX, nextY, 1); // update grid
+                if (countVal(2) < pos.size() - 1) {
+                    this.setCell(headX, headY, 2);
+                } else {
+                    this.setCell(headX, headY, 0);
+                }
+
             }
         }
     }
@@ -232,14 +283,16 @@ public class Grid {
     }
 
     public int countVal(int value) {
-        int count = 0;
-        for (int y = 0; y < this.length; y++) {
-            for (int x = 0; x < this.width; x++) {
-                if (this.playArea[y][x] == value) {
-                    count++;
-                }
-            }
-        }
+        /*
+         * int count = 0;
+         * for (int y = 0; y < this.length; y++) {
+         * for (int x = 0; x < this.width; x++) {
+         * if (this.playArea[y][x] == value) {
+         * count++;
+         * }
+         * }
+         * }
+         */
         int count2 = 0;
         for (int x = 0; x < this.width; x++) {
             for (int y = 0; y < this.length; y++) {
@@ -248,7 +301,7 @@ public class Grid {
                 }
             }
         }
-        return count;
+        return count2;
     }
 
     public void setPlayArea(int[][] newPlayArea) {

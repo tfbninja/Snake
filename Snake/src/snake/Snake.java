@@ -1,13 +1,13 @@
 package snake;
 
-import javafx.application.Application;
 import javafx.animation.AnimationTimer;
+import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -19,6 +19,7 @@ public class Snake extends Application {
 
     private int WIDTH = 419;
     private int HEIGHT = 475;
+    private int frame = 0;
 
     @Override
     public void start(Stage primaryStage) {
@@ -69,21 +70,25 @@ public class Snake extends Application {
         new AnimationTimer() {
             @Override
             public void handle(long now) {
-                board.drawBlocks();
+                frame++;
+                if (board.getGrid().getGameOver() == false) {
+                    if (frame % 4 == 0) {
+                        board.getGrid().nextGen();
+                    }
+                    board.drawBlocks();
+                }
             }
         }.start();
 
         scene.setOnMousePressed(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 board.mouseClicked(event);
-                board.drawBlocks();
             }
         });
 
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent eventa) {
                 board.keyPressed(eventa);
-                board.drawBlocks();
             }
         });
     }

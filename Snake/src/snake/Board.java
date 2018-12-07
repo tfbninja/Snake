@@ -1,13 +1,11 @@
 package snake;
 
-import java.util.Scanner;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.input.KeyCode;
-import javafx.scene.text.*;
 
 public class Board {
 
@@ -36,7 +34,7 @@ public class Board {
         width = 600;
         height = 600;
         canvas = new Canvas(width, height);
-        grid = new Grid(gridSize, gridSize, 13, 20);
+        //grid = new Grid(gridSize, gridSize, 13, 20);
     }
 
     public Board(int width, int height) {
