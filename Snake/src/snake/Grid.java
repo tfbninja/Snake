@@ -66,6 +66,12 @@ public class Grid {
         newApple(); // add an apple
     }
 
+    public void removeExtra() {
+        while (pos.size() > snakeSize) {
+            pos.remove(pos.size() - 1);
+        }
+    }
+
     public boolean getEdgeKills() {
         return this.edgeKills;
     }
@@ -221,7 +227,9 @@ public class Grid {
 
                 this.pos.add(0, new Pair(nextX, nextY)); // add segment in front
                 this.setCell(nextX, nextY, 1); // update grid
+                this.removeExtra();
                 if (countVal(2) < pos.size() - 1) {
+                    pos.add(new Pair(headX, headY));
                     this.setCell(headX, headY, 2);
                 } else {
                     this.setCell(headX, headY, 0);
