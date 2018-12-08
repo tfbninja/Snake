@@ -33,7 +33,7 @@ public class Grid {
     private int direction = 1;
     private int tempDir = 1;
     private ArrayList<Pair<Integer, Integer>> pos = new ArrayList<>();
-    private int snakeSize = 1;
+    private int snakeSize = 24;
 
     /*
      * Directions:
@@ -101,13 +101,13 @@ public class Grid {
     }
 
     public int[] newApple() {
-        int[] pos = {-1, -1};
-        while (pos[0] < 0 || pos[1] < 0 || this.isSnake(pos[0], pos[1])) {
-            pos[0] = random.nextInt(this.width);
-            pos[1] = random.nextInt(this.length);
+        int[] newPos = {-1, -1};
+        while (newPos[0] < 0 || newPos[1] < 0 || this.isSnake(newPos[0], newPos[1])) {
+            newPos[0] = random.nextInt(this.width);
+            newPos[1] = random.nextInt(this.length);
         }
-        this.setCell(pos[0], pos[1], 3);
-        return pos;
+        this.setCell(newPos[0], newPos[1], 3);
+        return newPos;
     }
 
     public void setTail(int x, int y) {
@@ -116,7 +116,7 @@ public class Grid {
 
     public void chopTail() {
         while (pos.size() > snakeSize) {
-            this.pos.remove(this.pos.size() - 1);
+            this.setCell(this.pos.remove(this.pos.size() - 1), 0);
         }
     }
 
@@ -149,8 +149,8 @@ public class Grid {
     }
 
     public int[] getHeadPos() {
-        int[] pos = {getHeadX(), getHeadY()};
-        return pos;
+        int[] headPos = {getHeadX(), getHeadY()};
+        return headPos;
     }
 
     public int getDirection() {
@@ -215,7 +215,7 @@ public class Grid {
         int headX = pos.get(0).getKey();
         int headY = pos.get(0).getValue();
 
-        if (this.countVal(2) + 1 > pos.size()) {
+        if (this.countVal(2) + 2 > pos.size()) {
             // if the amt of snake body + the head + the square about to be filled is more than the length, we need to chop the last part
             this.chopTail();
         }
@@ -242,7 +242,6 @@ public class Grid {
         } else if (!this.gameOver && this.isApple(nextX, nextY)) {
             // ate an apple
             grow();
-
             this.pos.add(0, new Pair(nextX, nextY)); // add segment in front
             this.setCell(nextX, nextY, 1); // update grid
             this.removeExtra();
@@ -306,6 +305,11 @@ public class Grid {
     public void setCell(int x, int y, int value) {
         this.lastPlayArea = this.playArea;
         this.playArea[y][x] = value;
+    }
+
+    public void setCell(Pair<Integer, Integer> pos, int value) {
+        this.lastPlayArea = this.playArea;
+        this.playArea[pos.getValue()][pos.getKey()] = value;
     }
 
     public int getCell(int x, int y) {
