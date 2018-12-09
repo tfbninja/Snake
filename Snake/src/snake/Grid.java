@@ -16,6 +16,7 @@ public class Grid {
      * 1 - Snake head
      * 2 - Snake body
      * 3 - Apple
+     * 4 - Rock
      */
     private int width;
     private int length;
@@ -33,7 +34,7 @@ public class Grid {
     private int direction = 1;
     private int tempDir = 1;
     private ArrayList<Pair<Integer, Integer>> pos = new ArrayList<>();
-    private int snakeSize = 25;
+    private int snakeSize = 5;
 
     /*
      * Directions:
@@ -65,6 +66,8 @@ public class Grid {
         this.pos.add(new Pair(startX, startY)); // add head to list
         setCell(startX, startY, 1); // init head
         newApple(); // add an apple
+        setVertRockLine(this.length / 2, 5);
+        setHorzRockLine(this.width / 2, 5);
     }
 
     public void removeExtra() {
@@ -77,6 +80,18 @@ public class Grid {
                     setCell(x, y, 0);
                 }
             }
+        }
+    }
+
+    public void setVertRockLine(int topX, int length) {
+        for (int i = 0; i < length; i++) {
+            this.setCell(topX, ((this.width / 2) - (length / 2)) + i, 4);
+        }
+    }
+
+    public void setHorzRockLine(int topY, int length) {
+        for (int i = 0; i < length; i++) {
+            this.setCell(((this.width / 2) - (length / 2)) + i, topY, 4);
         }
     }
 
@@ -102,7 +117,7 @@ public class Grid {
 
     public int[] newApple() {
         int[] newPos = {-1, -1};
-        while (newPos[0] < 0 || newPos[1] < 0 || this.isSnake(newPos[0], newPos[1])) {
+        while (newPos[0] < 0 || newPos[1] < 0 || this.isOccupied(newPos[0], newPos[1])) {
             newPos[0] = random.nextInt(this.width);
             newPos[1] = random.nextInt(this.length);
         }
@@ -208,6 +223,10 @@ public class Grid {
         return this.playArea[yPos][xPos] != 0;
     }
 
+    public boolean isRock(int xPos, int yPos) {
+        return this.playArea[yPos][xPos] == 4;
+    }
+
     public void nextGen() {
         this.direction = this.tempDir;
         int nextX = nextPos()[0];
@@ -233,8 +252,8 @@ public class Grid {
             }
         }
 
-        if (this.edgeKills && (nextX >= this.width || nextY >= this.length || nextX < 0 || nextY < 0)) {
-            // collision with wall
+        if (this.isRock(nextX, nextY) || this.edgeKills && (nextX >= this.width || nextY >= this.length || nextX < 0 || nextY < 0)) {
+            // collision with wall or rock
             this.gameOver = true;
         } else if (!this.gameOver && isSnake(nextX, nextY)) {
             // collision with self
@@ -254,7 +273,6 @@ public class Grid {
             clearApples();
             newApple();
         } else if (!this.gameOver && this.isBlank(nextX, nextY)) {
-
             this.pos.add(0, new Pair(nextX, nextY)); // add segment in front
             this.setCell(nextX, nextY, 1); // update grid
             this.removeExtra();
@@ -264,7 +282,6 @@ public class Grid {
             } else {
                 this.setCell(headX, headY, 0);
             }
-
         }
     }
 

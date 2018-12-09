@@ -27,6 +27,7 @@ public class Board {
     private String body = "249b0f";
     private String head = "b76309";
     private String bg = "ceceb5";
+    private String rock = "53585e";
 
     private boolean lost = false;
 
@@ -41,7 +42,7 @@ public class Board {
         this.width = width;
         this.height = height;
         canvas = new Canvas(width, height);
-        grid = new Grid(gridSize * sizeMultiplier, gridSize * sizeMultiplier, 13, 20);
+        grid = new Grid(gridSize * sizeMultiplier, gridSize * sizeMultiplier, 20, 20);
     }
 
     public Grid getGrid() {
@@ -73,6 +74,8 @@ public class Board {
                     temp.setColor(Color.web(this.head)); // brown
                 } else if (this.grid.isBlank(x, y)) {
                     temp.setColor(Color.web(this.blank)); // light blue
+                } else if (this.grid.isRock(x, y)) {
+                    temp.setColor(Color.web(this.rock));
                 } else { // there's a problem
                     //System.out.println(this.grid.getCell(x, y));
                     temp.setColor(Color.BLUEVIOLET);

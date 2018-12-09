@@ -17,7 +17,7 @@ import javafx.stage.Stage;
  */
 public class Snake extends Application {
 
-    private int sizeMulitiplier = 2;
+    private int sizeMulitiplier = 1;
     private int WIDTH = 419 * sizeMulitiplier;
     private int HEIGHT = 475 * sizeMulitiplier;
     private int frame = 0;
@@ -74,7 +74,7 @@ public class Snake extends Application {
                 frame++;
                 if (board.getGrid().getGameOver() == false) {
                     board.drawBlocks();
-                    if (frame % 1 == 0) {
+                    if (frame % 3 == 0) {
                         board.getGrid().nextGen();
                     }
 
