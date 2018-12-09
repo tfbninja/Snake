@@ -17,8 +17,9 @@ import javafx.stage.Stage;
  */
 public class Snake extends Application {
 
-    private int WIDTH = 419;
-    private int HEIGHT = 475;
+    private int sizeMulitiplier = 2;
+    private int WIDTH = 419 * sizeMulitiplier;
+    private int HEIGHT = 475 * sizeMulitiplier;
     private int frame = 0;
 
     @Override
@@ -53,7 +54,7 @@ public class Snake extends Application {
                 System.out.println("Hello World!");
             }
         });
-        Board board = new Board(WIDTH, HEIGHT);
+        Board board = new Board(WIDTH, HEIGHT, sizeMulitiplier);
 
         StackPane root = new StackPane();
         root.getChildren().add(reset);
@@ -73,7 +74,7 @@ public class Snake extends Application {
                 frame++;
                 if (board.getGrid().getGameOver() == false) {
                     board.drawBlocks();
-                    if (frame % 5 == 0) {
+                    if (frame % 1 == 0) {
                         board.getGrid().nextGen();
                     }
 

@@ -33,7 +33,7 @@ public class Grid {
     private int direction = 1;
     private int tempDir = 1;
     private ArrayList<Pair<Integer, Integer>> pos = new ArrayList<>();
-    private int snakeSize = 24;
+    private int snakeSize = 25;
 
     /*
      * Directions:

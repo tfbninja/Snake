@@ -37,11 +37,11 @@ public class Board {
         //grid = new Grid(gridSize, gridSize, 13, 20);
     }
 
-    public Board(int width, int height) {
+    public Board(int width, int height, int sizeMultiplier) {
         this.width = width;
         this.height = height;
         canvas = new Canvas(width, height);
-        grid = new Grid(gridSize, gridSize, 13, 20);
+        grid = new Grid(gridSize * sizeMultiplier, gridSize * sizeMultiplier, 13, 20);
     }
 
     public Grid getGrid() {
