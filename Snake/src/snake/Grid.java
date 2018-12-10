@@ -63,7 +63,7 @@ public class Grid {
         for (int i = 0; i < this.length; i++) {
             Arrays.fill(this.savedPlayArea[i], 0);
         }
-        this.pos.add(new Pair(startX, startY)); // add head to list
+        this.pos.add(new Pair<Integer, Integer>(startX, startY)); // add head to list
         setCell(startX, startY, 1); // init head
         newApple(); // add an apple
         setVertRockLine(this.length / 2, 5);
@@ -76,7 +76,7 @@ public class Grid {
         }
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < length; y++) {
-                if (getCell(x, y) == 2 && !pos.contains(new Pair(x, y))) {
+                if (getCell(x, y) == 2 && !pos.contains(new Pair<Integer, Integer>(x, y))) {
                     setCell(x, y, 0);
                 }
             }
@@ -126,7 +126,7 @@ public class Grid {
     }
 
     public void setTail(int x, int y) {
-        this.pos.set(this.pos.size() - 1, new Pair(x, y));
+        this.pos.set(this.pos.size() - 1, new Pair<Integer, Integer>(x, y));
     }
 
     public void chopTail() {
@@ -250,9 +250,21 @@ public class Grid {
             } else if (nextY >= this.length) {
                 nextY = 0;
             }
+        } else {
+            // edge kills
+            if (nextX < 0) {
+                this.gameOver = true;
+            } else if (nextX >= this.width) {
+                this.gameOver = true;
+            }
+            if (nextY < 0) {
+                this.gameOver = true;
+            } else if (nextY >= this.length) {
+                this.gameOver = true;
+            }
         }
 
-        if (this.isRock(nextX, nextY) || this.edgeKills && (nextX >= this.width || nextY >= this.length || nextX < 0 || nextY < 0)) {
+        if (!this.gameOver && this.isRock(nextX, nextY) || this.edgeKills && (nextX >= this.width || nextY >= this.length || nextX < 0 || nextY < 0)) {
             // collision with wall or rock
             this.gameOver = true;
         } else if (!this.gameOver && isSnake(nextX, nextY)) {
@@ -261,11 +273,11 @@ public class Grid {
         } else if (!this.gameOver && this.isApple(nextX, nextY)) {
             // ate an apple
             grow();
-            this.pos.add(0, new Pair(nextX, nextY)); // add segment in front
+            this.pos.add(0, new Pair<Integer, Integer>(nextX, nextY)); // add segment in front
             this.setCell(nextX, nextY, 1); // update grid
             this.removeExtra();
             if (countVal(2) < pos.size() - 1) {
-                pos.add(new Pair(headX, headY));
+                pos.add(new Pair<Integer, Integer>(headX, headY));
                 this.setCell(headX, headY, 2);
             } else {
                 this.setCell(headX, headY, 0);
@@ -273,11 +285,11 @@ public class Grid {
             clearApples();
             newApple();
         } else if (!this.gameOver && this.isBlank(nextX, nextY)) {
-            this.pos.add(0, new Pair(nextX, nextY)); // add segment in front
+            this.pos.add(0, new Pair<Integer, Integer>(nextX, nextY)); // add segment in front
             this.setCell(nextX, nextY, 1); // update grid
             this.removeExtra();
             if (countVal(2) < pos.size() - 1) {
-                pos.add(new Pair(headX, headY));
+                pos.add(new Pair<Integer, Integer>(headX, headY));
                 this.setCell(headX, headY, 2);
             } else {
                 this.setCell(headX, headY, 0);
