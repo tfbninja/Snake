@@ -3,6 +3,7 @@ package snake;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import java.awt.event.*;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -10,6 +11,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javax.swing.*;
 
 /**
  *
@@ -22,44 +24,33 @@ public class Snake extends Application {
     private int HEIGHT = 475 * sizeMulitiplier;
     private int frame = 0;
 
+    //button constants
+    private int bW = 50; // button Width
+    private int bH = 25; // button Height
+
+    private int resetX = 100; // reset button x position
+    private int resetY = 100; // reset button y position
+
     @Override
     public void start(Stage primaryStage) {
         // make buttons
-        Button reset = new Button();
-        reset.setText("Reset");
-        reset.setOnAction(new EventHandler<ActionEvent>() {
+        JFrame menu = new JFrame();
+        JButton reset = new JButton("RESET");
+        reset.setBounds(resetX, resetY, bW, bH);
 
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
+        reset.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("reset clicked!");
             }
         });
+        menu.add(reset);
+        menu.setSize(WIDTH, HEIGHT);
+        menu.setLayout(null);
+        menu.setVisible(true);
 
-        Button easy = new Button();
-        easy.setText("Reset");
-        easy.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
-            }
-        });
-
-        Button hard = new Button();
-        hard.setText("Hard");
-        reset.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
-            }
-        });
         Board board = new Board(WIDTH, HEIGHT, sizeMulitiplier);
 
         StackPane root = new StackPane();
-        root.getChildren().add(reset);
-        root.getChildren().add(easy);
-        root.getChildren().add(hard);
         root.getChildren().add(board.getCanvas());
 
         Scene scene = new Scene(root, WIDTH, HEIGHT);
@@ -74,7 +65,7 @@ public class Snake extends Application {
                 frame++;
                 if (board.getGrid().getGameOver() == false) {
                     board.drawBlocks();
-                    if (frame % 3 == 0) {
+                    if (frame % 4 == 0) {
                         board.getGrid().nextGen();
                     }
 
@@ -101,7 +92,6 @@ public class Snake extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-
 }
 /*
  * The MIT License
