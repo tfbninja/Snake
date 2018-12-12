@@ -66,8 +66,8 @@ public class Grid {
         this.pos.add(new Pair<Integer, Integer>(startX, startY)); // add head to list
         setCell(startX, startY, 1); // init head
         newApple(); // add an apple
-        setVertRockLine(this.length / 2, 5);
-        setHorzRockLine(this.width / 2, 5);
+        setVertRockLine(this.length / 2, 3);
+        setHorzRockLine(this.width / 2, 3);
     }
 
     public void removeExtra() {
@@ -187,7 +187,7 @@ public class Grid {
     }
 
     public void grow() {
-        this.snakeSize++;
+        this.snakeSize += 1;
     }
 
     public int[] nextPos() {

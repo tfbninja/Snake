@@ -34,20 +34,23 @@ public class Snake extends Application {
     @Override
     public void start(Stage primaryStage) {
         // make buttons
+
+        /*
         JFrame menu = new JFrame();
         JButton reset = new JButton("RESET");
         reset.setBounds(resetX, resetY, bW, bH);
-
+        
         reset.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("reset clicked!");
             }
-        });
+        });*/
+ /*
         menu.add(reset);
         menu.setSize(WIDTH, HEIGHT);
         menu.setLayout(null);
         menu.setVisible(true);
-
+         */
         Board board = new Board(WIDTH, HEIGHT, sizeMulitiplier);
 
         StackPane root = new StackPane();
@@ -65,8 +68,10 @@ public class Snake extends Application {
                 frame++;
                 if (board.getGrid().getGameOver() == false) {
                     board.drawBlocks();
-                    if (frame % 4 == 0) {
-                        board.getGrid().nextGen();
+                    if (frame % 3 == 0) {
+                        for (int i = 0; i < 1; i++) {
+                            board.getGrid().nextGen();
+                        }
                     }
 
                 }
