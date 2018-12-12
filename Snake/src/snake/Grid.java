@@ -68,9 +68,7 @@ public class Grid {
         }
         this.pos.add(new Pair<Integer, Integer>(startX, startY)); // add head to list
         setCell(startX, startY, 1); // init head
-        newApple(); // add an apple
-        setVertRockLine(this.length / 2, 3);
-        setHorzRockLine(this.width / 2, 3);
+
     }
 
     private void setObstacles() {
@@ -129,7 +127,7 @@ public class Grid {
             default:
                 break;
         }
-
+        newApple(); // add an apple
     }
 
     private void clearObstacles() {

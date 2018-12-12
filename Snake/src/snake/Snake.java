@@ -18,7 +18,7 @@ import javax.swing.*;
  * @author Tim Barber
  */
 public class Snake extends Application {
-    
+
     private int sizeMulitiplier = 1;
     private int WIDTH = 419 * sizeMulitiplier;
     private int HEIGHT = 475 * sizeMulitiplier;
@@ -52,14 +52,19 @@ public class Snake extends Application {
          * menu.setLayout(null);
          * menu.setVisible(true);
          */
+ 
+        // Create Board of block objects
         Board board = new Board(WIDTH, HEIGHT, sizeMulitiplier);
-        board.getGrid().setDiffLevel(3);
+
+        // Difficulty Level
+        board.getGrid().setDiffLevel(4);
+
         
         StackPane root = new StackPane();
         root.getChildren().add(board.getCanvas());
-        
+
         Scene scene = new Scene(root, WIDTH, HEIGHT);
-        
+
         board.drawBlocks();
         primaryStage.setTitle("Snake");
         primaryStage.setScene(scene);
@@ -75,17 +80,17 @@ public class Snake extends Application {
                             board.getGrid().nextGen();
                         }
                     }
-                    
+
                 }
             }
         }.start();
-        
+
         scene.setOnMousePressed(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 board.mouseClicked(event);
             }
         });
-        
+
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent eventa) {
                 board.keyPressed(eventa);
