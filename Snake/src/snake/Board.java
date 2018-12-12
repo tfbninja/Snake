@@ -42,7 +42,7 @@ public class Board {
         this.width = width;
         this.height = height;
         canvas = new Canvas(width, height);
-        grid = new Grid(gridSize * sizeMultiplier, gridSize * sizeMultiplier, 20, 20);
+        grid = new Grid(gridSize * sizeMultiplier, gridSize * sizeMultiplier, 21, 20);
     }
 
     public Grid getGrid() {
@@ -53,12 +53,22 @@ public class Board {
         this.grid = newGrid;
     }
 
+    public int[] getPixelDimensions() {
+        int[] dimensions = {gridSize * size + (gridSize - 1) * margin, gridSize * size + (gridSize - 1) * margin};
+        return dimensions;
+    }
+
     public void drawBlocks() {
         GraphicsContext gc = this.canvas.getGraphicsContext2D();
 
         //clear background
         gc.setFill(Color.web(this.bg));
         gc.fillRect(0, 0, this.width, this.height);
+        if (this.grid.getEdgeKills()) {
+            gc.setStroke(Color.CRIMSON);
+            gc.setLineWidth(5);
+            gc.strokeRect(xPos - 5, yPos - 5, xPos + getPixelDimensions()[0], yPos + getPixelDimensions()[1]);
+        }
 
         //draw squares
         int xPixel = this.xPos;

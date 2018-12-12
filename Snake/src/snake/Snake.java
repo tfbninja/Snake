@@ -18,7 +18,7 @@ import javax.swing.*;
  * @author Tim Barber
  */
 public class Snake extends Application {
-
+    
     private int sizeMulitiplier = 1;
     private int WIDTH = 419 * sizeMulitiplier;
     private int HEIGHT = 475 * sizeMulitiplier;
@@ -36,28 +36,30 @@ public class Snake extends Application {
         // make buttons
 
         /*
-        JFrame menu = new JFrame();
-        JButton reset = new JButton("RESET");
-        reset.setBounds(resetX, resetY, bW, bH);
-        
-        reset.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("reset clicked!");
-            }
-        });*/
+         * JFrame menu = new JFrame();
+         * JButton reset = new JButton("RESET");
+         * reset.setBounds(resetX, resetY, bW, bH);
+         *
+         * reset.addActionListener(new ActionListener() {
+         * public void actionPerformed(ActionEvent e) {
+         * System.out.println("reset clicked!");
+         * }
+         * });
+         */
  /*
-        menu.add(reset);
-        menu.setSize(WIDTH, HEIGHT);
-        menu.setLayout(null);
-        menu.setVisible(true);
+         * menu.add(reset);
+         * menu.setSize(WIDTH, HEIGHT);
+         * menu.setLayout(null);
+         * menu.setVisible(true);
          */
         Board board = new Board(WIDTH, HEIGHT, sizeMulitiplier);
-
+        board.getGrid().setDiffLevel(3);
+        
         StackPane root = new StackPane();
         root.getChildren().add(board.getCanvas());
-
+        
         Scene scene = new Scene(root, WIDTH, HEIGHT);
-
+        
         board.drawBlocks();
         primaryStage.setTitle("Snake");
         primaryStage.setScene(scene);
@@ -68,22 +70,22 @@ public class Snake extends Application {
                 frame++;
                 if (board.getGrid().getGameOver() == false) {
                     board.drawBlocks();
-                    if (frame % 3 == 0) {
-                        for (int i = 0; i < 1; i++) {
+                    if (frame % board.getGrid().getFrameSpeed() == 0) {
+                        for (int i = 0; i < board.getGrid().getGensPerFrame(); i++) {
                             board.getGrid().nextGen();
                         }
                     }
-
+                    
                 }
             }
         }.start();
-
+        
         scene.setOnMousePressed(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 board.mouseClicked(event);
             }
         });
-
+        
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent eventa) {
                 board.keyPressed(eventa);

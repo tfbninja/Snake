@@ -30,6 +30,9 @@ public class Grid {
 
     private boolean gameOver = false;
 
+    private int diffLevel = 1;
+    private int minDiffLevel = 1;
+    private int maxDiffLevel = 4;
     // snake vars
     private int direction = 1;
     private int tempDir = 1;
@@ -68,6 +71,96 @@ public class Grid {
         newApple(); // add an apple
         setVertRockLine(this.length / 2, 3);
         setHorzRockLine(this.width / 2, 3);
+    }
+
+    private void setObstacles() {
+        switch (this.diffLevel) {
+            case 1:
+                this.edgeKills = false;
+                clearObstacles();
+                break;
+            case 2:
+                this.edgeKills = false;
+                // set middle square as rock
+                clearObstacles();
+                setCell(this.width / 2, this.length / 2, 4);
+                break;
+            case 3:
+                this.edgeKills = true;
+                clearObstacles();
+                setVertRockLine(this.length / 2, 3);
+                setHorzRockLine(this.width / 2, 3);
+                break;
+            case 4:
+                this.edgeKills = false;
+                // set alternating pattern of rocks around edge
+                clearObstacles();
+                if (this.width % 2 == 1) {
+                    for (int x = 0; x < this.width; x += 2) {
+                        setCell(x, 0, 4);
+                        setCell(x, this.length - 1, 4);
+                    }
+                } else {
+                    for (int x = 0; x < this.width / 2; x += 2) {
+                        setCell(x, 0, 4);
+                        setCell(x, this.length - 1, 4);
+                    }
+                    for (int x = this.width - 1; x > this.width / 2 + 1; x -= 2) {
+                        setCell(x, 0, 4);
+                        setCell(x, this.length - 1, 4);
+                    }
+                }
+                if (this.length % 2 == 1) {
+                    for (int y = 0; y < this.length; y += 2) {
+                        setCell(0, y, 4);
+                        setCell(this.width - 1, y, 4);
+                    }
+                } else {
+                    for (int y = 0; y < this.length / 2; y += 2) {
+                        setCell(0, y, 4);
+                        setCell(this.width - 1, y, 4);
+                    }
+                    for (int y = this.length - 1; y > this.length / 2 + 1; y -= 2) {
+                        setCell(0, y, 4);
+                        setCell(this.width - 1, y, 4);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    private void clearObstacles() {
+        for (int x = 0; x < this.width; x++) {
+            for (int y = 0; y < this.length; y++) {
+                if (getCell(x, y) == 4) {
+                    setCell(x, y, 0);
+                }
+            }
+        }
+    }
+
+    public void setDiffLevel(int level) {
+        if (level <= maxDiffLevel && level >= minDiffLevel) {
+            this.diffLevel = level;
+            setObstacles();
+        }
+    }
+
+    public int getDiffLevel() {
+        return this.diffLevel;
+    }
+
+    public int getFrameSpeed() {
+        int[] frameSpeeds = {5, 3, 2, 1};
+        return frameSpeeds[diffLevel - 1];
+    }
+
+    public int getGensPerFrame() {
+        int[] genRepeats = {1, 1, 1, 1};
+        return genRepeats[diffLevel - 1];
     }
 
     public void removeExtra() {
