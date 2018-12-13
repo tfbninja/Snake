@@ -39,25 +39,13 @@ public class Board {
 
     //menu variables
     private boolean showMenu = true;
-    private int easyX = 25;
-    private int easyY = 350;
-    private int easyW = 150;
-    private int easyH = 75;
 
-    private int medX = 25;
-    private int medY = 25;
-    private int medW = 10;
-    private int medH = 10;
-
-    private int hardX = 50;
-    private int hardY = 50;
-    private int hardW = 10;
-    private int hardH = 10;
-
-    private int impX = 75;
-    private int impY = 75;
-    private int impW = 10;
-    private int impH = 10;
+    private double scaleFactor = getPixelDimensions()[0] / 430; // scale button coordinate values
+    // in order, xPos, yPos, Width, Height
+    private int[] easyButton = {12, 292, 194, 51};
+    private int[] medButton = {219, 292, 194, 51};
+    private int[] hardButton = {12, 353, 194, 51};
+    private int[] impButton = {219, 353, 194, 51};
 
     public Board() {
         width = 600;
@@ -71,9 +59,21 @@ public class Board {
         this.height = getPixelDimensions()[1];
         canvas = new Canvas(width, height);
         grid = new Grid(gridSize * sizeMultiplier, gridSize * sizeMultiplier, 21, 20);
+        scaleList(easyButton, scaleFactor);
+        scaleList(medButton, scaleFactor);
+        scaleList(hardButton, scaleFactor);
+        scaleList(impButton, scaleFactor);
     }
-    
-    public boolean getShowMenu(){
+
+    public int[] scaleList(int[] list, double scale) {
+        int[] newList = new int[list.length];
+        for (int i = 0; i < list.length; i++) {
+            newList[i] = (int) (list[i] * scale);
+        }
+        return newList;
+    }
+
+    public boolean getShowMenu() {
         return this.showMenu;
     }
 
@@ -192,19 +192,19 @@ public class Board {
             // left click
 
             // menu catching
-            if (mX >= easyX && mY >= easyY && mX <= easyX + easyW && easyY <= easyY + easyH) {
+            if (mX >= easyButton[0] && mY >= easyButton[1] && mX <= easyButton[0] + easyButton[2] && mY <= easyButton[1] + easyButton[3]) {
                 // easy mode chosen
                 this.grid.setDiffLevel(1);
                 this.showMenu = false;
-            } else if (mX >= medX && mY >= medY && mX <= medX + medW && medY <= medY + medH) {
+            } else if (mX >= medButton[0] && mY >= medButton[1] && mX <= medButton[0] + medButton[2] && mY <= medButton[1] + medButton[3]) {
                 // medium mode chosen
                 this.grid.setDiffLevel(2);
                 this.showMenu = false;
-            } else if (mX >= hardX && mY >= hardY && mX <= hardX + hardW && hardY <= hardY + hardH) {
+            } else if (mX >= hardButton[0] && mY >= hardButton[1] && mX <= hardButton[0] + hardButton[2] && mY <= hardButton[1] + hardButton[3]) {
                 // hard mode chosen
                 this.grid.setDiffLevel(3);
                 this.showMenu = false;
-            } else if (mX >= impX && mY >= impY && mX <= impX + impW && impY <= impY + impH) {
+            } else if (mX >= impButton[0] && mY >= impButton[1] && mX <= impButton[0] + impButton[2] && mY <= impButton[1] + impButton[3]) {
                 // impossible mode chosen
                 this.grid.setDiffLevel(4);
                 this.showMenu = false;

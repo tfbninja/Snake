@@ -46,21 +46,6 @@ public class Snake extends Application {
         } catch (FileNotFoundException f) {
             System.out.println("oof");
         }
-        Image image = new Image(menuStream);
-
-        // displays the image as is
-        ImageView iv1 = new ImageView();
-        iv1.setImage(image);
-
-        // resizes the image to have width of 100 while preserving the ratio and using
-        // higher quality filtering method; this ImageView is also cached to
-        // improve performance
-        ImageView iv2 = new ImageView();
-        iv2.setImage(image);
-        iv2.setPreserveRatio(true);
-        iv2.setFitWidth(430);
-        iv2.setSmooth(true);
-        iv2.setCache(true);
 
         // Create Board of block objects
         Board board = new Board(sizeMulitiplier);
@@ -68,16 +53,26 @@ public class Snake extends Application {
         // Difficulty Level
         board.getGrid().setDiffLevel(2);
 
+        Image image = new Image(menuStream);
+
+        // resizes the image to have width of 100 while preserving the ratio and using
+        // higher quality filtering method; this ImageView is also cached to
+        // improve performance
+        ImageView iv1 = new ImageView();
+        iv1.setImage(image);
+        iv1.setPreserveRatio(true);
+        iv1.setFitWidth(board.getPixelDimensions()[0]);
+        iv1.setSmooth(true);
+        iv1.setCache(true);
+
         BorderPane root = new BorderPane(); // better arrangement style
         root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
-        root.setTop(board.getCanvas());
-        root.setTop(iv1);
-        root.setTop(iv2);
+        root.setTop(iv1); // display titlescreen
 
         Scene scene = new Scene(root, WIDTH, HEIGHT);
 
         board.drawBlocks();
-        primaryStage.setTitle("Snake");
+        primaryStage.setTitle("JSnake");
         primaryStage.setScene(scene);
         primaryStage.show();
 
@@ -88,12 +83,14 @@ public class Snake extends Application {
                 frame++;
                 board.setFrame(frame);
                 if (board.getShowMenu()) {
-                    if (root.getTop() != iv2) {
-                        Collections.swap(root.getChildren(), 0, 2);
+                    // If we're supposed to be showing the menu and we're not already, show it
+                    if (root.getTop() != iv1) {
+                        root.setTop(iv1);
                     }
                 } else {
+                    // If we're supposed to be showing the game graphics and we're not already, show it
                     if (root.getTop() != board.getCanvas()) {
-                        Collections.swap(root.getChildren(), 0, 2);
+                        root.setTop(board.getCanvas());
                     }
 
                     if (board.getGrid().getGameOver() == false) {
