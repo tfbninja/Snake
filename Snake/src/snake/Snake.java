@@ -18,8 +18,8 @@ public class Snake extends Application {
 
     private int canvasMargin = 10;
     private int sizeMulitiplier = 1;
-    private int WIDTH = 500 * sizeMulitiplier;
-    private int HEIGHT = 550 * sizeMulitiplier;
+    private int WIDTH = 430 * sizeMulitiplier;
+    private int HEIGHT = 475 * sizeMulitiplier;
 
     private int frame = 0;
 
@@ -37,11 +37,11 @@ public class Snake extends Application {
         Board board = new Board(sizeMulitiplier);
 
         // Difficulty Level
-        board.getGrid().setDiffLevel(1);
+        board.getGrid().setDiffLevel(3);
 
         BorderPane root = new BorderPane(); // better arrangement style
         root.setPadding(new Insets(canvasMargin, canvasMargin, 10, 10));
-        root.setTop(board.getCanvas());
+        root.setCenter(board.getCanvas());
 
         Scene scene = new Scene(root, WIDTH, HEIGHT);
 
@@ -55,14 +55,16 @@ public class Snake extends Application {
             @Override
             public void handle(long now) {
                 frame++;
-                if (board.getGrid().getGameOver() == false) {
-                    board.drawBlocks();
-                    if (frame % board.getGrid().getFrameSpeed() == 0) {
-                        for (int i = 0; i < board.getGrid().getGensPerFrame(); i++) {
-                            board.getGrid().nextGen();
+                board.setFrame(frame);
+                if (frame > 100) {
+                    if (board.getGrid().getGameOver() == false) {
+                        board.drawBlocks();
+                        if (frame % board.getGrid().getFrameSpeed() == 0) {
+                            for (int i = 0; i < board.getGrid().getGensPerFrame(); i++) {
+                                board.getGrid().nextGen();
+                            }
                         }
                     }
-
                 }
             }
         }.start();

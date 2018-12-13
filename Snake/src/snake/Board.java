@@ -6,6 +6,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 public class Board {
 
@@ -33,6 +34,8 @@ public class Board {
     private String rock = "53585e";
 
     private boolean lost = false;
+    
+    private int frame = 0;
 
     public Board() {
         width = 600;
@@ -54,6 +57,10 @@ public class Board {
 
     public void setGrid(Grid newGrid) {
         this.grid = newGrid;
+    }
+    
+    public void setFrame(int amt){
+        this.frame = amt;
     }
 
     public int[] getPixelDimensions() {
@@ -112,6 +119,11 @@ public class Board {
             }
             xPixel += margin + size;
         }
+        
+        // draw frame number / 30
+        gc.setFill(Color.BLUEVIOLET);
+        gc.setFont(Font.font("Verdana", 20));
+        gc.fillText(String.valueOf(frame / 30.0), XMARGIN + getPixelDimensions()[0] / 2, YMARGIN + getPixelDimensions()[1] + 20);
 
         // we've drawn all the blocks, now if we've lost we need to act on it
         if (this.lost == true) {
