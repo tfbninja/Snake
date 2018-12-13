@@ -38,7 +38,6 @@ public class Snake extends Application {
 
         // Difficulty Level
         board.getGrid().setDiffLevel(1);
-        board.getGrid().setGrowBy(3);
 
         BorderPane root = new BorderPane(); // better arrangement style
         root.setPadding(new Insets(canvasMargin, canvasMargin, 10, 10));
