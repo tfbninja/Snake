@@ -2,16 +2,13 @@ package snake;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import java.awt.event.*;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javax.swing.*;
 
 /**
  *
@@ -19,9 +16,11 @@ import javax.swing.*;
  */
 public class Snake extends Application {
 
+    private int canvasMargin = 10;
     private int sizeMulitiplier = 1;
-    private int WIDTH = 419 * sizeMulitiplier;
-    private int HEIGHT = 475 * sizeMulitiplier;
+    private int WIDTH = 500 * sizeMulitiplier;
+    private int HEIGHT = 550 * sizeMulitiplier;
+
     private int frame = 0;
 
     //button constants
@@ -33,35 +32,17 @@ public class Snake extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        // make buttons
 
-        /*
-         * JFrame menu = new JFrame();
-         * JButton reset = new JButton("RESET");
-         * reset.setBounds(resetX, resetY, bW, bH);
-         *
-         * reset.addActionListener(new ActionListener() {
-         * public void actionPerformed(ActionEvent e) {
-         * System.out.println("reset clicked!");
-         * }
-         * });
-         */
- /*
-         * menu.add(reset);
-         * menu.setSize(WIDTH, HEIGHT);
-         * menu.setLayout(null);
-         * menu.setVisible(true);
-         */
- 
         // Create Board of block objects
-        Board board = new Board(WIDTH, HEIGHT, sizeMulitiplier);
+        Board board = new Board(sizeMulitiplier);
 
         // Difficulty Level
-        board.getGrid().setDiffLevel(4);
+        board.getGrid().setDiffLevel(1);
+        board.getGrid().setGrowBy(3);
 
-        
-        StackPane root = new StackPane();
-        root.getChildren().add(board.getCanvas());
+        BorderPane root = new BorderPane(); // better arrangement style
+        root.setPadding(new Insets(canvasMargin, canvasMargin, 10, 10));
+        root.setTop(board.getCanvas());
 
         Scene scene = new Scene(root, WIDTH, HEIGHT);
 
@@ -69,6 +50,8 @@ public class Snake extends Application {
         primaryStage.setTitle("Snake");
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        // Main loop
         new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -85,6 +68,7 @@ public class Snake extends Application {
             }
         }.start();
 
+        // Input handling
         scene.setOnMousePressed(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 board.mouseClicked(event);

@@ -39,6 +39,8 @@ public class Grid {
     private ArrayList<Pair<Integer, Integer>> pos = new ArrayList<>();
     private int snakeSize = 5;
 
+    private int growBy = 1;
+
     /*
      * Directions:
      * 1 = up
@@ -71,7 +73,12 @@ public class Grid {
 
     }
 
+    public void setGrowBy(int amt) {
+        this.growBy = amt;
+    }
+
     private void setObstacles() {
+        this.setGrowBy(1);
         switch (this.diffLevel) {
             case 1:
                 this.edgeKills = false;
@@ -90,6 +97,7 @@ public class Grid {
                 setHorzRockLine(this.width / 2, 3);
                 break;
             case 4:
+                this.setGrowBy(2);
                 this.edgeKills = false;
                 // set alternating pattern of rocks around edge
                 clearObstacles();
@@ -278,7 +286,7 @@ public class Grid {
     }
 
     public void grow() {
-        this.snakeSize += 1;
+        this.snakeSize += this.growBy;
     }
 
     public int[] nextPos() {

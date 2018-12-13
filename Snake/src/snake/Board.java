@@ -15,9 +15,12 @@ public class Board {
     private Canvas canvas;
 
     private int margin = 1;
-    private int xPos = 10; // starting values for grid position on screen
+    private final int XMARGIN = 5; // margin inside the stackpane
+    private final int YMARGIN = 5;
     private int size = 15;
-    private int yPos = 10;
+    private int borderSize = 2;
+    private int edgeSize = 2;
+
     private int mouseClicks = 0;
 
     private int gridSize = 25;
@@ -38,9 +41,9 @@ public class Board {
         //grid = new Grid(gridSize, gridSize, 13, 20);
     }
 
-    public Board(int width, int height, int sizeMultiplier) {
-        this.width = width;
-        this.height = height;
+    public Board(int sizeMultiplier) {
+        this.width = getPixelDimensions()[0];
+        this.height = getPixelDimensions()[1];
         canvas = new Canvas(width, height);
         grid = new Grid(gridSize * sizeMultiplier, gridSize * sizeMultiplier, 21, 20);
     }
@@ -54,7 +57,7 @@ public class Board {
     }
 
     public int[] getPixelDimensions() {
-        int[] dimensions = {gridSize * size + (gridSize - 1) * margin, gridSize * size + (gridSize - 1) * margin};
+        int[] dimensions = {XMARGIN * 2 + gridSize * size + (gridSize - 1) * margin, YMARGIN * 2 + gridSize * size + (gridSize - 1) * margin};
         return dimensions;
     }
 
@@ -64,16 +67,26 @@ public class Board {
         //clear background
         gc.setFill(Color.web(this.bg));
         gc.fillRect(0, 0, this.width, this.height);
+
+        // draw black border
+        gc.setStroke(Color.BLACK);
+        gc.setLineWidth(borderSize);
+        gc.strokeRoundRect(borderSize / 2, borderSize / 2, width - borderSize, height - borderSize, 2, 2);
+
         if (this.grid.getEdgeKills()) {
-            gc.setStroke(Color.CRIMSON);
-            gc.setLineWidth(5);
-            gc.strokeRect(xPos - 5, yPos - 5, xPos + getPixelDimensions()[0], yPos + getPixelDimensions()[1]);
+            // draw red border indicating that edge kills
+            gc.setStroke(Color.CRIMSON.darker());
+        } else {
+            gc.setStroke(Color.DARKORANGE);
         }
+        gc.setLineWidth(edgeSize);
+        int pixelSize = gridSize * size + gridSize * margin;
+        gc.strokeRect(XMARGIN - edgeSize / 2, YMARGIN - edgeSize / 2, pixelSize + edgeSize - 1, pixelSize + edgeSize - 1);
 
         //draw squares
-        int xPixel = this.xPos;
+        int xPixel = this.XMARGIN;
         for (int x = 0; x < this.grid.getWidth(); x++) {
-            int yPixel = this.yPos;
+            int yPixel = this.YMARGIN;
             for (int y = 0; y < this.grid.getLength(); y++) {
                 Block temp = new Block();
                 if (this.grid.isApple(x, y)) {
