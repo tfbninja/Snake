@@ -46,6 +46,10 @@ public class Board {
     private int[] medButton = {219, 292, 194, 51};
     private int[] hardButton = {12, 353, 194, 51};
     private int[] impButton = {219, 353, 194, 51};
+    private int edgeMargin = 0;
+    
+    // settings variables
+    private boolean showSettings = false;
 
     public Board() {
         width = 600;
@@ -54,7 +58,7 @@ public class Board {
         //grid = new Grid(gridSize, gridSize, 13, 20);
     }
 
-    public Board(int sizeMultiplier) {
+    public Board(int sizeMultiplier, int margin) {
         this.width = getPixelDimensions()[0];
         this.height = getPixelDimensions()[1];
         canvas = new Canvas(width, height);
@@ -63,6 +67,7 @@ public class Board {
         scaleList(medButton, scaleFactor);
         scaleList(hardButton, scaleFactor);
         scaleList(impButton, scaleFactor);
+        edgeMargin = margin;
     }
 
     public int[] scaleList(int[] list, double scale) {
@@ -184,8 +189,8 @@ public class Board {
 
         double mouseX = e.getX();
         double mouseY = e.getY();
-        int mX = (int) mouseX;
-        int mY = (int) mouseY;
+        int mX = (int) mouseX - edgeMargin;
+        int mY = (int) mouseY - edgeMargin;
 
         boolean leftClick = e.isPrimaryButtonDown();
         if (leftClick) {

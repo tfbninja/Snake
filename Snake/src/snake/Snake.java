@@ -42,13 +42,13 @@ public class Snake extends Application {
     public void start(Stage primaryStage) {
 
         try {
-            menuStream = new FileInputStream("menu.jpg");
+            menuStream = new FileInputStream("menuWithSettingsButton.jpg");
         } catch (FileNotFoundException f) {
             System.out.println("oof");
         }
 
         // Create Board of block objects
-        Board board = new Board(sizeMulitiplier);
+        Board board = new Board(sizeMulitiplier, canvasMargin);
 
         // Difficulty Level
         board.getGrid().setDiffLevel(2);
