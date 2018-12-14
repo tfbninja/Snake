@@ -79,35 +79,39 @@ public class Grid {
 
     private void setObstacles() {
         this.setGrowBy(1);
+        clearApples();
         switch (this.diffLevel) {
             case 1:
                 this.edgeKills = false;
+                this.growBy = 2;
                 clearObstacles();
                 break;
             case 2:
-                this.edgeKills = false;
+                this.edgeKills = true;
+                this.growBy = 3;
                 // set middle square as rock
                 clearObstacles();
-                setCell(this.width / 2, this.length / 2, 4);
+                //setCell(this.width / 2, this.length / 2, 4);
                 break;
             case 3:
                 this.edgeKills = true;
+                this.growBy = 4;
                 clearObstacles();
                 setVertRockLine(this.length / 2, 3);
                 setHorzRockLine(this.width / 2, 3);
                 break;
             case 4:
-                this.setGrowBy(2);
+                this.setGrowBy(5);
                 this.edgeKills = false;
                 // set alternating pattern of rocks around edge
                 clearObstacles();
                 if (this.width % 2 == 1) {
-                    for (int x = 0; x < this.width; x += 2) {
+                    for (int x = 0; x < this.width; x += 7) {
                         setCell(x, 0, 4);
                         setCell(x, this.length - 1, 4);
                     }
                 } else {
-                    for (int x = 0; x < this.width / 2; x += 2) {
+                    for (int x = 0; x < this.width / 2; x += 7) {
                         setCell(x, 0, 4);
                         setCell(x, this.length - 1, 4);
                     }
@@ -117,12 +121,12 @@ public class Grid {
                     }
                 }
                 if (this.length % 2 == 1) {
-                    for (int y = 0; y < this.length; y += 2) {
+                    for (int y = 0; y < this.length; y += 7) {
                         setCell(0, y, 4);
                         setCell(this.width - 1, y, 4);
                     }
                 } else {
-                    for (int y = 0; y < this.length / 2; y += 2) {
+                    for (int y = 0; y < this.length / 2; y += 7) {
                         setCell(0, y, 4);
                         setCell(this.width - 1, y, 4);
                     }
@@ -131,6 +135,7 @@ public class Grid {
                         setCell(this.width - 1, y, 4);
                     }
                 }
+                clearObstacles();
                 break;
             default:
                 break;
@@ -160,7 +165,7 @@ public class Grid {
     }
 
     public int getFrameSpeed() {
-        int[] frameSpeeds = {5, 3, 2, 1};
+        int[] frameSpeeds = {5, 4, 3, 2};
         return frameSpeeds[diffLevel - 1];
     }
 
@@ -339,15 +344,41 @@ public class Grid {
         }
 
         if (!this.edgeKills) {
-            if (nextX < 0) {
-                nextX = this.width - 1;
-            } else if (nextX >= this.width) {
-                nextX = 0;
-            }
-            if (nextY < 0) {
-                nextY = this.length - 1;
-            } else if (nextY >= this.length) {
-                nextY = 0;
+            if (this.diffLevel < 4) {
+                if (nextX < 0) {
+                    nextX = this.width - 1;
+                } else if (nextX >= this.width) {
+                    nextX = 0;
+                }
+                if (nextY < 0) {
+                    nextY = this.length - 1;
+                } else if (nextY >= this.length) {
+                    nextY = 0;
+                }
+            } else {
+                // extreme mode, warp x with y
+                if (nextX < 0) {
+                    nextX = nextY;
+                    nextY = 0;
+                    this.direction = 3;
+                    this.tempDir = 3;
+                } else if (nextX >= this.width) {
+                    nextX = nextY;
+                    nextY = this.length - 1;
+                    this.direction = 1;
+                    this.tempDir = 1;
+                }
+                if (nextY < 0) {
+                    nextY = nextX;
+                    nextX = this.width - 1;
+                    this.direction = 4;
+                    this.tempDir = 4;
+                } else if (nextY >= this.length) {
+                    nextY = nextX;
+                    nextX = 0;
+                    this.direction = 2;
+                    this.tempDir = 2;
+                }
             }
         } else {
             // edge kills

@@ -93,18 +93,19 @@ public class Snake extends Application {
                         root.setTop(board.getCanvas());
                     }
 
-                    if (board.getGrid().getGameOver() == false) {
+                    if (!board.getGrid().getGameOver()) {
                         board.drawBlocks();
                         if (frame % board.getGrid().getFrameSpeed() == 0) {
                             for (int i = 0; i < board.getGrid().getGensPerFrame(); i++) {
-                                board.getGrid().nextGen();
+                                if (board.getPlaying()) {
+                                    board.getGrid().nextGen();
+                                }
                             }
                         }
                     }
                 }
             }
-        }
-                .start();
+        }.start();
 
         // Input handling
         scene.setOnMousePressed(new EventHandler<MouseEvent>() {

@@ -37,6 +37,8 @@ public class Board {
 
     private int frame = 0;
 
+    private boolean playing = false;
+
     //menu variables
     private boolean showMenu = true;
 
@@ -71,6 +73,10 @@ public class Board {
             newList[i] = (int) (list[i] * scale);
         }
         return newList;
+    }
+
+    public boolean getPlaying() {
+        return this.playing;
     }
 
     public boolean getShowMenu() {
@@ -164,6 +170,9 @@ public class Board {
     }
 
     public void keyPressed(KeyEvent e) {
+        if (!this.playing && !this.showMenu) {
+            this.playing = true;
+        }
         if (e.getCode() == KeyCode.UP || e.getCode() == KeyCode.W) {
             // user pressed up key
             this.grid.attemptSetDirection(1);
