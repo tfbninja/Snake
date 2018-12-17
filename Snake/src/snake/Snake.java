@@ -42,7 +42,7 @@ public class Snake extends Application {
     public void start(Stage primaryStage) {
 
         try {
-            menuStream = new FileInputStream("menuWithSettingsButton.jpg");
+            menuStream = new FileInputStream("menu.jpg");
         } catch (FileNotFoundException f) {
             System.out.println("oof");
         }
