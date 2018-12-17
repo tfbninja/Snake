@@ -23,9 +23,9 @@ import java.util.Collections;
 public class Snake extends Application {
 
     private int canvasMargin = 10;
-    private int sizeMulitiplier = 1;
-    private int WIDTH = 450 * sizeMulitiplier;
-    private int HEIGHT = 450 * sizeMulitiplier;
+    private int sizeMultiplier = 1;
+    private int WIDTH = 450 * sizeMultiplier;
+    private int HEIGHT = 450 * sizeMultiplier;
 
     private int frame = 0;
 
@@ -42,13 +42,13 @@ public class Snake extends Application {
     public void start(Stage primaryStage) {
 
         try {
-            menuStream = new FileInputStream("menuWithSettingsButton.jpg");
+            menuStream = new FileInputStream("menu.jpg");
         } catch (FileNotFoundException f) {
             System.out.println("oof");
         }
 
         // Create Board of block objects
-        Board board = new Board(sizeMulitiplier, canvasMargin);
+        Board board = new Board(sizeMultiplier, canvasMargin);
 
         // Difficulty Level
         board.getGrid().setDiffLevel(2);
@@ -82,7 +82,6 @@ public class Snake extends Application {
             public void handle(long now) {
                 frame++;
                 board.setFrame(frame);
-
                 if (board.getShowMenu()) {
                     // If we're supposed to be showing the menu and we're not already, show it
                     if (root.getTop() != iv1) {
@@ -105,7 +104,6 @@ public class Snake extends Application {
                         }
                     }
                 }
-
             }
         }.start();
 
