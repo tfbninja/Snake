@@ -82,6 +82,7 @@ public class Snake extends Application {
             public void handle(long now) {
                 frame++;
                 board.setFrame(frame);
+
                 if (board.getShowMenu()) {
                     // If we're supposed to be showing the menu and we're not already, show it
                     if (root.getTop() != iv1) {
@@ -104,6 +105,7 @@ public class Snake extends Application {
                         }
                     }
                 }
+
             }
         }.start();
 

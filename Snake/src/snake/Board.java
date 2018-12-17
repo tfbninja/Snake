@@ -49,7 +49,7 @@ public class Board {
     private int[] hardButton = {12, 353, 194, 51};
     private int[] impButton = {219, 353, 194, 51};
     private int edgeMargin = 0;
-    
+
     // settings variables
     private boolean showSettings = false;
 
@@ -106,9 +106,10 @@ public class Board {
     }
 
     public void drawBlocks() {
+        GraphicsContext gc = this.canvas.getGraphicsContext2D();
+
         // don't bother drawing the game if the menu is up, it'll just get drawn over
         if (!this.showMenu) {
-            GraphicsContext gc = this.canvas.getGraphicsContext2D();
 
             //clear background
             gc.setFill(Color.web(this.bg));
@@ -171,6 +172,11 @@ public class Board {
                 transparentCover.draw(canvas);
                 // add code for a text obj...
             }
+        } else {
+            // outline buttons
+            gc.setStroke(Color.RED);
+            gc.setLineWidth(3);
+            gc.strokeRect(easyButton[0], easyButton[1], easyButton[2], easyButton[3]);
         }
     }
 
@@ -198,8 +204,10 @@ public class Board {
 
         double mouseX = e.getX();
         double mouseY = e.getY();
-        int mX = (int) mouseX - edgeMargin;
-        int mY = (int) mouseY - edgeMargin;
+        mouseY += edgeMargin;
+        mouseX += edgeMargin;
+        int mX = (int) mouseX;
+        int mY = (int) mouseY;
 
         boolean leftClick = e.isPrimaryButtonDown();
         if (leftClick) {
