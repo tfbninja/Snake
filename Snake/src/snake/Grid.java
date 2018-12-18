@@ -105,7 +105,7 @@ public class Grid {
                 for (int i = 0; i < 15; i++) {
                     int x = (int) (Math.random() * this.width);
                     int y = (int) (Math.random() * this.length);
-                    while (getCell(x, y) != 0 && y != this.pos.get(0).getValue()) {
+                    while (getCell(x, y) != 0 || x != this.pos.get(0).getValue() || getNeighbors(x, y, 4, 2) > 0) {
                         x = (int) (Math.random() * this.width);
                         y = (int) (Math.random() * this.length);
                     }
@@ -153,6 +153,22 @@ public class Grid {
                 break;
         }
         newApple(); // add an apple
+    }
+
+    public int getNeighbors(int x, int y, int type, int radius) {
+        int count = 0;
+        for (int tempX = x - radius; tempX <= x + radius; tempX++) {
+            for (int tempY = y - radius; tempY <= y + radius; tempY++) {
+                if (safeCheck(tempX, tempY) == type) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    public int getNeighbors(int x, int y, int type) {
+        return getNeighbors(x, y, type, 1);
     }
 
     private void clearObstacles() {
