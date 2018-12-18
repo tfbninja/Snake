@@ -19,6 +19,8 @@ import java.io.FileNotFoundException;
 import java.util.Collections;
 import javafx.scene.paint.Color;
 import java.net.URL;
+import java.applet.*;
+import java.net.*;
 
 /**
  *
@@ -117,6 +119,7 @@ public class Snake extends Application {
 
             public void handle(MouseEvent event) {
                 board.mouseClicked(event);
+                //playSound("warp.wav");
             }
         }
         );
@@ -133,6 +136,16 @@ public class Snake extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public static void playSound(String name) {
+        // Taken from https://www.cs.cmu.edu/~illah/CLASSDOCS/javasound.pdf
+        try {
+            AudioClip clip = Applet.newAudioClip(new URL("file:" + name));
+            clip.play();
+        } catch (MalformedURLException malURL) {
+            System.out.println(malURL);
+        }
     }
 }
 /*

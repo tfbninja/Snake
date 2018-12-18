@@ -70,6 +70,7 @@ public class Board {
         scaleList(hardButton, scaleFactor);
         scaleList(impButton, scaleFactor);
         edgeMargin = margin;
+        grid.clearApples();
     }
 
     public int[] scaleList(int[] list, double scale) {

@@ -1,9 +1,18 @@
 package snake;
 
+import java.applet.Applet;
+import java.applet.AudioClip;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 import javafx.util.Pair;
+import java.io.File;
+import java.io.FileNotFoundException;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 
 /**
  *
@@ -33,6 +42,7 @@ public class Grid {
     private int diffLevel = 1;
     private int minDiffLevel = 1;
     private int maxDiffLevel = 4;
+
     // snake vars
     private int direction = 1;
     private int tempDir = 1;
@@ -369,16 +379,21 @@ public class Grid {
         }
 
         if (!this.edgeKills) {
+
             if (this.diffLevel < 4) {
                 if (nextX < 0) {
                     nextX = this.width - 1;
+                    playSound("warp.wav");
                 } else if (nextX >= this.width) {
                     nextX = 0;
+                    playSound("warp.wav");
                 }
                 if (nextY < 0) {
                     nextY = this.length - 1;
+                    playSound("warp.wav");
                 } else if (nextY >= this.length) {
                     nextY = 0;
+                    playSound("warp.wav");
                 }
             } else {
                 // extreme mode, warp x with y
@@ -387,22 +402,26 @@ public class Grid {
                     nextY = 0;
                     this.direction = 3;
                     this.tempDir = 3;
+                    playSound("warp.wav");
                 } else if (nextX >= this.width) {
                     nextX = nextY;
                     nextY = this.length - 1;
                     this.direction = 1;
                     this.tempDir = 1;
+                    playSound("warp.wav");
                 }
                 if (nextY < 0) {
                     nextY = nextX;
                     nextX = this.width - 1;
                     this.direction = 4;
                     this.tempDir = 4;
+                    playSound("warp.wav");
                 } else if (nextY >= this.length) {
                     nextY = nextX;
                     nextX = 0;
                     this.direction = 2;
                     this.tempDir = 2;
+                    playSound("warp.wav");
                 }
             }
         } else {
@@ -532,6 +551,40 @@ public class Grid {
 
     public void setPlayArea(int[][] newPlayArea) {
         this.playArea = newPlayArea;
+    }
+
+    public void playSound(String name) {
+        // Taken from https://www.cs.cmu.edu/~illah/CLASSDOCS/javasound.pdf
+        try {
+            AudioClip clip = Applet.newAudioClip(new URL("file:" + name));
+            clip.play();
+        } catch (MalformedURLException malURL) {
+            System.out.println(malURL);
+        }
+    }
+
+    public void playSound2(String name) {
+
+        // create AudioInputStream object 
+        AudioInputStream strm = new AudioInputStream();
+        try {
+            strm = AudioSystem.getAudioInputStream(new File(name).getAbsoluteFile());
+        } catch (Exception e) {
+            System.out.println("nope");
+        }
+
+        // create clip reference
+        Clip clip;
+        try {
+            clip = AudioSystem.getClip();
+        } catch (Exception e) {
+            System.out.println("nope");
+        }
+
+        // open audioInputStream to the clip 
+        clip.open(strm);
+
+        clip.loop(Clip.LOOP_CONTINUOUSLY);
     }
 
     @Override
