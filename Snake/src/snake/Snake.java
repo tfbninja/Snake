@@ -4,17 +4,21 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.ImageView;
 import java.io.FileInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collections;
+import javafx.scene.paint.Color;
+import java.net.URL;
 
 /**
  *
@@ -24,8 +28,8 @@ public class Snake extends Application {
 
     private int canvasMargin = 10;
     private int sizeMultiplier = 1;
-    private int WIDTH = 450 * sizeMultiplier;
-    private int HEIGHT = 450 * sizeMultiplier;
+    private int WIDTH = 430 * sizeMultiplier;
+    private int HEIGHT = 430 * sizeMultiplier;
 
     private int frame = 0;
 
@@ -66,6 +70,7 @@ public class Snake extends Application {
         iv1.setCache(true);
 
         BorderPane root = new BorderPane(); // better arrangement style
+        root.setStyle("-fx-background-color: black");
         root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
         root.setTop(iv1); // display titlescreen
 

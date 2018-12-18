@@ -94,18 +94,15 @@ public class Grid {
                 //setCell(this.width / 2, this.length / 2, 4);
                 break;
             case 3:
-                this.edgeKills = true;
                 this.growBy = 4;
                 this.edgeKills = false;
                 clearObstacles();
-                //setVertRockLine(this.length / 2, 3);
-                //setHorzRockLine(this.width / 2, 3);
 
                 //add 10 random rocks
                 for (int i = 0; i < 10; i++) {
                     int x = (int) (Math.random() * this.width);
                     int y = (int) (Math.random() * this.length);
-                    while (getCell(x, y) != 0 || x != this.pos.get(0).getValue() || getNeighbors(x, y, 4, 2) > 0) {
+                    while (getCell(x, y) != 0 || x == this.pos.get(0).getValue() || getNeighbors(x, y, 4, 2) > 0) {
                         x = (int) (Math.random() * this.width);
                         y = (int) (Math.random() * this.length);
                     }

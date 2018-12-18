@@ -118,7 +118,7 @@ public class Board {
             // draw black border
             gc.setStroke(Color.BLACK);
             gc.setLineWidth(borderSize);
-            gc.strokeRoundRect(borderSize / 2, borderSize / 2, width - borderSize, height - borderSize, 2, 2);
+            gc.fillRect(borderSize / 2, borderSize / 2, width - borderSize, height - borderSize);
 
             if (this.grid.getEdgeKills()) {
                 // draw red border indicating that edge kills
