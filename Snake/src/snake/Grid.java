@@ -49,6 +49,9 @@ public class Grid {
     private ArrayList<Pair<Integer, Integer>> pos = new ArrayList<>();
     private int snakeSize = 5;
 
+    // sounds
+    private Sound warp;
+
     private int growBy = 1;
 
     /*
@@ -67,6 +70,7 @@ public class Grid {
         for (int i = 0; i < this.length; i++) {
             Arrays.fill(this.savedPlayArea[i], 0);
         }
+        this.warp = new Sound("warp.wav");
     }
 
     public Grid(int width, int length, int startX, int startY) {
@@ -80,7 +84,7 @@ public class Grid {
         }
         this.pos.add(new Pair<Integer, Integer>(startX, startY)); // add head to list
         setCell(startX, startY, 1); // init head
-
+        this.warp = new Sound("warp.wav");
     }
 
     public void setGrowBy(int amt) {
@@ -383,17 +387,17 @@ public class Grid {
             if (this.diffLevel < 4) {
                 if (nextX < 0) {
                     nextX = this.width - 1;
-                    playSound("warp.wav");
+                    warp.playSoundOnce();
                 } else if (nextX >= this.width) {
                     nextX = 0;
-                    playSound("warp.wav");
+                    warp.playSoundOnce();
                 }
                 if (nextY < 0) {
                     nextY = this.length - 1;
-                    playSound("warp.wav");
+                    warp.playSoundOnce();
                 } else if (nextY >= this.length) {
                     nextY = 0;
-                    playSound("warp.wav");
+                    warp.playSoundOnce();
                 }
             } else {
                 // extreme mode, warp x with y
@@ -563,26 +567,25 @@ public class Grid {
         }
     }
 
-    public void playSound2(String name) {
+    public void playSound2(File name) {
 
         // create AudioInputStream object 
-        AudioInputStream strm = new AudioInputStream();
-        try {
-            strm = AudioSystem.getAudioInputStream(new File(name).getAbsoluteFile());
-        } catch (Exception e) {
-            System.out.println("nope");
-        }
+        AudioInputStream strm = null;
+        Clip clip = null;
 
-        // create clip reference
-        Clip clip;
         try {
+            strm = AudioSystem.getAudioInputStream(name.getAbsoluteFile());
+            System.out.println("nope");
+
+            // create clip reference
             clip = AudioSystem.getClip();
-        } catch (Exception e) {
-            System.out.println("nope");
-        }
+            System.out.println("this ain't it chief");
 
-        // open audioInputStream to the clip 
-        clip.open(strm);
+            // open AudioInputStream to the clip 
+            clip.open(strm);
+        } catch (Exception e) {
+            System.out.println("oof");
+        }
 
         clip.loop(Clip.LOOP_CONTINUOUSLY);
     }
