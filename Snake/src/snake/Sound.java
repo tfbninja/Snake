@@ -1,12 +1,9 @@
 package snake;
 
 import java.applet.*;
-import javax.swing.*;
-import java.io.*;
 import java.net.URL;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import java.net.*;
 
 /**
  *
@@ -32,12 +29,15 @@ public class Sound {// Holds one audio file
             mediaPlayer.setVolume(1.0);
         } else {
             try {
-                System.out.println("wack");
                 songPath = new URL(filename); // Get the Sound URL
                 song = Applet.newAudioClip(songPath); // Load the Sound
             } catch (Exception e) {
             } // Satisfy the catch
         }
+    }
+
+    public void setVolume(int amt) {
+        this.mediaPlayer.setVolume(amt);
     }
 
     public void playSound() {

@@ -166,18 +166,21 @@ public class Board {
             gc.setFont(Font.font("Verdana", 20));
             gc.fillText(String.valueOf(frame / 30.0), XMARGIN + getPixelDimensions()[0] / 2, YMARGIN + getPixelDimensions()[1] + 20);
 
+            if (!this.lost && this.grid.getGameOver()) {
+                System.out.println("yee");
+                this.lost = true;
+            }
+
             // we've drawn all the blocks, now if we've lost we need to act on it
             if (this.lost == true) {
+                System.out.println("done");
                 // paint the background over, but add an alpha value so you can still see the mines
                 Block transparentCover = new Block(0, 0, this.width, this.height, Color.web(this.bg + "D8"));
                 transparentCover.draw(canvas);
                 // add code for a text obj...
             }
         } else {
-            // outline buttons
-            gc.setStroke(Color.RED);
-            gc.setLineWidth(3);
-            gc.strokeRect(easyButton[0], easyButton[1], easyButton[2], easyButton[3]);
+
         }
     }
 

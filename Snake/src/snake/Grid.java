@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.Random;
 import javafx.util.Pair;
 import java.io.File;
-import java.io.FileNotFoundException;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -51,6 +50,8 @@ public class Grid {
 
     // sounds
     private Sound warp;
+    private Sound loseSound;
+    private Sound bite;
 
     private int growBy = 1;
 
@@ -71,6 +72,8 @@ public class Grid {
             Arrays.fill(this.savedPlayArea[i], 0);
         }
         this.warp = new Sound("warp.mp3");
+        this.loseSound = new Sound("lose.mp3");
+        this.bite = new Sound("bite2.mp3");
     }
 
     public Grid(int width, int length, int startX, int startY) {
@@ -85,6 +88,8 @@ public class Grid {
         this.pos.add(new Pair<Integer, Integer>(startX, startY)); // add head to list
         setCell(startX, startY, 1); // init head
         this.warp = new Sound("warp.mp3");
+        this.loseSound = new Sound("lose.mp3");
+        this.bite = new Sound("bite2.mp3");
     }
 
     public void setGrowBy(int amt) {
@@ -401,55 +406,69 @@ public class Grid {
                 }
             } else {
                 // extreme mode, warp x with y
-                if (nextX < 0) {
-                    nextX = this.width - nextY - 1;
-                    nextY = 0;
-                    this.direction = 3;
-                    this.tempDir = 3;
-                    warp.playMP3();
-                } else if (nextX >= this.width) {
-                    nextX = nextY;
-                    nextY = this.length - 1;
-                    this.direction = 1;
-                    this.tempDir = 1;
-                    warp.playMP3();
-                }
-                if (nextY < 0) {
-                    nextY = nextX;
-                    nextX = this.width - 1;
-                    this.direction = 4;
-                    this.tempDir = 4;
-                    warp.playMP3();
-                } else if (nextY >= this.length) {
-                    nextY = nextX;
-                    nextX = 0;
-                    this.direction = 2;
-                    this.tempDir = 2;
-                    warp.playMP3();
+                while (nextX < 0 || nextX >= this.width || nextY < 0 || nextY >= this.length) {
+                    if (nextX < 0) {
+                        nextX = this.width - nextY - 1;
+                        nextY = 0;
+                        this.direction = 3;
+                        this.tempDir = 3;
+                        warp.playMP3();
+                    }
+                    if (nextX >= this.width) {
+                        nextX = this.width - nextY - 1;
+                        nextY = this.length - 1;
+                        this.direction = 1;
+                        this.tempDir = 1;
+                        warp.playMP3();
+                    }
+
+                    if (nextY < 0) {
+                        nextY = nextX;
+                        nextX = this.width - 1;
+                        this.direction = 4;
+                        this.tempDir = 4;
+                        warp.playMP3();
+                    }
+                    if (nextY >= this.length) {
+                        nextY = nextX;
+                        nextX = 0;
+                        this.direction = 2;
+                        this.tempDir = 2;
+                        warp.playMP3();
+                    }
                 }
             }
         } else {
             // edge kills
             if (nextX < 0) {
                 this.gameOver = true;
-            } else if (nextX >= this.width) {
+                loseSound.playMP3();
+            }
+            if (nextX >= this.width) {
                 this.gameOver = true;
+                loseSound.playMP3();
             }
             if (nextY < 0) {
                 this.gameOver = true;
-            } else if (nextY >= this.length) {
+                loseSound.playMP3();
+            }
+            if (nextY >= this.length) {
                 this.gameOver = true;
+                loseSound.playMP3();
             }
         }
 
         if (!this.gameOver && this.isRock(nextX, nextY) || this.edgeKills && (nextX >= this.width || nextY >= this.length || nextX < 0 || nextY < 0)) {
             // collision with wall or rock
             this.gameOver = true;
+            loseSound.playMP3();
         } else if (!this.gameOver && isSnake(nextX, nextY)) {
             // collision with self
             this.gameOver = true;
+            loseSound.playMP3();
         } else if (!this.gameOver && this.isApple(nextX, nextY)) {
             // ate an apple
+            bite.playMP3();
             grow();
             this.pos.add(0, new Pair<Integer, Integer>(nextX, nextY)); // add segment in front
             this.setCell(nextX, nextY, 1); // update grid
