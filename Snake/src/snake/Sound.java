@@ -3,6 +3,9 @@ package snake;
 import java.applet.*;
 import javax.swing.*;
 import java.io.*;
+import java.net.URL;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import java.net.*;
 
 /**
@@ -15,12 +18,26 @@ public class Sound {// Holds one audio file
     private AudioClip song; // Sound player
     private URL songPath; // Sound path
 
+    // mp3 types
+    private URL resource;
+    private MediaPlayer mediaPlayer;
+    private Media media;
+
     public Sound(String filename) {
-        try {
-            songPath = new URL(filename); // Get the Sound URL
-            song = Applet.newAudioClip(songPath); // Load the Sound
-        } catch (Exception e) {
-        } // Satisfy the catch
+        if (filename.contains(".mp3")) {
+            // taken from http://www.java2s.com/Code/Java/JavaFX/Playmp3file.htm
+            resource = getClass().getResource(filename);
+            media = new Media(resource.toString());
+            mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setVolume(1.0);
+        } else {
+            try {
+                System.out.println("wack");
+                songPath = new URL(filename); // Get the Sound URL
+                song = Applet.newAudioClip(songPath); // Load the Sound
+            } catch (Exception e) {
+            } // Satisfy the catch
+        }
     }
 
     public void playSound() {
@@ -32,7 +49,14 @@ public class Sound {// Holds one audio file
     }
 
     public void playSoundOnce() {
+        System.out.println(song);
         song.play(); // Play only once
+    }
+
+    public void playMP3() {
+        mediaPlayer.pause();
+        mediaPlayer.stop();
+        mediaPlayer.play();
     }
 }
 

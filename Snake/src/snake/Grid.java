@@ -70,7 +70,7 @@ public class Grid {
         for (int i = 0; i < this.length; i++) {
             Arrays.fill(this.savedPlayArea[i], 0);
         }
-        this.warp = new Sound("warp.wav");
+        this.warp = new Sound("warp.mp3");
     }
 
     public Grid(int width, int length, int startX, int startY) {
@@ -84,7 +84,7 @@ public class Grid {
         }
         this.pos.add(new Pair<Integer, Integer>(startX, startY)); // add head to list
         setCell(startX, startY, 1); // init head
-        this.warp = new Sound("warp.wav");
+        this.warp = new Sound("warp.mp3");
     }
 
     public void setGrowBy(int amt) {
@@ -387,45 +387,45 @@ public class Grid {
             if (this.diffLevel < 4) {
                 if (nextX < 0) {
                     nextX = this.width - 1;
-                    warp.playSoundOnce();
+                    warp.playMP3();
                 } else if (nextX >= this.width) {
                     nextX = 0;
-                    warp.playSoundOnce();
+                    warp.playMP3();
                 }
                 if (nextY < 0) {
                     nextY = this.length - 1;
-                    warp.playSoundOnce();
+                    warp.playMP3();
                 } else if (nextY >= this.length) {
                     nextY = 0;
-                    warp.playSoundOnce();
+                    warp.playMP3();
                 }
             } else {
                 // extreme mode, warp x with y
                 if (nextX < 0) {
-                    nextX = nextY;
+                    nextX = this.width - nextY - 1;
                     nextY = 0;
                     this.direction = 3;
                     this.tempDir = 3;
-                    playSound("warp.wav");
+                    warp.playMP3();
                 } else if (nextX >= this.width) {
                     nextX = nextY;
                     nextY = this.length - 1;
                     this.direction = 1;
                     this.tempDir = 1;
-                    playSound("warp.wav");
+                    warp.playMP3();
                 }
                 if (nextY < 0) {
                     nextY = nextX;
                     nextX = this.width - 1;
                     this.direction = 4;
                     this.tempDir = 4;
-                    playSound("warp.wav");
+                    warp.playMP3();
                 } else if (nextY >= this.length) {
                     nextY = nextX;
                     nextX = 0;
                     this.direction = 2;
                     this.tempDir = 2;
-                    playSound("warp.wav");
+                    warp.playMP3();
                 }
             }
         } else {
