@@ -1,22 +1,20 @@
 package snake;
 
+import java.applet.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.net.*;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import java.io.FileInputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.net.URL;
-import java.applet.*;
-import java.net.*;
 
 /**
  *
@@ -30,6 +28,8 @@ public class Snake extends Application {
     private int HEIGHT = 430 * sizeMultiplier;
 
     private int frame = 0;
+
+    private static Board board;
 
     //button constants
     private int bW = 50; // button Width
@@ -50,7 +50,7 @@ public class Snake extends Application {
         }
 
         // Create Board of block objects
-        Board board = new Board(sizeMultiplier, canvasMargin);
+        board = new Board(sizeMultiplier, canvasMargin);
 
         // Difficulty Level
         board.getGrid().setDiffLevel(2);
@@ -85,6 +85,7 @@ public class Snake extends Application {
             public void handle(long now) {
                 frame++;
                 board.setFrame(frame);
+
                 if (board.getShowMenu()) {
                     // If we're supposed to be showing the menu and we're not already, show it
                     if (root.getTop() != iv1) {
@@ -97,6 +98,7 @@ public class Snake extends Application {
                     }
 
                     if (!board.getGrid().getGameOver()) {
+                        //AI();
                         board.drawBlocks();
                         if (frame % board.getGrid().getFrameSpeed() == 0) {
                             for (int i = 0; i < board.getGrid().getGensPerFrame(); i++) {
@@ -132,6 +134,23 @@ public class Snake extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public static void AI() {
+        if (board.getPlaying()) {
+            int[] nextPos = board.getGrid().nextPos();
+            if (board.getGrid().isApple(nextPos[0], nextPos[1])) {
+                // about to eat an apple
+            }
+            while (board.getGrid().isBody(nextPos[0], nextPos[1]) || board.getGrid().isRock(nextPos[0], nextPos[1])) {
+                board.getGrid().attemptSetDirection((board.getGrid().getDirection() - 1) % 4 + 1);
+            }
+            while (board.getGrid().getEdgeKills() && (nextPos[0] >= board.getGrid().getWidth() || nextPos[0] < 0 || nextPos[1] >= board.getGrid().getLength() || nextPos[1] < 0)) {
+                board.getGrid().attemptSetDirection((board.getGrid().getDirection() - 1) % 4 + 1);
+            }
+        } else {
+            board.getGrid().setDirection(1);
+        }
     }
 
     public static void playSound(String name) {

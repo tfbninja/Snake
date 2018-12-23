@@ -41,6 +41,8 @@ public class Board {
 
     //menu variables
     private boolean showMenu = true;
+    private Sound menuMusic;
+    private boolean startMusic = true;
 
     private double scaleFactor = getPixelDimensions()[0] / 430; // scale button coordinate values
     // in order, xPos, yPos, Width, Height
@@ -58,6 +60,7 @@ public class Board {
         height = 600;
         canvas = new Canvas(width, height);
         //grid = new Grid(gridSize, gridSize, 13, 20);
+        menuMusic = new Sound("menuMusic.wav");
     }
 
     public Board(int sizeMultiplier, int margin) {
@@ -71,6 +74,7 @@ public class Board {
         scaleList(impButton, scaleFactor);
         edgeMargin = margin;
         grid.clearApples();
+        menuMusic = new Sound("menuMusic.wav");
     }
 
     public int[] scaleList(int[] list, double scale) {
@@ -180,7 +184,10 @@ public class Board {
                 // add code for a text obj...
             }
         } else {
-
+            if (startMusic) {
+                menuMusic.playSound();
+                startMusic = false;
+            }
         }
     }
 

@@ -29,9 +29,11 @@ public class Sound {// Holds one audio file
             mediaPlayer.setVolume(1.0);
         } else {
             try {
-                songPath = new URL(filename); // Get the Sound URL
+                songPath = new URL("file:\\\\" + filename); // Get the Sound URL
+
                 song = Applet.newAudioClip(songPath); // Load the Sound
             } catch (Exception e) {
+                System.out.println("could not find \"" + filename + "\"");
             } // Satisfy the catch
         }
     }

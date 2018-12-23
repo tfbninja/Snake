@@ -2,13 +2,13 @@ package snake;
 
 import java.applet.Applet;
 import java.applet.AudioClip;
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 import javafx.util.Pair;
-import java.io.File;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -43,8 +43,8 @@ public class Grid {
     private int maxDiffLevel = 4;
 
     // snake vars
-    private int direction = 1;
-    private int tempDir = 1;
+    private int direction = 0;
+    private int tempDir = 0;
     private ArrayList<Pair<Integer, Integer>> pos = new ArrayList<>();
     private int snakeSize = 5;
 
@@ -345,6 +345,11 @@ public class Grid {
         newPos[0] += xAdd[direction - 1];
         newPos[1] += yAdd[direction - 1];
         return newPos;
+    }
+
+    public void setDirection(int dir) {
+        this.direction = dir;
+        this.tempDir = dir;
     }
 
     public boolean isSnake(int xPos, int yPos) {
