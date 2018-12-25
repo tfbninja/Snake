@@ -21,7 +21,7 @@ public class Sound {// Holds one audio file
     private Media media;
 
     public Sound(String filename) {
-        if (filename.contains(".mp3")) {
+        if (filename.contains(".mp3") || filename.contains(".wav")) {
             // taken from http://www.java2s.com/Code/Java/JavaFX/Playmp3file.htm
             resource = getClass().getResource(filename);
             media = new Media(resource.toString());
@@ -38,7 +38,7 @@ public class Sound {// Holds one audio file
         }
     }
 
-    public void setVolume(int amt) {
+    public void setVolume(double amt) {
         this.mediaPlayer.setVolume(amt);
     }
 
@@ -51,7 +51,6 @@ public class Sound {// Holds one audio file
     }
 
     public void playSoundOnce() {
-        System.out.println(song);
         song.play(); // Play only once
     }
 

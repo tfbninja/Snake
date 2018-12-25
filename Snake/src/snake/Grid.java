@@ -47,6 +47,7 @@ public class Grid {
     private int tempDir = 0;
     private ArrayList<Pair<Integer, Integer>> pos = new ArrayList<>();
     private int snakeSize = 5;
+    private int applesEaten = 0;
 
     // sounds
     private Sound warp;
@@ -85,11 +86,15 @@ public class Grid {
         for (int i = 0; i < this.length; i++) {
             Arrays.fill(this.savedPlayArea[i], 0);
         }
-        this.pos.add(new Pair<Integer, Integer>(startX, startY)); // add head to list
+        this.pos.add(new Pair<>(startX, startY)); // add head to list
         setCell(startX, startY, 1); // init head
         this.warp = new Sound("warp.mp3");
         this.loseSound = new Sound("lose.mp3");
         this.bite = new Sound("bite2.mp3");
+    }
+
+    public int getApplesEaten() {
+        return this.applesEaten;
     }
 
     public void setGrowBy(int amt) {
@@ -342,6 +347,7 @@ public class Grid {
         int[] newPos = this.getHeadPos();
         int[] xAdd = {0, 1, 0, -1};
         int[] yAdd = {-1, 0, 1, 0};
+
         newPos[0] += xAdd[direction - 1];
         newPos[1] += yAdd[direction - 1];
         return newPos;
@@ -473,6 +479,7 @@ public class Grid {
             loseSound.playMP3();
         } else if (!this.gameOver && this.isApple(nextX, nextY)) {
             // ate an apple
+            this.applesEaten++;
             bite.playMP3();
             grow();
             this.pos.add(0, new Pair<Integer, Integer>(nextX, nextY)); // add segment in front
@@ -486,6 +493,7 @@ public class Grid {
             }
             clearApples();
             newApple();
+            nextGen(); // don't pause
         } else if (!this.gameOver && this.isBlank(nextX, nextY)) {
             this.pos.add(0, new Pair<Integer, Integer>(nextX, nextY)); // add segment in front
             this.setCell(nextX, nextY, 1); // update grid

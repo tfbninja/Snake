@@ -24,8 +24,10 @@ public class Snake extends Application {
 
     private int canvasMargin = 10;
     private int sizeMultiplier = 1;
-    private int WIDTH = 430 * sizeMultiplier;
-    private int HEIGHT = 430 * sizeMultiplier;
+    private int WIDTH = 430 + canvasMargin * 2;
+    private int HEIGHT = 430 + canvasMargin * 2;
+    private int canvasW = 430;
+    private int canvasH = 430;
 
     private int frame = 0;
 
@@ -35,41 +37,54 @@ public class Snake extends Application {
     private int bW = 50; // button Width
     private int bH = 25; // button Height
 
-    private int resetX = 100; // reset button x position
-    private int resetY = 100; // reset button y position
+    private Sound menuMusic = new Sound("menuMusic.wav");
 
-    FileInputStream menuStream;
+    private FileInputStream menuStream;
+    private FileInputStream loseScreenStream;
 
     @Override
     public void start(Stage primaryStage) {
 
+        // Create Board of block objects
+        board = new Board(canvasW, canvasH);
+
+        // Difficulty Level
+        board.getGrid().setDiffLevel(2);
+
+        // background music
+        menuMusic.setVolume(0.15);
+        menuMusic.playMP3();
+
+        // set up menu screen
         try {
             menuStream = new FileInputStream("menu.jpg");
         } catch (FileNotFoundException f) {
             System.out.println("oof");
         }
-
-        // Create Board of block objects
-        board = new Board(sizeMultiplier, canvasMargin);
-
-        // Difficulty Level
-        board.getGrid().setDiffLevel(2);
-
         Image image = new Image(menuStream);
-
-        // resizes the image to have width of 100 while preserving the ratio and using
-        // higher quality filtering method; this ImageView is also cached to
-        // improve performance
         ImageView iv1 = new ImageView();
         iv1.setImage(image);
         iv1.setPreserveRatio(true);
-        iv1.setFitWidth(board.getPixelDimensions()[0]);
         iv1.setSmooth(true);
         iv1.setCache(true);
 
+        // set up lose screen
+        try {
+            loseScreenStream = new FileInputStream("art\\loseScreen.png");
+        } catch (FileNotFoundException f) {
+            System.out.println("big oof");
+        }
+        Image loseScreen = new Image(loseScreenStream);
+        ImageView iv2 = new ImageView();
+        iv2.setImage(loseScreen);
+        iv2.setPreserveRatio(true);
+        iv2.setSmooth(true);
+        iv2.setCache(true);
+
+        // arrange objects in window
         BorderPane root = new BorderPane(); // better arrangement style
-        root.setStyle("-fx-background-color: black");
         root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+        root.setStyle("-fx-background-color: black");
         root.setTop(iv1); // display titlescreen
 
         Scene scene = new Scene(root, WIDTH, HEIGHT);
@@ -86,14 +101,14 @@ public class Snake extends Application {
                 frame++;
                 board.setFrame(frame);
 
-                if (board.getShowMenu()) {
+                if (board.getShowMenu() && !board.getGrid().getGameOver()) {
                     // If we're supposed to be showing the menu and we're not already, show it
                     if (root.getTop() != iv1) {
                         root.setTop(iv1);
                     }
                 } else {
                     // If we're supposed to be showing the game graphics and we're not already, show it
-                    if (root.getTop() != board.getCanvas()) {
+                    if (root.getTop() != board.getCanvas() && !board.getGrid().getGameOver()) {
                         root.setTop(board.getCanvas());
                     }
 
@@ -107,6 +122,10 @@ public class Snake extends Application {
                                 }
                             }
                         }
+                    } else {
+                        // game over
+                        board.drawBlocks();
+                        root.setTop(iv2);
                     }
                 }
             }

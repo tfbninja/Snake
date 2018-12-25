@@ -36,15 +36,13 @@ public class Board {
     private boolean lost = false;
 
     private int frame = 0;
+    private int keyPresses = 0;
 
     private boolean playing = false;
 
     //menu variables
     private boolean showMenu = true;
-    private Sound menuMusic;
-    private boolean startMusic = true;
 
-    private double scaleFactor = getPixelDimensions()[0] / 430; // scale button coordinate values
     // in order, xPos, yPos, Width, Height
     private int[] easyButton = {12, 292, 194, 51};
     private int[] medButton = {219, 292, 194, 51};
@@ -55,34 +53,13 @@ public class Board {
     // settings variables
     private boolean showSettings = false;
 
-    public Board() {
-        width = 600;
-        height = 600;
+    public Board(int w, int h) {
+        this.width = w;
+        this.height = h;
         canvas = new Canvas(width, height);
-        //grid = new Grid(gridSize, gridSize, 13, 20);
-        menuMusic = new Sound("menuMusic.wav");
-    }
-
-    public Board(int sizeMultiplier, int margin) {
-        this.width = getPixelDimensions()[0];
-        this.height = getPixelDimensions()[1];
-        canvas = new Canvas(width, height);
-        grid = new Grid(gridSize * sizeMultiplier, gridSize * sizeMultiplier, 21, 20);
-        scaleList(easyButton, scaleFactor);
-        scaleList(medButton, scaleFactor);
-        scaleList(hardButton, scaleFactor);
-        scaleList(impButton, scaleFactor);
+        grid = new Grid(gridSize, gridSize, 21, 20);
         edgeMargin = margin;
         grid.clearApples();
-        menuMusic = new Sound("menuMusic.wav");
-    }
-
-    public int[] scaleList(int[] list, double scale) {
-        int[] newList = new int[list.length];
-        for (int i = 0; i < list.length; i++) {
-            newList[i] = (int) (list[i] * scale);
-        }
-        return newList;
     }
 
     public boolean getPlaying() {
@@ -106,7 +83,7 @@ public class Board {
     }
 
     public int[] getPixelDimensions() {
-        int[] dimensions = {XMARGIN * 2 + gridSize * size + (gridSize - 1) * margin, YMARGIN * 2 + gridSize * size + (gridSize - 1) * margin};
+        int[] dimensions = {margin * (gridSize - 1) + size * gridSize, margin * (gridSize - 1) + size * gridSize};
         return dimensions;
     }
 
@@ -168,45 +145,54 @@ public class Board {
             // draw frame number / 30
             gc.setFill(Color.BLUEVIOLET);
             gc.setFont(Font.font("Verdana", 20));
-            gc.fillText(String.valueOf(frame / 30.0), XMARGIN + getPixelDimensions()[0] / 2, YMARGIN + getPixelDimensions()[1] + 20);
+            gc.fillText("Apples eaten: " + this.getGrid().getApplesEaten(), XMARGIN + width / 2 - 100, YMARGIN + getPixelDimensions()[1] + 20
+            );
 
             if (!this.lost && this.grid.getGameOver()) {
-                System.out.println("yee");
                 this.lost = true;
             }
 
             // we've drawn all the blocks, now if we've lost we need to act on it
             if (this.lost == true) {
-                System.out.println("done");
-                // paint the background over, but add an alpha value so you can still see the mines
-                Block transparentCover = new Block(0, 0, this.width, this.height, Color.web(this.bg + "D8"));
-                transparentCover.draw(canvas);
-                // add code for a text obj...
             }
         } else {
-            if (startMusic) {
-                menuMusic.playSound();
-                startMusic = false;
-            }
+
         }
     }
 
     public void keyPressed(KeyEvent e) {
+        keyPresses++;
         if (!this.playing && !this.showMenu) {
             this.playing = true;
         }
-        if (e.getCode() == KeyCode.UP || e.getCode() == KeyCode.W) {
-            // user pressed up key
-            this.grid.attemptSetDirection(1);
-        } else if (e.getCode() == KeyCode.DOWN || e.getCode() == KeyCode.S) {
-            // user pressed down key
-            this.grid.attemptSetDirection(3);
-        } else if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.A) {
-            // user pressed left key
-            this.grid.attemptSetDirection(4);
-        } else if (e.getCode() == KeyCode.RIGHT || e.getCode() == KeyCode.D) {
-            // user pressed right key
-            this.grid.attemptSetDirection(2);
+        if (keyPresses > 1) {
+            if (e.getCode() == KeyCode.UP || e.getCode() == KeyCode.W) {
+                // user pressed up key
+                this.grid.attemptSetDirection(1);
+            } else if (e.getCode() == KeyCode.DOWN || e.getCode() == KeyCode.S) {
+                // user pressed down key
+                this.grid.attemptSetDirection(3);
+            } else if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.A) {
+                // user pressed left key
+                this.grid.attemptSetDirection(4);
+            } else if (e.getCode() == KeyCode.RIGHT || e.getCode() == KeyCode.D) {
+                // user pressed right key
+                this.grid.attemptSetDirection(2);
+            }
+        } else {
+            if (e.getCode() == KeyCode.UP || e.getCode() == KeyCode.W) {
+                // user pressed up key
+                this.grid.setDirection(1);
+            } else if (e.getCode() == KeyCode.DOWN || e.getCode() == KeyCode.S) {
+                // user pressed down key
+                this.grid.setDirection(3);
+            } else if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.A) {
+                // user pressed left key
+                this.grid.setDirection(4);
+            } else if (e.getCode() == KeyCode.RIGHT || e.getCode() == KeyCode.D) {
+                // user pressed right key
+                this.grid.setDirection(2);
+            }
         }
     }
 
