@@ -53,14 +53,21 @@ public class Snake extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        scores.add(readDecodedFile("scores\\local\\localhighScore1.dat"));
+        scores.add(readDecodedFile("scores\\local\\localHighScore1.dat"));
         scores.add(readDecodedFile("scores\\world\\worldHighScore1.dat"));
-        scores.add(readDecodedFile("scores\\local\\localhighScore2.dat"));
+        scores.add(readDecodedFile("scores\\local\\localHighScore2.dat"));
         scores.add(readDecodedFile("scores\\world\\worldHighScore2.dat"));
-        scores.add(readDecodedFile("scores\\local\\localhighScore3.dat"));
+        scores.add(readDecodedFile("scores\\local\\localHighScore3.dat"));
         scores.add(readDecodedFile("scores\\world\\worldHighScore3.dat"));
-        scores.add(readDecodedFile("scores\\local\\localhighScore4.dat"));
+        scores.add(readDecodedFile("scores\\local\\localHighScore4.dat"));
         scores.add(readDecodedFile("scores\\world\\worldhighScore4.dat"));
+        // if local files unreadable, set to 0
+        for (int i = 0; i < scores.size(); i += 2) { // loop through local scores
+            if (scores.get(i) == -1) { // if bad encode
+                scores.set(i, 0); // set score to 0
+            }
+            writeEncodedScore("scores\\local\\localHighScore" + (i / 2 + 1) + ".dat", 0); // write 0 to file
+        }
 
         for (int i : scores) {
             System.out.println(i);
@@ -162,7 +169,7 @@ public class Snake extends Application {
                                     writeEncodedScore("scores\\world\\worldHighScore" + thisDifficulty + ".dat", thisScore);
                                 } else {
                                     // if there's no world file, it ain't legit
-                                    //System.out.println("maybe keep the world high score file around buddy...");
+                                    System.out.println("maybe keep the world high score file around buddy...");
                                 }
                             }
                         }
@@ -258,7 +265,7 @@ public class Snake extends Application {
 
     public static boolean checkFileExists(String filename) {
         try {
-            Scanner temp = new Scanner(new File("localHighScore.dat"));
+            Scanner temp = new Scanner(new File(filename));
             return true;
         } catch (FileNotFoundException e) {
             return false;

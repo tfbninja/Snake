@@ -7,7 +7,7 @@ package snake;
 public class EnigmaTester {
 
     public static void main(String[] args) {
-        int num = 191;
+        int num = 0;
         String e = Enigma.encode(num);
         System.out.println("Encoded " + num + ": " + e);
         try {
