@@ -7,9 +7,8 @@ package snake;
 public class EnigmaTester {
 
     public static void main(String[] args) {
-        int num = 4;
+        int num = 191;
         String e = Enigma.encode(num);
-        System.out.println("String length: " + e.length());
         System.out.println("Encoded " + num + ": " + e);
         try {
             System.out.println(Enigma.decode(e));

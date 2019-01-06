@@ -1,9 +1,15 @@
 package snake;
 
 import java.applet.*;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.InvalidObjectException;
+import java.io.PrintWriter;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.Scanner;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -42,8 +48,23 @@ public class Snake extends Application {
     private FileInputStream menuStream;
     private FileInputStream loseScreenStream;
 
+    private ArrayList<Integer> scores = new ArrayList<>();
+
     @Override
     public void start(Stage primaryStage) {
+
+        scores.add(readDecodedFile("scores\\local\\localhighScore1.dat"));
+        scores.add(readDecodedFile("scores\\world\\worldHighScore1.dat"));
+        scores.add(readDecodedFile("scores\\local\\localhighScore2.dat"));
+        scores.add(readDecodedFile("scores\\world\\worldHighScore2.dat"));
+        scores.add(readDecodedFile("scores\\local\\localhighScore3.dat"));
+        scores.add(readDecodedFile("scores\\world\\worldHighScore3.dat"));
+        scores.add(readDecodedFile("scores\\local\\localhighScore4.dat"));
+        scores.add(readDecodedFile("scores\\world\\worldhighScore4.dat"));
+
+        for (int i : scores) {
+            System.out.println(i);
+        }
 
         // Create Board of block objects
         board = new Board(canvasW, canvasH);
@@ -126,6 +147,38 @@ public class Snake extends Application {
                         // game over
                         board.drawBlocks();
                         root.setTop(iv2);
+
+                        int thisDifficulty = board.getGrid().getDiffLevel();
+                        int thisScore = board.getGrid().getApplesEaten();
+
+                        if (thisScore > scores.get((thisDifficulty - 1) * 2) || thisScore > scores.get((thisDifficulty - 1) * 2 + 1)) {
+                            //  (if score is higher than local or world)
+
+                            // write scores to files
+                            writeEncodedScore("scores\\local\\localHighScore" + thisDifficulty + ".dat", thisScore);
+
+                            if (thisScore > scores.get((thisDifficulty - 1) * 2 + 1)) {
+                                if (checkFileExists("scores\\world\\worldHighScore" + thisDifficulty + ".dat")) {
+                                    writeEncodedScore("scores\\world\\worldHighScore" + thisDifficulty + ".dat", thisScore);
+                                } else {
+                                    // if there's no world file, it ain't legit
+                                    //System.out.println("maybe keep the world high score file around buddy...");
+                                }
+                            }
+                        }
+                        int y = 303;
+                        for (int i = 0; i < scores.size(); i++) {
+                            if (i % 2 == 0) {
+                                if (i > 1) {
+                                    y += 27;
+                                }
+                                int x = 250;
+                            } else {
+                                int x = 143;
+                            }
+                            // impact font, size 22
+                            // draw scores.get(i) at x, y
+                        }
                     }
                 }
             }
@@ -155,6 +208,27 @@ public class Snake extends Application {
         launch(args);
     }
 
+    public static int readDecodedFile(String fileName) {
+        int decodedScore = -1;
+        Scanner reader = new Scanner("");
+        try {
+            File highScore = new File(fileName);
+            reader = new Scanner(highScore);
+            reader.useDelimiter("Y33T");
+        } catch (FileNotFoundException x) {
+            //System.out.println("bad file: " + x.getLocalizedMessage());
+            return -1;
+        }
+        String temp = reader.next().trim();
+        try {
+            decodedScore = Enigma.decode(temp);
+        } catch (InvalidObjectException ioe) {
+            System.out.println("bad encode");
+            return -1;
+        }
+        return decodedScore;
+    }
+
     public static void AI() {
         if (board.getPlaying()) {
             int[] nextPos = board.getGrid().nextPos();
@@ -179,6 +253,27 @@ public class Snake extends Application {
             clip.play();
         } catch (MalformedURLException malURL) {
             System.out.println(malURL);
+        }
+    }
+
+    public static boolean checkFileExists(String filename) {
+        try {
+            Scanner temp = new Scanner(new File("localHighScore.dat"));
+            return true;
+        } catch (FileNotFoundException e) {
+            return false;
+        }
+    }
+
+    public static void writeEncodedScore(String filename, int score) {
+        try {
+            PrintWriter printer = new PrintWriter(filename, "UTF-8");
+            FileWriter creator = new FileWriter(new File(filename));
+            printer.print(Enigma.encode(score));
+            printer.close();
+            creator.close();
+        } catch (Exception x) {
+            System.out.println(x.getLocalizedMessage() + " oof.");
         }
     }
 }

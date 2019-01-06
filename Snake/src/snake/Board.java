@@ -57,9 +57,13 @@ public class Board {
         this.width = w;
         this.height = h;
         canvas = new Canvas(width, height);
-        grid = new Grid(gridSize, gridSize, 21, 20);
+        createGrid();
         edgeMargin = margin;
         grid.clearApples();
+    }
+
+    public void createGrid() {
+        grid = new Grid(gridSize, gridSize, 21, 20);
     }
 
     public boolean getPlaying() {
@@ -160,10 +164,21 @@ public class Board {
         }
     }
 
+    public void reset() {
+        this.lost = false;
+        this.showMenu = true;
+        this.playing = false;
+        this.grid.revertToSaved();
+        createGrid();
+    }
+
     public void keyPressed(KeyEvent e) {
         keyPresses++;
         if (!this.playing && !this.showMenu) {
             this.playing = true;
+        }
+        if (this.lost && !this.showMenu) {
+            reset();
         }
         if (keyPresses > 1) {
             if (e.getCode() == KeyCode.UP || e.getCode() == KeyCode.W) {
@@ -206,27 +221,33 @@ public class Board {
         int mX = (int) mouseX;
         int mY = (int) mouseY;
 
+        if (this.lost && !this.showMenu) {
+            reset();
+        }
+
         boolean leftClick = e.isPrimaryButtonDown();
         if (leftClick) {
             // left click
 
             // menu catching
-            if (mX >= easyButton[0] && mY >= easyButton[1] && mX <= easyButton[0] + easyButton[2] && mY <= easyButton[1] + easyButton[3]) {
-                // easy mode chosen
-                this.grid.setDiffLevel(1);
-                this.showMenu = false;
-            } else if (mX >= medButton[0] && mY >= medButton[1] && mX <= medButton[0] + medButton[2] && mY <= medButton[1] + medButton[3]) {
-                // medium mode chosen
-                this.grid.setDiffLevel(2);
-                this.showMenu = false;
-            } else if (mX >= hardButton[0] && mY >= hardButton[1] && mX <= hardButton[0] + hardButton[2] && mY <= hardButton[1] + hardButton[3]) {
-                // hard mode chosen
-                this.grid.setDiffLevel(3);
-                this.showMenu = false;
-            } else if (mX >= impButton[0] && mY >= impButton[1] && mX <= impButton[0] + impButton[2] && mY <= impButton[1] + impButton[3]) {
-                // impossible mode chosen
-                this.grid.setDiffLevel(4);
-                this.showMenu = false;
+            if (this.showMenu) {
+                if (mX >= easyButton[0] && mY >= easyButton[1] && mX <= easyButton[0] + easyButton[2] && mY <= easyButton[1] + easyButton[3]) {
+                    // easy mode chosen
+                    this.grid.setDiffLevel(1);
+                    this.showMenu = false;
+                } else if (mX >= medButton[0] && mY >= medButton[1] && mX <= medButton[0] + medButton[2] && mY <= medButton[1] + medButton[3]) {
+                    // medium mode chosen
+                    this.grid.setDiffLevel(2);
+                    this.showMenu = false;
+                } else if (mX >= hardButton[0] && mY >= hardButton[1] && mX <= hardButton[0] + hardButton[2] && mY <= hardButton[1] + hardButton[3]) {
+                    // hard mode chosen
+                    this.grid.setDiffLevel(3);
+                    this.showMenu = false;
+                } else if (mX >= impButton[0] && mY >= impButton[1] && mX <= impButton[0] + impButton[2] && mY <= impButton[1] + impButton[3]) {
+                    // impossible mode chosen
+                    this.grid.setDiffLevel(4);
+                    this.showMenu = false;
+                }
             }
         } else if (e.isSecondaryButtonDown()) {
             // right click

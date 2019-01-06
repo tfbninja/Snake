@@ -15,13 +15,42 @@ public class Enigma {
     private static int additive = 50;
 
     /*
-     * i^2 + 15 number of chars
-     * last character is unicode(i^2 + 17)
-     * character i is unicode(i + 9)
-     * first character is unicode(multiple of 13)
-     * all other characters must be multiples of 2 or 3
+     * So the old method doesn't work, new method:
+     * Unicode(num + 63)
+     * num * 2 + 3
+     * Unicode(num + 67)
      */
     public static String encode(int num) {
+        String first = String.valueOf((char) (num + 63));
+        String mid = String.valueOf(num * 2 + 3);
+        String last = String.valueOf((char) (num + 67));
+        return first + "" + mid + "" + last;
+    }
+
+    public static int decode(String encoded) throws InvalidObjectException {
+        boolean longShotLengthCheck = encoded.length() <= 5;
+        char first = encoded.charAt(0);
+        int mid = Integer.valueOf(encoded.substring(1, encoded.length() - 1));
+        char last = encoded.charAt(encoded.length() - 1);
+        mid -= 3;
+        mid /= 2; // now we have the real value
+        boolean firstCharCheck = Integer.valueOf(first) - 63 == mid;
+        boolean lastCharCheck = Integer.valueOf(last) - 67 == mid;
+        if (!(longShotLengthCheck && firstCharCheck && lastCharCheck)) {
+            throw new InvalidObjectException("first char: " + firstCharCheck + " last char: " + lastCharCheck + " length check: " + longShotLengthCheck);
+        }
+        return mid;
+    }
+
+    public static String encodeOld(int num) {
+        /*
+         * Old method:
+         * i^2 + 15 number of chars
+         * last character is unicode(i^2 + 17)
+         * character i is unicode(i + 9)
+         * first character is unicode(multiple of 13)
+         * all other characters must be multiples of 2 or 3
+         */
         Random random = new Random(LocalDateTime.now().getNano());
         String encoded = "";
         encoded += (char) (65 + random.nextInt(maxAmt) * 13);
@@ -45,7 +74,15 @@ public class Enigma {
         return encoded;
     }
 
-    public static int decode(String encoded) throws InvalidObjectException {
+    public static int decodeOld(String encoded) throws InvalidObjectException {
+        /*
+         * Old method:
+         * i^2 + 15 number of chars
+         * last character is unicode(i^2 + 17)
+         * character i is unicode(i + 9)
+         * first character is unicode(multiple of 13)
+         * all other characters must be multiples of 2 or 3
+         */
         boolean firstCheck = encoded.charAt(0) % 13 == 0;
         int temp = (int) Math.sqrt(encoded.charAt(encoded.length() - 1) - 17);
         boolean lengthCheck = encoded.length() == temp * temp + 15;
@@ -59,7 +96,7 @@ public class Enigma {
             }
         }
         if (!firstCheck || !lengthCheck || !tempCheck || !otherChecks) {
-            throw new InvalidObjectException(firstCheck + " " + lengthCheck + " " + tempCheck + " " + otherChecks);
+            throw new InvalidObjectException("first char check: " + firstCheck + " length check: " + lengthCheck + " last char check: " + tempCheck + " other chars check: " + otherChecks);
         }
 
         return temp;
