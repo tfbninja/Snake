@@ -10,7 +10,7 @@ import javafx.scene.media.MediaPlayer;
  * @author Tim Barber
  */
 // This class taken mostly verbatim from https://www.dreamincode.net/forums/topic/14083-incredibly-easy-way-to-play-sounds/
-public class Sound {// Holds one audio file
+public class Sound { // Holds one audio file
 
     private AudioClip song; // Sound player
     private URL songPath; // Sound path
@@ -55,6 +55,8 @@ public class Sound {// Holds one audio file
     }
 
     public void playMP3() {
+        // hey... it works alright? Don't question it
+        mediaPlayer.setAutoPlay(true);
         mediaPlayer.pause();
         mediaPlayer.stop();
         mediaPlayer.play();

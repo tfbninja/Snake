@@ -1,17 +1,9 @@
 package snake;
 
-import java.applet.Applet;
-import java.applet.AudioClip;
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 import javafx.util.Pair;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 
 /**
  *
@@ -33,6 +25,8 @@ public class Grid {
     private static int[][] savedPlayArea;
 
     private boolean edgeKills = false;
+
+    private boolean soundOn = true;
 
     private Random random = new Random();
 
@@ -93,6 +87,10 @@ public class Grid {
         this.bite = new Sound("bite2.mp3");
     }
 
+    public void setSoundOn(boolean sound) {
+        this.soundOn = sound;
+    }
+
     public int getApplesEaten() {
         return this.applesEaten;
     }
@@ -122,11 +120,12 @@ public class Grid {
                 this.edgeKills = false;
                 clearObstacles();
 
-                //add 10 random rocks
-                for (int i = 0; i < 10; i++) {
+                //add 5 random rocks
+                for (int i = 0; i < 5; i++) {
                     int x = (int) (Math.random() * this.width);
                     int y = (int) (Math.random() * this.length);
                     while (getCell(x, y) != 0 || x == this.pos.get(0).getValue() || getNeighbors(x, y, 4, 2) > 0) {
+                        // while the rock is about to be placed over a non-blank spot, or it is the same x value as the snake, or it has neighbors in a 2 cell radius, recalculate the position
                         x = (int) (Math.random() * this.width);
                         y = (int) (Math.random() * this.length);
                     }
@@ -399,38 +398,42 @@ public class Grid {
         }
 
         if (!this.edgeKills) {
-
+            boolean playWarpSound = false;
             if (this.diffLevel < 4) {
                 if (nextX < 0) {
                     nextX = this.width - 1;
-                    warp.playMP3();
+                    playWarpSound = true;
                 } else if (nextX >= this.width) {
                     nextX = 0;
-                    warp.playMP3();
+                    playWarpSound = true;
                 }
                 if (nextY < 0) {
                     nextY = this.length - 1;
-                    warp.playMP3();
+                    playWarpSound = true;
                 } else if (nextY >= this.length) {
                     nextY = 0;
+                    playWarpSound = true;
+                }
+                if (playWarpSound && soundOn) {
                     warp.playMP3();
                 }
             } else {
                 // extreme mode, warp x with y
+                boolean playWarpSound2 = false;
                 while (nextX < 0 || nextX >= this.width || nextY < 0 || nextY >= this.length) {
                     if (nextX < 0) {
                         nextX = this.width - nextY - 1;
                         nextY = 0;
                         this.direction = 3;
                         this.tempDir = 3;
-                        warp.playMP3();
+                        playWarpSound2 = true;
                     }
                     if (nextX >= this.width) {
                         nextX = this.width - nextY - 1;
                         nextY = this.length - 1;
                         this.direction = 1;
                         this.tempDir = 1;
-                        warp.playMP3();
+                        playWarpSound2 = true;
                     }
 
                     if (nextY < 0) {
@@ -438,13 +441,16 @@ public class Grid {
                         nextX = this.width - 1;
                         this.direction = 4;
                         this.tempDir = 4;
-                        warp.playMP3();
+                        playWarpSound2 = true;
                     }
                     if (nextY >= this.length) {
                         nextY = nextX;
                         nextX = 0;
                         this.direction = 2;
                         this.tempDir = 2;
+                        playWarpSound2 = true;
+                    }
+                    if (playWarpSound2 && soundOn) {
                         warp.playMP3();
                     }
                 }
@@ -453,34 +459,48 @@ public class Grid {
             // edge kills
             if (nextX < 0) {
                 this.gameOver = true;
-                loseSound.playMP3();
+                if (soundOn) {
+                    loseSound.playMP3();
+                }
             }
             if (nextX >= this.width) {
                 this.gameOver = true;
-                loseSound.playMP3();
+                if (soundOn) {
+                    loseSound.playMP3();
+                }
             }
             if (nextY < 0) {
                 this.gameOver = true;
-                loseSound.playMP3();
+                if (soundOn) {
+                    loseSound.playMP3();
+                }
             }
             if (nextY >= this.length) {
                 this.gameOver = true;
-                loseSound.playMP3();
+                if (soundOn) {
+                    loseSound.playMP3();
+                }
             }
         }
 
         if (!this.gameOver && this.isRock(nextX, nextY) || this.edgeKills && (nextX >= this.width || nextY >= this.length || nextX < 0 || nextY < 0)) {
             // collision with wall or rock
             this.gameOver = true;
-            loseSound.playMP3();
+            if (soundOn) {
+                loseSound.playMP3();
+            }
         } else if (!this.gameOver && isSnake(nextX, nextY)) {
             // collision with self
             this.gameOver = true;
-            loseSound.playMP3();
+            if (soundOn) {
+                loseSound.playMP3();
+            }
         } else if (!this.gameOver && this.isApple(nextX, nextY)) {
             // ate an apple
             this.applesEaten++;
-            bite.playMP3();
+            if (soundOn) {
+                bite.playMP3();
+            }
             grow();
             this.pos.add(0, new Pair<Integer, Integer>(nextX, nextY)); // add segment in front
             this.setCell(nextX, nextY, 1); // update grid
@@ -493,7 +513,7 @@ public class Grid {
             }
             clearApples();
             newApple();
-            nextGen(); // don't pause
+            //nextGen(); // don't pause
         } else if (!this.gameOver && this.isBlank(nextX, nextY)) {
             this.pos.add(0, new Pair<Integer, Integer>(nextX, nextY)); // add segment in front
             this.setCell(nextX, nextY, 1); // update grid
@@ -587,39 +607,6 @@ public class Grid {
 
     public void setPlayArea(int[][] newPlayArea) {
         this.playArea = newPlayArea;
-    }
-
-    public void playSound(String name) {
-        // Taken from https://www.cs.cmu.edu/~illah/CLASSDOCS/javasound.pdf
-        try {
-            AudioClip clip = Applet.newAudioClip(new URL("file:" + name));
-            clip.play();
-        } catch (MalformedURLException malURL) {
-            System.out.println(malURL);
-        }
-    }
-
-    public void playSound2(File name) {
-
-        // create AudioInputStream object 
-        AudioInputStream strm = null;
-        Clip clip = null;
-
-        try {
-            strm = AudioSystem.getAudioInputStream(name.getAbsoluteFile());
-            System.out.println("nope");
-
-            // create clip reference
-            clip = AudioSystem.getClip();
-            System.out.println("this ain't it chief");
-
-            // open AudioInputStream to the clip 
-            clip.open(strm);
-        } catch (Exception e) {
-            System.out.println("oof");
-        }
-
-        clip.loop(Clip.LOOP_CONTINUOUSLY);
     }
 
     @Override

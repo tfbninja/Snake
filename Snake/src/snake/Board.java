@@ -15,8 +15,9 @@ public class Board {
     private Grid grid;
     private Canvas canvas;
 
-    private int margin = 1;
-    private final int XMARGIN = 5; // margin inside the stackpane
+    private int outsideMargin = 10;
+    private int margin = 1; // margin between individual squares
+    private final int XMARGIN = 15; // margin inside the stackpane
     private final int YMARGIN = 5;
     private int size = 15;
     private int borderSize = 2;
@@ -32,6 +33,7 @@ public class Board {
     private String head = "b76309";
     private String bg = "ceceb5";
     private String rock = "53585e";
+    private String applesEaten = "750BE0";
 
     private boolean lost = false;
 
@@ -42,13 +44,17 @@ public class Board {
 
     //menu variables
     private boolean showMenu = true;
+    private boolean showHighScores = false;
+    private boolean soundOn = true;
+    private boolean showHelp = false;
 
     // in order, xPos, yPos, Width, Height
     private int[] easyButton = {12, 292, 194, 51};
     private int[] medButton = {219, 292, 194, 51};
     private int[] hardButton = {12, 353, 194, 51};
     private int[] impButton = {219, 353, 194, 51};
-    private int edgeMargin = 0;
+    private int[] muteButton = {92, 12, 29, 29};
+    private int[] helpButton = {12, 12, 64, 34};
 
     // settings variables
     private boolean showSettings = false;
@@ -58,12 +64,23 @@ public class Board {
         this.height = h;
         canvas = new Canvas(width, height);
         createGrid();
-        edgeMargin = margin;
         grid.clearApples();
+    }
+
+    public void setOutsideMargin(int amt) {
+        this.outsideMargin = amt;
+    }
+
+    public boolean getShowHelp() {
+        return this.showHelp;
     }
 
     public void createGrid() {
         grid = new Grid(gridSize, gridSize, 21, 20);
+    }
+
+    public boolean getShowHighScores() {
+        return this.showHighScores;
     }
 
     public boolean getPlaying() {
@@ -110,7 +127,8 @@ public class Board {
                 // draw red border indicating that edge kills
                 gc.setStroke(Color.CRIMSON.darker());
             } else {
-                gc.setStroke(Color.DARKORANGE);
+                // draw green border indicating that warp mode is on
+                gc.setStroke(Color.CHARTREUSE);
             }
             gc.setLineWidth(edgeSize);
             int pixelSize = gridSize * size + gridSize * margin;
@@ -146,11 +164,10 @@ public class Board {
                 xPixel += margin + size;
             }
 
-            // draw frame number / 30
-            gc.setFill(Color.BLUEVIOLET);
-            gc.setFont(Font.font("Verdana", 20));
-            gc.fillText("Apples eaten: " + this.getGrid().getApplesEaten(), XMARGIN + width / 2 - 100, YMARGIN + getPixelDimensions()[1] + 20
-            );
+            // draw apples eaten
+            gc.setFill(Color.web(applesEaten));
+            gc.setFont(Font.font("Impact", 22));
+            gc.fillText("Apples eaten: " + this.getGrid().getApplesEaten(), XMARGIN + width / 2 - 100, YMARGIN + getPixelDimensions()[1] + 22);
 
             if (!this.lost && this.grid.getGameOver()) {
                 this.lost = true;
@@ -172,13 +189,28 @@ public class Board {
         createGrid();
     }
 
+    public boolean getSoundOn() {
+        return this.soundOn;
+    }
+
+    public boolean isDirectional(KeyEvent i) {
+        return i.getCode() == KeyCode.UP || i.getCode() == KeyCode.W
+                || i.getCode() == KeyCode.DOWN || i.getCode() == KeyCode.S
+                || i.getCode() == KeyCode.LEFT || i.getCode() == KeyCode.A
+                || i.getCode() == KeyCode.RIGHT || i.getCode() == KeyCode.D;
+    }
+
     public void keyPressed(KeyEvent e) {
         keyPresses++;
-        if (!this.playing && !this.showMenu) {
+        if (!this.playing && !this.showMenu || isDirectional(e)) {
             this.playing = true;
         }
-        if (this.lost && !this.showMenu) {
-            reset();
+        if (e.getCode() == KeyCode.H) {
+            this.showHighScores = !this.showHighScores;
+            this.showMenu = !this.showMenu;
+        }
+        if (e.getCode() == KeyCode.M) {
+            toggleSound();
         }
         if (keyPresses > 1) {
             if (e.getCode() == KeyCode.UP || e.getCode() == KeyCode.W) {
@@ -193,6 +225,8 @@ public class Board {
             } else if (e.getCode() == KeyCode.RIGHT || e.getCode() == KeyCode.D) {
                 // user pressed right key
                 this.grid.attemptSetDirection(2);
+            } else if (this.lost && !this.showMenu && (e.getCode() == KeyCode.R || e.getCode() == KeyCode.SPACE)) {
+                reset();
             }
         } else {
             if (e.getCode() == KeyCode.UP || e.getCode() == KeyCode.W) {
@@ -211,19 +245,21 @@ public class Board {
         }
     }
 
+    public void toggleSound() {
+        this.soundOn = !this.soundOn;
+        this.grid.setSoundOn(soundOn);
+    }
+
     public void mouseClicked(MouseEvent e) {
         this.mouseClicks++;
 
         double mouseX = e.getX();
         double mouseY = e.getY();
-        mouseY += edgeMargin;
-        mouseX += edgeMargin;
+        // account for border outside of canvas
+        mouseY -= outsideMargin;
+        mouseX -= outsideMargin;
         int mX = (int) mouseX;
         int mY = (int) mouseY;
-
-        if (this.lost && !this.showMenu) {
-            reset();
-        }
 
         boolean leftClick = e.isPrimaryButtonDown();
         if (leftClick) {
@@ -247,7 +283,17 @@ public class Board {
                     // impossible mode chosen
                     this.grid.setDiffLevel(4);
                     this.showMenu = false;
+                } else if (mX >= muteButton[0] && mY >= muteButton[1] && mX <= muteButton[0] + muteButton[2] && mY <= muteButton[1] + muteButton[3]) {
+                    // mute
+                    toggleSound();
+                } else if (mX >= helpButton[0] && mY >= helpButton[0] && mX <= helpButton[0] + helpButton[2] && mY <= helpButton[1] + helpButton[3]) {
+                    // help screen
+                    this.showHelp = true;
+                    this.showMenu = false;
                 }
+            } else if (this.showHelp) {
+                this.showHelp = false;
+                this.showMenu = true;
             }
         } else if (e.isSecondaryButtonDown()) {
             // right click
