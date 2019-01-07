@@ -121,9 +121,9 @@ public class Snake extends Application {
                 frame++;
                 board.setFrame(frame);
                 if (board.getSoundOn()) {
-                    menuMusic.setVolume(0.15);
+                    menuMusic.unmute();
                 } else {
-                    menuMusic.setVolume(0);
+                    menuMusic.mute();
                 }
                 if (board.getShowMenu() && !board.getGrid().getGameOver()) {
                     // If we're supposed to be showing the menu and we're not already, show it

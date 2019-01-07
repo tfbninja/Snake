@@ -22,6 +22,9 @@ public class Sound { // Holds one audio file
     private MediaPlayer mediaPlayer;
     private Media media;
     private Clip clip;
+    private BooleanControl muteControl;
+    private double volumeLevel = 1.0;
+    FloatControl gainControl;
 
     //
     public Sound(String filename) {
@@ -42,6 +45,8 @@ public class Sound { // Holds one audio file
                         // taken from https://stackoverflow.com/questions/30587437
                         clip = AudioSystem.getClip();
                         clip.open(AudioSystem.getAudioInputStream(new File(filename)));
+                        muteControl = (BooleanControl) clip.getControl(BooleanControl.Type.MUTE);
+                        gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
                     } catch (UnsupportedAudioFileException c) {
                         System.out.println("Unsuppported audio file " + filename);
                     }
@@ -56,20 +61,30 @@ public class Sound { // Holds one audio file
 
     public void setVolume(double amt) {
         // number between 0 and 1
+        if (amt != 0) {
+            volumeLevel = amt;
+        }
         this.mediaPlayer.setVolume(amt);
-
-        FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-        float dB = (float) (Math.log(amt) / Math.log(10.0) * 20.0);
-        gainControl.setValue(dB);
+        gainControl.setValue((float) volumeLevel);
     }
 
     public void toggleMute() {
+        muteControl.setValue(!muteControl.getValue());
         this.mediaPlayer.setMute(!this.mediaPlayer.muteProperty().getValue());
-        BooleanControl muteControl = (BooleanControl) clip.getControl(BooleanControl.Type.MUTE);
-        muteControl.setValue(muteControl negate
-    
+    }
 
-    );
+    public void mute() {
+        //gainControl.setValue(0);
+        gainControl.shift(0, 0, 1);
+        this.mediaPlayer.setMute(true);
+        //muteControl.setValue(true);
+    }
+
+    public void unmute() {
+        this.mediaPlayer.setMute(false);
+        gainControl.shift(0, (float) volumeLevel, 1);
+        //gainControl.setValue((float) volumeLevel);
+        //muteControl.setValue(false);
     }
 
     public void loop() {
@@ -80,7 +95,7 @@ public class Sound { // Holds one audio file
 
     public void play() {
         // hey... it works alright? Don't question it
-        mediaPlayer.setAutoPlay(true);
+        //mediaPlayer.setAutoPlay(true);
         mediaPlayer.pause();
         mediaPlayer.stop();
         mediaPlayer.play();
