@@ -196,7 +196,7 @@ public class Snake extends Application {
                                 } else {
                                     x = 153;
                                 }
-                                if (i / 2 + 1 == thisDifficulty && highScore) {
+                                if (i / 2 + 1 == thisDifficulty && highScore && (thisScore > scores.get(thisDifficulty * 2 - 1) || i % 2 == 1 && thisScore > scores.get((i / 2 + 1) * 2 + 1))) {
                                     overlayImage("art\\loseScreen.png", "art\\loseScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 22), 255, 0, 0);
                                 } else {
                                     overlayImage("art\\loseScreen.png", "art\\loseScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 22), 177, 96, 15);
