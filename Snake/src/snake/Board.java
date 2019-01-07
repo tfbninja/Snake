@@ -1,5 +1,7 @@
 package snake;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
@@ -53,7 +55,7 @@ public class Board {
     private int[] medButton = {219, 292, 194, 51};
     private int[] hardButton = {12, 353, 194, 51};
     private int[] impButton = {219, 353, 194, 51};
-    private int[] muteButton = {92, 12, 29, 29};
+    private int[] muteButton = {99, 14, 29, 29};
     private int[] helpButton = {12, 12, 64, 34};
 
     // settings variables
@@ -194,6 +196,7 @@ public class Board {
     }
 
     public boolean isDirectional(KeyEvent i) {
+        //System.out.println(i.getCode());
         return i.getCode() == KeyCode.UP || i.getCode() == KeyCode.W
                 || i.getCode() == KeyCode.DOWN || i.getCode() == KeyCode.S
                 || i.getCode() == KeyCode.LEFT || i.getCode() == KeyCode.A
@@ -201,18 +204,20 @@ public class Board {
     }
 
     public void keyPressed(KeyEvent e) {
-        keyPresses++;
-        if (!this.playing && !this.showMenu || isDirectional(e)) {
+        if (isDirectional(e) && !this.showMenu && !this.showHelp) {
+            keyPresses++;
+        }
+        if (!this.playing && !this.showMenu && isDirectional(e) && !this.showHelp && !this.showHighScores) {
             this.playing = true;
         }
-        if (e.getCode() == KeyCode.H) {
+        if (e.getCode() == KeyCode.H && (this.showMenu || this.showHighScores)) {
             this.showHighScores = !this.showHighScores;
             this.showMenu = !this.showMenu;
         }
         if (e.getCode() == KeyCode.M) {
             toggleSound();
         }
-        if (keyPresses > 1) {
+        if (this.playing && keyPresses > 1) {
             if (e.getCode() == KeyCode.UP || e.getCode() == KeyCode.W) {
                 // user pressed up key
                 this.grid.attemptSetDirection(1);
@@ -228,7 +233,7 @@ public class Board {
             } else if (this.lost && !this.showMenu && (e.getCode() == KeyCode.R || e.getCode() == KeyCode.SPACE)) {
                 reset();
             }
-        } else {
+        } else if (this.playing) {
             if (e.getCode() == KeyCode.UP || e.getCode() == KeyCode.W) {
                 // user pressed up key
                 this.grid.setDirection(1);
@@ -290,6 +295,9 @@ public class Board {
                     // help screen
                     this.showHelp = true;
                     this.showMenu = false;
+                    StringSelection tmpSel = new StringSelection("github.com/tfbninja/snake");
+                    Clipboard tmpClp = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    tmpClp.setContents(tmpSel, null);
                 }
             } else if (this.showHelp) {
                 this.showHelp = false;

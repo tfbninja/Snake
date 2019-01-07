@@ -25,7 +25,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javax.imageio.ImageIO;
@@ -42,8 +41,6 @@ public class Snake extends Application {
     private int canvasH = 430;
     private int WIDTH = 430 + canvasMargin * 2;
     private int HEIGHT = 430 + canvasMargin * 2;
-
-    private Color bigoof = Color.web("B1600F");
 
     private int frame = 0;
 
@@ -81,10 +78,11 @@ public class Snake extends Application {
 
         // set up help screen
         ImageView HELP_IV = getImageView("art\\help.jpg");
-
-        for (int i : scores) {
-            System.out.println(i);
-        }
+        /*
+         * for (int i : scores) {
+         * System.out.println(i);
+         * }
+         */
 
         // Create Board of block objects
         board = new Board(canvasW, canvasH);
