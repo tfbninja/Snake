@@ -93,7 +93,7 @@ public class Snake extends Application {
 
         // background music
         menuMusic.setVolume(0.15);
-        menuMusic.playMP3();
+        menuMusic.loop();
 
         // set up menu screen with sound on
         ImageView MON_IV = getImageView("menuOn.jpg");
@@ -184,14 +184,10 @@ public class Snake extends Application {
                             // re-grab scores
                             getScores();
                             // copy the master image
-                            // instead of deleting just paint white over
-                            java.io.File oldLoseScreen = new java.io.File("art\\loseScreen.png");
-                            System.out.println(oldLoseScreen.delete());
-                            System.out.println("copied file: " + copyFile("art\\loseScreenMaster.png", "art\\loseScreen.png"));
+                            overlayImage("art\\loseScreen.png", "art\\loseScreen.png", "art\\loseScreenMaster.png", 0, 0);
                             int y = 320;
-                            int x = 0;
+                            int x;
                             for (int i = 0; i < scores.size(); i++) {
-
                                 if (i % 2 == 0) {
                                     if (i > 1) {
                                         y += 27;
@@ -200,9 +196,7 @@ public class Snake extends Application {
                                 } else {
                                     x = 153;
                                 }
-                                // impact font, size 22
-                                // draw scores.get(i) at x, y
-                                if (i + 1 == thisDifficulty && highScore) {
+                                if (i / 2 + 1 == thisDifficulty && highScore) {
                                     overlayImage("art\\loseScreen.png", "art\\loseScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 22), 255, 0, 0);
                                 } else {
                                     overlayImage("art\\loseScreen.png", "art\\loseScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 22), 177, 96, 15);

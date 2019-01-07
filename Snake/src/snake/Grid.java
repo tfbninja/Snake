@@ -415,7 +415,7 @@ public class Grid {
                     playWarpSound = true;
                 }
                 if (playWarpSound && soundOn) {
-                    warp.playMP3();
+                    warp.play();
                 }
             } else {
                 // extreme mode, warp x with y
@@ -451,7 +451,7 @@ public class Grid {
                         playWarpSound2 = true;
                     }
                     if (playWarpSound2 && soundOn) {
-                        warp.playMP3();
+                        warp.play();
                     }
                 }
             }
@@ -460,25 +460,25 @@ public class Grid {
             if (nextX < 0) {
                 this.gameOver = true;
                 if (soundOn) {
-                    loseSound.playMP3();
+                    loseSound.play();
                 }
             }
             if (nextX >= this.width) {
                 this.gameOver = true;
                 if (soundOn) {
-                    loseSound.playMP3();
+                    loseSound.play();
                 }
             }
             if (nextY < 0) {
                 this.gameOver = true;
                 if (soundOn) {
-                    loseSound.playMP3();
+                    loseSound.play();
                 }
             }
             if (nextY >= this.length) {
                 this.gameOver = true;
                 if (soundOn) {
-                    loseSound.playMP3();
+                    loseSound.play();
                 }
             }
         }
@@ -487,19 +487,19 @@ public class Grid {
             // collision with wall or rock
             this.gameOver = true;
             if (soundOn) {
-                loseSound.playMP3();
+                loseSound.play();
             }
         } else if (!this.gameOver && isSnake(nextX, nextY)) {
             // collision with self
             this.gameOver = true;
             if (soundOn) {
-                loseSound.playMP3();
+                loseSound.play();
             }
         } else if (!this.gameOver && this.isApple(nextX, nextY)) {
             // ate an apple
             this.applesEaten++;
             if (soundOn) {
-                bite.playMP3();
+                bite.play();
             }
             grow();
             this.pos.add(0, new Pair<Integer, Integer>(nextX, nextY)); // add segment in front
