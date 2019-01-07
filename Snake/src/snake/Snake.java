@@ -184,10 +184,14 @@ public class Snake extends Application {
                             // re-grab scores
                             getScores();
                             // copy the master image
-                            copyFile("art\\loseScreenMaster.png", "art\\loseScreen.png");
+                            // instead of deleting just paint white over
+                            java.io.File oldLoseScreen = new java.io.File("art\\loseScreen.png");
+                            System.out.println(oldLoseScreen.delete());
+                            System.out.println("copied file: " + copyFile("art\\loseScreenMaster.png", "art\\loseScreen.png"));
                             int y = 320;
                             int x = 0;
                             for (int i = 0; i < scores.size(); i++) {
+
                                 if (i % 2 == 0) {
                                     if (i > 1) {
                                         y += 27;
@@ -198,8 +202,13 @@ public class Snake extends Application {
                                 }
                                 // impact font, size 22
                                 // draw scores.get(i) at x, y
-                                overlayImage("art\\loseScreen.png", "art\\loseScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 22), 177, 96, 15);
+                                if (i + 1 == thisDifficulty && highScore) {
+                                    overlayImage("art\\loseScreen.png", "art\\loseScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 22), 255, 0, 0);
+                                } else {
+                                    overlayImage("art\\loseScreen.png", "art\\loseScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 22), 177, 96, 15);
+                                }
                             }
+
                             if (highScore) {
                                 overlayImage("art\\loseScreen.png", "art\\loseScreen.png", "NEW HIGHSCORE", 105, 34, new Font("Impact", 34), 255, 0, 0);
                             }
@@ -253,6 +262,8 @@ public class Snake extends Application {
         // re-grab scores
         getScores();
         // copy the master image
+        java.io.File oldLoseScreen = new java.io.File("art\\loseScreen.png");
+        System.out.println(oldLoseScreen.delete());
         copyFile("art\\loseScreenMaster.png", "art\\loseScreen.png");
         int y = 320;
         int x = 0;
@@ -280,6 +291,13 @@ public class Snake extends Application {
             File dest = new File(destName);
             Files.copy(src.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
+            try {
+                File src = new File(srcName);
+                File dest = new File(destName);
+                Files.copy(src.toPath(), dest.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
+            } catch (IOException b) {
+                return false;
+            }
             return false;
         }
         return true;
