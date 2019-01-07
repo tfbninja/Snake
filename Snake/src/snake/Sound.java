@@ -74,17 +74,15 @@ public class Sound { // Holds one audio file
     }
 
     public void mute() {
-        //gainControl.setValue(0);
-        gainControl.shift(0, 0, 1);
         this.mediaPlayer.setMute(true);
-        //muteControl.setValue(true);
+        //gainControl.setValue(0);
+        muteControl.setValue(true);
     }
 
     public void unmute() {
         this.mediaPlayer.setMute(false);
-        gainControl.shift(0, (float) volumeLevel, 1);
         //gainControl.setValue((float) volumeLevel);
-        //muteControl.setValue(false);
+        muteControl.setValue(false);
     }
 
     public void loop() {
