@@ -66,9 +66,9 @@ public class Grid {
         for (int i = 0; i < this.length; i++) {
             Arrays.fill(this.savedPlayArea[i], 0);
         }
-        this.warp = new Sound("warp.mp3");
-        this.loseSound = new Sound("lose.mp3");
-        this.bite = new Sound("bite2.mp3");
+        this.warp = new Sound("resources/sounds/warp.mp3");
+        this.loseSound = new Sound("resources/sounds/lose.mp3");
+        this.bite = new Sound("resources/sounds/bite2.mp3");
     }
 
     public Grid(int width, int length, int startX, int startY) {
@@ -82,9 +82,9 @@ public class Grid {
         }
         this.pos.add(new Pair<>(startX, startY)); // add head to list
         setCell(startX, startY, 1); // init head
-        this.warp = new Sound("warp.mp3");
-        this.loseSound = new Sound("lose.mp3");
-        this.bite = new Sound("bite2.mp3");
+        this.warp = new Sound("resources/sounds/warp.mp3");
+        this.loseSound = new Sound("resources/sounds/lose.mp3");
+        this.bite = new Sound("resources/sounds/bite2.mp3");
     }
 
     public void setSoundOn(boolean sound) {

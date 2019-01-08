@@ -50,13 +50,7 @@ public class Snake extends Application {
     private int bW = 50; // button Width
     private int bH = 25; // button Height
 
-    private Sound menuMusic = new Sound("menuMusic.wav");
-
-    private FileInputStream menuOnStream;
-    private FileInputStream menuOffStream;
-    private FileInputStream helpStream;
-    private static FileInputStream loseScreenStream;
-
+    private Sound menuMusic = new Sound("resources/sounds/menuMusic.wav");
     private static ArrayList<Integer> scores = new ArrayList<>();
 
     private boolean scoresOverwritten = false;
@@ -69,7 +63,7 @@ public class Snake extends Application {
             if (scores.get(i) == -1) { // if bad encode
                 scores.set(i, 0); // set score to 0
                 //System.out.println("Re-writing local high score " + (i / 2 + 1) + " to 0.");
-                writeEncodedScore("scores\\local\\localHighScore" + (i / 2 + 1) + ".dat", 0); // write 0 to file
+                writeEncodedScore("resources\\scores\\local\\localHighScore" + (i / 2 + 1) + ".dat", 0); // write 0 to file
             }
         }
 
@@ -77,7 +71,7 @@ public class Snake extends Application {
         ImageView HS_IV = createHighScoreScreen();
 
         // set up help screen
-        ImageView HELP_IV = getImageView("art\\help.jpg");
+        ImageView HELP_IV = getImageView("resources\\art\\help.jpg");
         /*
          * for (int i : scores) {
          * System.out.println(i);
@@ -96,10 +90,10 @@ public class Snake extends Application {
         menuMusic.loop();
 
         // set up menu screen with sound on
-        ImageView MON_IV = getImageView("menuOn.jpg");
+        ImageView MON_IV = getImageView("resources\\art\\menuOn.jpg");
 
         // set up menu screen with sound off
-        ImageView MOFF_IV = getImageView("menuOff.jpg");
+        ImageView MOFF_IV = getImageView("resources\\art\\menuOff.jpg");
 
         // arrange objects in window
         BorderPane root = new BorderPane(); // better arrangement style
@@ -165,26 +159,27 @@ public class Snake extends Application {
                             int thisDifficulty = board.getGrid().getDiffLevel();
                             int thisScore = board.getGrid().getApplesEaten();
                             boolean highScore = thisScore > scores.get((thisDifficulty - 1) * 2) || thisScore > scores.get((thisDifficulty - 1) * 2 + 1);
+                            int[] oldScores = toList(scores);
 
                             if (highScore) {
                                 //  (if score is higher than local or world)
 
                                 // write scores to files
-                                writeEncodedScore("scores\\local\\localHighScore" + thisDifficulty + ".dat", thisScore);
+                                writeEncodedScore("resources\\scores\\local\\localHighScore" + thisDifficulty + ".dat", thisScore);
 
                                 if (thisScore > scores.get((thisDifficulty - 1) * 2 + 1)) {
-                                    if (checkFileExists("scores\\world\\worldHighScore" + thisDifficulty + ".dat")) {
-                                        writeEncodedScore("scores\\world\\worldHighScore" + thisDifficulty + ".dat", thisScore);
+                                    if (checkFileExists("resources\\scores\\world\\worldHighScore" + thisDifficulty + ".dat")) {
+                                        writeEncodedScore("resources\\scores\\world\\worldHighScore" + thisDifficulty + ".dat", thisScore);
                                     } else {
                                         // if there's no world file, it ain't legit
-                                        System.out.println("maybe keep the world high score file around buddy...");
+                                        //System.out.println("maybe keep the world high score file around buddy...");
                                     }
                                 }
                             }
                             // re-grab scores
                             getScores();
                             // copy the master image
-                            overlayImage("art\\loseScreen.png", "art\\loseScreen.png", "art\\loseScreenMaster.png", 0, 0);
+                            overlayImage("resources\\art\\loseScreenMaster.png", "resources\\art\\loseScreen.png", String.valueOf(thisScore), 248, 194, new Font("Impact", 26), 177, 96, 15);
                             int y = 320;
                             int x;
                             for (int i = 0; i < scores.size(); i++) {
@@ -196,18 +191,18 @@ public class Snake extends Application {
                                 } else {
                                     x = 153;
                                 }
-                                if (i / 2 + 1 == thisDifficulty && highScore && (thisScore > scores.get(thisDifficulty * 2 - 1) || i % 2 == 1 && thisScore > scores.get((i / 2 + 1) * 2 + 1))) {
-                                    overlayImage("art\\loseScreen.png", "art\\loseScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 22), 255, 0, 0);
+                                if (i / 2 + 1 == thisDifficulty && highScore && thisScore > oldScores[i]) {
+                                    overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 22), 255, 0, 0);
                                 } else {
-                                    overlayImage("art\\loseScreen.png", "art\\loseScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 22), 177, 96, 15);
+                                    overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 22), 177, 96, 15);
                                 }
                             }
 
                             if (highScore) {
-                                overlayImage("art\\loseScreen.png", "art\\loseScreen.png", "NEW HIGHSCORE", 105, 34, new Font("Impact", 34), 255, 0, 0);
+                                overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", "NEW HIGHSCORE", 105, 34, new Font("Impact", 34), 255, 0, 0);
                             }
                             scoresOverwritten = true;
-                            ImageView LOSE_IV = getImageView("art\\loseScreen.png");
+                            ImageView LOSE_IV = getImageView("resources\\art\\loseScreen.png");
                             root.setTop(LOSE_IV);
                         }
                     }
@@ -237,6 +232,16 @@ public class Snake extends Application {
         launch(args);
     }
 
+    public static int[] toList(ArrayList<Integer> obj) {
+        int[] list = new int[obj.size()];
+        int index = 0;
+        for (Integer i : obj) {
+            list[index] = i;
+            index++;
+        }
+        return list;
+    }
+
     public static ImageView getImageView(String filename) {
         try {
             FileInputStream tempStream = new FileInputStream(filename);
@@ -256,9 +261,7 @@ public class Snake extends Application {
         // re-grab scores
         getScores();
         // copy the master image
-        java.io.File oldLoseScreen = new java.io.File("art\\loseScreen.png");
-        System.out.println(oldLoseScreen.delete());
-        copyFile("art\\loseScreenMaster.png", "art\\loseScreen.png");
+        copyFile("resources\\art\\loseScreenMaster.png", "resources\\art\\loseScreen.png");
         int y = 320;
         int x = 0;
         for (int i = 0; i < scores.size(); i++) {
@@ -272,7 +275,7 @@ public class Snake extends Application {
             }
             // impact font, size 22
             // draw scores.get(i) at x, y
-            overlayImage("art\\loseScreen.png", "art\\loseScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 22), 177, 96, 15);
+            overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 22), 177, 96, 15);
         }
         // set up lose screen
         ImageView iv = getImageView("art\\loseScreen.png");
@@ -299,14 +302,14 @@ public class Snake extends Application {
 
     public static void getScores() {
         scores = new ArrayList<>();
-        scores.add(readDecodedFile("scores\\local\\localHighScore1.dat"));
-        scores.add(readDecodedFile("scores\\world\\worldHighScore1.dat"));
-        scores.add(readDecodedFile("scores\\local\\localHighScore2.dat"));
-        scores.add(readDecodedFile("scores\\world\\worldHighScore2.dat"));
-        scores.add(readDecodedFile("scores\\local\\localHighScore3.dat"));
-        scores.add(readDecodedFile("scores\\world\\worldHighScore3.dat"));
-        scores.add(readDecodedFile("scores\\local\\localHighScore4.dat"));
-        scores.add(readDecodedFile("scores\\world\\worldhighScore4.dat"));
+        scores.add(readDecodedFile("resources\\scores\\local\\localHighScore1.dat"));
+        scores.add(readDecodedFile("resources\\scores\\world\\worldHighScore1.dat"));
+        scores.add(readDecodedFile("resources\\scores\\local\\localHighScore2.dat"));
+        scores.add(readDecodedFile("resources\\scores\\world\\worldHighScore2.dat"));
+        scores.add(readDecodedFile("resources\\scores\\local\\localHighScore3.dat"));
+        scores.add(readDecodedFile("resources\\scores\\world\\worldHighScore3.dat"));
+        scores.add(readDecodedFile("resources\\scores\\local\\localHighScore4.dat"));
+        scores.add(readDecodedFile("resources\\scores\\world\\worldhighScore4.dat"));
     }
 
     public static int readDecodedFile(String fileName) {

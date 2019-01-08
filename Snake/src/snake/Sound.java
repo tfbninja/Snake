@@ -1,16 +1,16 @@
 package snake;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import java.io.IOException;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.UnsupportedAudioFileException;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.BooleanControl;
+import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
-import java.io.File;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 /**
  *
