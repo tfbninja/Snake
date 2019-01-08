@@ -52,6 +52,7 @@ public class Snake extends Application {
 
     private Sound menuMusic = new Sound("resources/sounds/menuMusic.wav");
     private static ArrayList<Integer> scores = new ArrayList<>();
+    private ImageView HS_IV;
 
     private boolean scoresOverwritten = false;
 
@@ -68,7 +69,7 @@ public class Snake extends Application {
         }
 
         // set up high score screen
-        ImageView HS_IV = createHighScoreScreen();
+        HS_IV = createHighScoreScreen();
 
         // set up help screen
         ImageView HELP_IV = getImageView("resources\\art\\help.jpg");
@@ -152,8 +153,8 @@ public class Snake extends Application {
                             }
                         }
                     } else {
-                        //System.out.println("game over");
                         // game over
+                        HS_IV = createHighScoreScreen(); // re-cache high score screen
                         board.drawBlocks();
                         if (!scoresOverwritten) {
                             int thisDifficulty = board.getGrid().getDiffLevel();
@@ -261,24 +262,22 @@ public class Snake extends Application {
         // re-grab scores
         getScores();
         // copy the master image
-        copyFile("resources\\art\\loseScreenMaster.png", "resources\\art\\loseScreen.png");
-        int y = 320;
+        copyFile("resources\\art\\HighScoreScreenMaster.png", "resources\\art\\HighScoreScreen.png");
+        int y = 236;
         int x = 0;
         for (int i = 0; i < scores.size(); i++) {
             if (i % 2 == 0) {
                 if (i > 1) {
-                    y += 27;
+                    y += 35;
                 }
-                x = 264;
+                x = 320;
             } else {
-                x = 153;
+                x = 193;
             }
-            // impact font, size 22
-            // draw scores.get(i) at x, y
-            overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 22), 177, 96, 15);
+            overlayImage("resources\\art\\HighScoreScreen.png", "resources\\art\\HighScoreScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 28), 177, 96, 15);
         }
         // set up lose screen
-        ImageView iv = getImageView("art\\loseScreen.png");
+        ImageView iv = getImageView("resources\\art\\HighScoreScreen.png");
         return iv;
     }
 
