@@ -73,11 +73,6 @@ public class Snake extends Application {
 
         // set up help screen
         ImageView HELP_IV = getImageView("resources\\art\\help.jpg");
-        /*
-         * for (int i : scores) {
-         * System.out.println(i);
-         * }
-         */
 
         // Create Board of block objects
         board = new Board(canvasW, canvasH);
