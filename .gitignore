@@ -12,3 +12,6 @@ Snake/dist/resources/scores/local/localHighScore2.dat
 Snake/dist/resources/scores/local/localHighScore2.dat
 Snake/dist/resources/scores/local/localHighScore3.dat
 Snake/dist/resources/scores/local/localHighScore4.dat
+Snake/dist/resources/scores/local/localHighScore3.dat
+*.local
+*.dat

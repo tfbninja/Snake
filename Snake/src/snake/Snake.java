@@ -64,7 +64,7 @@ public class Snake extends Application {
             if (scores.get(i) == -1) { // if bad encode
                 scores.set(i, 0); // set score to 0
                 //System.out.println("Re-writing local high score " + (i / 2 + 1) + " to 0.");
-                writeEncodedScore("resources\\scores\\local\\localHighScore" + (i / 2 + 1) + ".dat", 0); // write 0 to file
+                writeEncodedScore("resources\\scores\\local\\localHighScore" + (i / 2 + 1) + ".local", 0); // write 0 to file
             }
         }
 
@@ -166,11 +166,11 @@ public class Snake extends Application {
                                 //  (if score is higher than local or world)
 
                                 // write scores to files
-                                writeEncodedScore("resources\\scores\\local\\localHighScore" + thisDifficulty + ".dat", thisScore);
+                                writeEncodedScore("resources\\scores\\local\\localHighScore" + thisDifficulty + ".local", thisScore);
 
                                 if (thisScore > scores.get((thisDifficulty - 1) * 2 + 1)) {
-                                    if (checkFileExists("resources\\scores\\world\\worldHighScore" + thisDifficulty + ".dat")) {
-                                        writeEncodedScore("resources\\scores\\world\\worldHighScore" + thisDifficulty + ".dat", thisScore);
+                                    if (checkFileExists("resources\\scores\\world\\worldHighScore" + thisDifficulty + ".world")) {
+                                        writeEncodedScore("resources\\scores\\world\\worldHighScore" + thisDifficulty + ".world", thisScore);
                                     } else {
                                         // if there's no world file, it ain't legit
                                         //System.out.println("maybe keep the world high score file around buddy...");
@@ -301,14 +301,14 @@ public class Snake extends Application {
 
     public static void getScores() {
         scores = new ArrayList<>();
-        scores.add(readDecodedFile("resources\\scores\\local\\localHighScore1.dat"));
-        scores.add(readDecodedFile("resources\\scores\\world\\worldHighScore1.dat"));
-        scores.add(readDecodedFile("resources\\scores\\local\\localHighScore2.dat"));
-        scores.add(readDecodedFile("resources\\scores\\world\\worldHighScore2.dat"));
-        scores.add(readDecodedFile("resources\\scores\\local\\localHighScore3.dat"));
-        scores.add(readDecodedFile("resources\\scores\\world\\worldHighScore3.dat"));
-        scores.add(readDecodedFile("resources\\scores\\local\\localHighScore4.dat"));
-        scores.add(readDecodedFile("resources\\scores\\world\\worldhighScore4.dat"));
+        scores.add(readDecodedFile("resources\\scores\\local\\localHighScore1.local"));
+        scores.add(readDecodedFile("resources\\scores\\world\\worldHighScore1.world"));
+        scores.add(readDecodedFile("resources\\scores\\local\\localHighScore2.local"));
+        scores.add(readDecodedFile("resources\\scores\\world\\worldHighScore2.world"));
+        scores.add(readDecodedFile("resources\\scores\\local\\localHighScore3.local"));
+        scores.add(readDecodedFile("resources\\scores\\world\\worldHighScore3.world"));
+        scores.add(readDecodedFile("resources\\scores\\local\\localHighScore4.local"));
+        scores.add(readDecodedFile("resources\\scores\\world\\worldhighScore4.world"));
     }
 
     public static int readDecodedFile(String fileName) {
