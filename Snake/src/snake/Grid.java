@@ -9,7 +9,7 @@ import javafx.util.Pair;
  *
  * @author Tim Barber
  */
-public class Grid {
+public class Grid /*implements squares*/ {
 
     /*
      * 0 - Blank
@@ -21,7 +21,6 @@ public class Grid {
     private int width;
     private int length;
     private int[][] playArea;
-    private int[][] lastPlayArea;
     private static int[][] savedPlayArea;
 
     private boolean edgeKills = false;
@@ -61,7 +60,6 @@ public class Grid {
         this.width = 10;
         this.length = 10;
         this.playArea = new int[this.length][this.width];
-        this.lastPlayArea = this.playArea;
         this.savedPlayArea = new int[this.length][this.width];
         for (int i = 0; i < this.length; i++) {
             Arrays.fill(this.savedPlayArea[i], 0);
@@ -76,7 +74,6 @@ public class Grid {
         this.width = width;
         this.length = length;
         this.playArea = new int[this.length][this.width];
-        this.lastPlayArea = this.playArea;
         this.savedPlayArea = new int[this.length][this.width];
         for (int i = 0; i < this.length; i++) {
             Arrays.fill(this.savedPlayArea[i], 0);
@@ -529,10 +526,9 @@ public class Grid {
         }
     }
 
-    public int[][] getPlayArea() {
+    /*public int[][] getPlayArea() {
         return this.playArea;
-    }
-
+    }*/
     public int[][] getSavedPlayArea() {
         return this.savedPlayArea;
     }
@@ -541,18 +537,11 @@ public class Grid {
         this.savedPlayArea = this.playArea;
     }
 
-    public void revertToSaved() {
-        this.lastPlayArea = this.playArea;
-        this.playArea = this.savedPlayArea;
-    }
-
     public void clear() {
-        this.lastPlayArea = this.playArea;
         this.playArea = new int[this.length][this.width];
     }
 
     public void setCells(int xPosition, int yPosition, int[][] cells) {
-        this.lastPlayArea = this.playArea;
         int[][] newArea = this.playArea;
         for (int y = yPosition; y < yPosition + cells.length; y++) {
             for (int x = xPosition; x < xPosition + cells[0].length; x++) {
@@ -564,12 +553,10 @@ public class Grid {
     }
 
     public void setCell(int x, int y, int value) {
-        this.lastPlayArea = this.playArea;
         this.playArea[y][x] = value;
     }
 
     public void setCell(Pair<Integer, Integer> pos, int value) {
-        this.lastPlayArea = this.playArea;
         this.playArea[pos.getValue()][pos.getKey()] = value;
     }
 

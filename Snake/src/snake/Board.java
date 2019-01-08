@@ -39,7 +39,6 @@ public class Board {
 
     private boolean lost = false;
 
-    private int frame = 0;
     private int keyPresses = 0;
 
     private boolean playing = false;
@@ -99,10 +98,6 @@ public class Board {
 
     public void setGrid(Grid newGrid) {
         this.grid = newGrid;
-    }
-
-    public void setFrame(int amt) {
-        this.frame = amt;
     }
 
     public int[] getPixelDimensions() {
@@ -187,7 +182,6 @@ public class Board {
         this.lost = false;
         this.showMenu = true;
         this.playing = false;
-        this.grid.revertToSaved();
         createGrid();
     }
 

@@ -109,7 +109,6 @@ public class Snake extends Application {
             @Override
             public void handle(long now) {
                 frame++;
-                board.setFrame(frame);
                 if (board.getSoundOn()) {
                     menuMusic.unmute();
                 } else {
