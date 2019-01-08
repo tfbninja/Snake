@@ -1,17 +1,3 @@
 /Snake/nbproject/private/
-/Snake/snake/src/snake/EnigmaTester.java
-Snake/src/snake/scores/local/localHighScore1.dat
 
-Snake/src/snake/scores/local/localHighScore2.dat
-
-Snake/src/snake/scores/local/localHighScore3.dat
-
-Snake/src/snake/scores/local/localHighScore4.dat
-Snake/dist/resources/scores/local/localHighScore2.dat
-Snake/dist/resources/scores/local/localHighScore2.dat
-Snake/dist/resources/scores/local/localHighScore2.dat
-Snake/dist/resources/scores/local/localHighScore3.dat
-Snake/dist/resources/scores/local/localHighScore4.dat
-Snake/dist/resources/scores/local/localHighScore3.dat
 *.local
-*.dat
