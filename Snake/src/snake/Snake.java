@@ -149,7 +149,6 @@ public class Snake extends Application {
                         }
                     } else {
                         // game over
-                        HS_IV = createHighScoreScreen(); // re-cache high score screen
                         board.drawBlocks();
                         if (!scoresOverwritten) {
                             int thisDifficulty = board.getGrid().getDiffLevel();
@@ -200,6 +199,7 @@ public class Snake extends Application {
                             scoresOverwritten = true;
                             ImageView LOSE_IV = getImageView("resources\\art\\loseScreen.png");
                             root.setTop(LOSE_IV);
+                            HS_IV = createHighScoreScreen(); // re-cache high score screen
                         }
                     }
                 }
@@ -257,7 +257,7 @@ public class Snake extends Application {
         // re-grab scores
         getScores();
         // copy the master image
-        copyFile("resources\\art\\HighScoreScreenMaster.png", "resources\\art\\HighScoreScreen.png");
+        overlayImage("resources\\art\\HighScoreScreen.png", "resources\\art\\HighScoreScreen.png", "resources\\art\\HighScoreScreenMaster.png", 0, 0);
         int y = 236;
         int x = 0;
         for (int i = 0; i < scores.size(); i++) {
