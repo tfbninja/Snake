@@ -18,6 +18,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  */
 public class Sound { // Holds one audio file
 
+    private String filename;
     private URL resource;
     private MediaPlayer mediaPlayer;
     private Media media;
@@ -28,6 +29,7 @@ public class Sound { // Holds one audio file
 
     //
     public Sound(String filename) {
+        this.filename = filename;
         // this block of code can deal with at least .mp3 and .wav, possibly more
         // however I can't figure out how to make a mediaPlayer loop
         // taken from http://www.java2s.com/Code/Java/JavaFX/Playmp3file.htm
@@ -60,12 +62,15 @@ public class Sound { // Holds one audio file
     }
 
     public void setVolume(double amt) {
-        // number between 0 and 1
-        if (amt != 0) {
-            volumeLevel = amt;
+        if (filename.contains(".mp3")) {
+            // number between 0 and 1
+            if (amt != 0) {
+                volumeLevel = amt;
+            }
+            this.mediaPlayer.setVolume(amt);
+        } else {
+            gainControl.setValue((float) volumeLevel);
         }
-        this.mediaPlayer.setVolume(amt);
-        gainControl.setValue((float) volumeLevel);
     }
 
     public void toggleMute() {
@@ -93,10 +98,13 @@ public class Sound { // Holds one audio file
 
     public void play() {
         // hey... it works alright? Don't question it
-        //mediaPlayer.setAutoPlay(true);
         mediaPlayer.pause();
         mediaPlayer.stop();
         mediaPlayer.play();
+        if (filename.contains(".wav")) {
+            clip.setMicrosecondPosition(0);
+            clip.start();
+        }
     }
 
     public void stop() {
