@@ -66,6 +66,17 @@ public class Board {
         canvas = new Canvas(width, height);
         createGrid();
         grid.clearApples();
+        setDarkMode();
+    }
+
+    public void setDarkMode() {
+        blank = "444444";
+        apple = "E51B39";
+        body = "2377DD";
+        head = "AF6C00";
+        bg = "212121";
+        rock = "1e1e1e";
+        applesEaten = "EDDDD4";
     }
 
     public void setOutsideMargin(int amt) {
