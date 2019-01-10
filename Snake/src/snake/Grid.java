@@ -9,7 +9,9 @@ import javafx.util.Pair;
  *
  * @author Tim Barber
  */
-public class Grid /*implements squares*/ {
+public class Grid /*
+ * implements squares
+ */ {
 
     /*
      * 0 - Blank
@@ -24,8 +26,6 @@ public class Grid /*implements squares*/ {
     private static int[][] savedPlayArea;
 
     private boolean edgeKills = false;
-
-    private boolean soundOn = true;
 
     private Random random = new Random();
 
@@ -43,6 +43,7 @@ public class Grid /*implements squares*/ {
     private int applesEaten = 0;
 
     // sounds
+    private boolean soundOn = true;
     private Sound warp;
     private Sound loseSound;
     private Sound bite;
@@ -526,9 +527,11 @@ public class Grid /*implements squares*/ {
         }
     }
 
-    /*public int[][] getPlayArea() {
-        return this.playArea;
-    }*/
+    /*
+     * public int[][] getPlayArea() {
+     * return this.playArea;
+     * }
+     */
     public int[][] getSavedPlayArea() {
         return this.savedPlayArea;
     }

@@ -194,6 +194,7 @@ public class Board {
         this.showMenu = true;
         this.playing = false;
         createGrid();
+        this.grid.setSoundOn(this.soundOn);
     }
 
     public boolean getSoundOn() {
