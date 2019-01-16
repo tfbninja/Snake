@@ -210,6 +210,25 @@ public class Board {
     }
 
     public void keyPressed(KeyEvent e) {
+        if (this.showMenu) {
+            if (e.getCode() == KeyCode.DIGIT1) {
+                // easy mode chosen
+                this.grid.setDiffLevel(1);
+                this.showMenu = false;
+            } else if (e.getCode() == KeyCode.DIGIT2) {
+                // medium mode chosen
+                this.grid.setDiffLevel(2);
+                this.showMenu = false;
+            } else if (e.getCode() == KeyCode.DIGIT3) {
+                // hard mode chosen
+                this.grid.setDiffLevel(3);
+                this.showMenu = false;
+            } else if (e.getCode() == KeyCode.DIGIT4) {
+                // impossible mode chosen
+                this.grid.setDiffLevel(4);
+                this.showMenu = false;
+            }
+        }
         if (isDirectional(e) && !this.showMenu && !this.showHelp) {
             keyPresses++;
         }
