@@ -44,6 +44,8 @@ public class Snake extends Application {
 
     private int frame = 0;
 
+    private boolean AI = false;
+
     private static Board board;
 
     //button constants
@@ -136,7 +138,9 @@ public class Snake extends Application {
                     }
 
                     if (!board.getGrid().getGameOver()) {
-                        //AI();
+                        if (AI) {
+                            AI();
+                        }
                         board.drawBlocks();
                         scoresOverwritten = false;
                         if (frame % board.getGrid().getFrameSpeed() == 0) {
@@ -325,17 +329,34 @@ public class Snake extends Application {
         return decodedScore;
     }
 
+    public int distanceToPoint(int targetXPos, int targetYPos, int selfX, int selfY) {
+        // Manhattan/Taxicab distance
+        return Math.abs(selfX - targetXPos) + Math.abs(selfY - targetYPos);
+    }
+
     public static void AI() {
         if (board.getPlaying()) {
+            int x = board.getGrid().getHeadX(), y = board.getGrid().getHeadY();
             int[] nextPos = board.getGrid().nextPos();
-            if (board.getGrid().isApple(nextPos[0], nextPos[1])) {
-                // about to eat an apple
+            int[] applePos = board.getGrid().getApplePos();
+            if (Math.abs(applePos[0] - x) > 0) {
+                if (applePos[0] < x) {
+                    board.getGrid().attemptSetDirection(4);
+                } else {
+                    board.getGrid().attemptSetDirection(2);
+                }
+            } else {
+                if (applePos[1] < y) {
+                    board.getGrid().attemptSetDirection(1);
+                } else {
+                    board.getGrid().attemptSetDirection(3);
+                }
             }
-            while (board.getGrid().isBody(nextPos[0], nextPos[1]) || board.getGrid().isRock(nextPos[0], nextPos[1])) {
-                board.getGrid().attemptSetDirection((board.getGrid().getDirection() - 1) % 4 + 1);
-            }
-            while (board.getGrid().getEdgeKills() && (nextPos[0] >= board.getGrid().getWidth() || nextPos[0] < 0 || nextPos[1] >= board.getGrid().getLength() || nextPos[1] < 0)) {
-                board.getGrid().attemptSetDirection((board.getGrid().getDirection() - 1) % 4 + 1);
+            int nextSquare = board.getGrid().safeCheck(nextPos[0], nextPos[1]);
+            for (int i = 0; i < 5; i++) {
+                if (nextSquare != 3 && nextSquare > 0) {
+                    board.getGrid().turnRight();
+                }
             }
         } else {
             board.getGrid().setDirection(1);

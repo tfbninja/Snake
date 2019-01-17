@@ -48,6 +48,7 @@ public class Grid /*
     private Sound loseSound;
     private Sound bite;
 
+    int[] applePos = new int[2];
     private int growBy = 1;
 
     /*
@@ -267,6 +268,10 @@ public class Grid /*
         }
     }
 
+    public int[] getApplePos() {
+        return applePos;
+    }
+
     public int[] newApple() {
         int[] newPos = {-1, -1};
         while (newPos[0] < 0 || newPos[1] < 0 || this.isOccupied(newPos[0], newPos[1])) {
@@ -274,6 +279,8 @@ public class Grid /*
             newPos[1] = random.nextInt(this.length);
         }
         this.setCell(newPos[0], newPos[1], 3);
+        applePos[0] = newPos[0];
+        applePos[1] = newPos[1];
         return newPos;
     }
 
@@ -328,6 +335,27 @@ public class Grid /*
         if (Math.abs(this.direction - dir) != 2 && Math.abs(this.tempDir - dir) != 2) {
             this.tempDir = dir;
         }
+    }
+
+    public int getNorth() {
+        return safeCheck(this.pos.get(0).getKey(), this.pos.get(0).getValue() - 1);
+    }
+
+    public int getEast() {
+        return safeCheck(this.pos.get(0).getKey() - 1, this.pos.get(0).getValue());
+    }
+
+    public int getSouth() {
+        return safeCheck(this.pos.get(0).getKey(), this.pos.get(0).getValue() + 1);
+    }
+
+    public int getWest() {
+        return safeCheck(this.pos.get(0).getKey() + 1, this.pos.get(0).getValue());
+    }
+
+    public void turnRight() {
+        this.tempDir++;
+        tempDir = tempDir % 4;
     }
 
     public int getSize() {
@@ -568,6 +596,12 @@ public class Grid /*
     }
 
     public int safeCheck(int xPos, int yPos) {
+        if (xPos > width) {
+            xPos = xPos % width;
+        }
+        if (yPos > length) {
+            yPos = yPos & length;
+        }
         try {
             return this.playArea[yPos][xPos];
         } catch (ArrayIndexOutOfBoundsException b) {
