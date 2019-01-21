@@ -375,6 +375,7 @@ public class Grid /*
         int[] xAdd = {0, 1, 0, -1};
         int[] yAdd = {-1, 0, 1, 0};
 
+        //System.out.println("direction = " + direction);
         newPos[0] += xAdd[direction - 1];
         newPos[1] += yAdd[direction - 1];
         return newPos;

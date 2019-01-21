@@ -190,6 +190,7 @@ public class Board {
     }
 
     public void reset() {
+        keyPresses = 0;
         this.lost = false;
         this.showMenu = true;
         this.playing = false;
