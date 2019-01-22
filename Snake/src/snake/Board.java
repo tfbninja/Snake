@@ -11,12 +11,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 public class Board {
-
+    
     private int width;
     private int height;
     private Grid grid;
     private Canvas canvas;
-
+    
     private int outsideMargin = 10;
     private int margin = 1; // margin between individual squares
     private final int XMARGIN = 15; // margin inside the stackpane
@@ -24,11 +24,11 @@ public class Board {
     private int size = 15;
     private int borderSize = 2;
     private int edgeSize = 2;
-
+    
     private int mouseClicks = 0;
-
+    
     private int gridSize = 25;
-
+    
     private String blank = "74bfb0";
     private String apple = "cc1212";
     private String body = "249b0f";
@@ -36,11 +36,11 @@ public class Board {
     private String bg = "ceceb5";
     private String rock = "53585e";
     private String applesEaten = "750BE0";
-
+    
     private boolean lost = false;
-
+    
     private int keyPresses = 0;
-
+    
     private boolean playing = false;
 
     //menu variables
@@ -59,16 +59,18 @@ public class Board {
 
     // settings variables
     private boolean showSettings = false;
-
+    
+    private boolean nightTheme = false;
+    
     public Board(int w, int h) {
         this.width = w;
         this.height = h;
         canvas = new Canvas(width, height);
         createGrid();
         grid.clearApples();
-        setDarkMode();
+        //setDarkMode();
     }
-
+    
     public void setDarkMode() {
         blank = "444444";
         apple = "E51B39";
@@ -78,44 +80,67 @@ public class Board {
         rock = "1e1e1e";
         applesEaten = "EDDDD4";
     }
-
+    
+    public void setLightMode() {
+        blank = "74bfb0";
+        apple = "cc1212";
+        body = "249b0f";
+        head = "b76309";
+        bg = "ceceb5";
+        rock = "53585e";
+        applesEaten = "750BE0";
+    }
+    
     public void setOutsideMargin(int amt) {
         this.outsideMargin = amt;
     }
-
+    
     public boolean getShowHelp() {
         return this.showHelp;
     }
-
+    
     public void createGrid() {
         grid = new Grid(gridSize, gridSize, 21, 20);
     }
-
+    
     public boolean getShowHighScores() {
         return this.showHighScores;
     }
-
+    
     public boolean getPlaying() {
         return this.playing;
     }
-
+    
     public boolean getShowMenu() {
         return this.showMenu;
     }
-
+    
     public Grid getGrid() {
         return this.grid;
     }
-
+    
     public void setGrid(Grid newGrid) {
         this.grid = newGrid;
     }
-
+    
     public int[] getPixelDimensions() {
         int[] dimensions = {margin * (gridSize - 1) + size * gridSize, margin * (gridSize - 1) + size * gridSize};
         return dimensions;
     }
-
+    
+    public boolean getNightTheme() {
+        return this.nightTheme;
+    }
+    
+    public void setNightTheme(boolean val) {
+        this.nightTheme = val;
+        if (val) {
+            setDarkMode();
+        } else {
+            setLightMode();
+        }
+    }
+    
     public void drawBlocks() {
         GraphicsContext gc = this.canvas.getGraphicsContext2D();
 
@@ -130,7 +155,7 @@ public class Board {
             gc.setStroke(Color.BLACK);
             gc.setLineWidth(borderSize);
             gc.fillRect(borderSize / 2, borderSize / 2, width - borderSize, height - borderSize);
-
+            
             if (this.grid.getEdgeKills()) {
                 // draw red border indicating that edge kills
                 gc.setStroke(Color.CRIMSON.darker());
@@ -176,7 +201,7 @@ public class Board {
             gc.setFill(Color.web(applesEaten));
             gc.setFont(Font.font("Impact", 22));
             gc.fillText("Apples eaten: " + this.getGrid().getApplesEaten(), XMARGIN + width / 2 - 100, YMARGIN + getPixelDimensions()[1] + 22);
-
+            
             if (!this.lost && this.grid.getGameOver()) {
                 this.lost = true;
             }
@@ -185,10 +210,10 @@ public class Board {
             if (this.lost == true) {
             }
         } else {
-
+            
         }
     }
-
+    
     public void reset() {
         keyPresses = 0;
         this.lost = false;
@@ -197,11 +222,16 @@ public class Board {
         createGrid();
         this.grid.setSoundOn(this.soundOn);
     }
-
+    
     public boolean getSoundOn() {
         return this.soundOn;
     }
-
+    
+    public void setSoundOn(boolean amt) {
+        this.soundOn = amt;
+        this.grid.setSoundOn(amt);
+    }
+    
     public boolean isDirectional(KeyEvent i) {
         //System.out.println(i.getCode());
         return i.getCode() == KeyCode.UP || i.getCode() == KeyCode.W
@@ -209,8 +239,13 @@ public class Board {
                 || i.getCode() == KeyCode.LEFT || i.getCode() == KeyCode.A
                 || i.getCode() == KeyCode.RIGHT || i.getCode() == KeyCode.D;
     }
-
+    
     public void keyPressed(KeyEvent e) {
+        if (e.getCode() == KeyCode.N) {
+            this.nightTheme = !this.nightTheme;
+            this.setNightTheme(nightTheme);
+        }
+        
         if (this.showMenu) {
             if (e.getCode() == KeyCode.DIGIT1) {
                 // easy mode chosen
@@ -275,15 +310,15 @@ public class Board {
             }
         }
     }
-
+    
     public void toggleSound() {
         this.soundOn = !this.soundOn;
         this.grid.setSoundOn(soundOn);
     }
-
+    
     public void mouseClicked(MouseEvent e) {
         this.mouseClicks++;
-
+        
         double mouseX = e.getX();
         double mouseY = e.getY();
         // account for border outside of canvas
@@ -291,7 +326,7 @@ public class Board {
         mouseX -= outsideMargin;
         int mX = (int) mouseX;
         int mY = (int) mouseY;
-
+        
         boolean leftClick = e.isPrimaryButtonDown();
         if (leftClick) {
             // left click
@@ -335,18 +370,18 @@ public class Board {
             // middle button
         }
     }
-
+    
     public void mouseMoved(MouseEvent e) {
         double mouseX = e.getX();
         double mouseY = e.getY();
         int mX = (int) mouseX;
         int mY = (int) mouseY;
     }
-
+    
     public Canvas getCanvas() {
         return canvas;
     }
-
+    
     @Override
     public String toString() {
         return "";

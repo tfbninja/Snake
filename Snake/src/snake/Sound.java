@@ -92,8 +92,8 @@ public class Sound { // Holds one audio file
 
     public void loop() {
         // taken from https://stackoverflow.com/questions/30587437
-        clip.start();
-        clip.loop(Clip.LOOP_CONTINUOUSLY);
+        //clip.start();
+        clip.loop(999);
     }
 
     public void play() {

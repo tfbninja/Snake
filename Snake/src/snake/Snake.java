@@ -58,8 +58,36 @@ public class Snake extends Application {
 
     private boolean scoresOverwritten = false;
 
+    private File settings;
+    private String settingsLocation = "resources/settings.snk";
+    private boolean sfxOn = true;
+    private boolean nightMode = false;
+
     @Override
     public void start(Stage primaryStage) {
+        // Create Board of block objects
+        board = new Board(canvasW, canvasH);
+        board.setOutsideMargin(canvasMargin);
+
+        // initialize settings to last used
+        try {
+            settings = new File(settingsLocation);
+            Scanner reader = new Scanner(settings);
+            reader.useDelimiter(" ");
+            String temp = reader.next().trim();
+            sfxOn = temp.equals("1");
+            reader.nextLine();
+            temp = reader.next().trim();
+            nightMode = temp.equals("1");
+        } catch (FileNotFoundException x) {
+            System.out.println("bad file: " + settingsLocation);
+        }
+        System.out.println("SFX: " + sfxOn + "\nNight mode: " + nightMode);
+        if (nightMode) {
+            board.setDarkMode();
+        }
+        board.setSoundOn(sfxOn);
+
         getScores();
         // if local files unreadable, set to 0
         for (int i = 0; i < scores.size(); i += 2) { // loop through local scores
@@ -76,28 +104,29 @@ public class Snake extends Application {
         // set up help screen
         ImageView HELP_IV = getImageView("resources\\art\\help.jpg");
 
-        // Create Board of block objects
-        board = new Board(canvasW, canvasH);
-        board.setOutsideMargin(canvasMargin);
-
-        // Difficulty Level
-        board.getGrid().setDiffLevel(2);
-
         // background music
         menuMusic.setVolume(0.15);
+        if (!sfxOn) {
+            menuMusic.mute();
+        }
         menuMusic.loop();
 
         // set up menu screen with sound on
-        ImageView MON_IV = getImageView("resources\\art\\menuOn.jpg");
+        final ImageView MON_IV = getImageView("resources\\art\\menuOn.jpg");
 
         // set up menu screen with sound off
-        ImageView MOFF_IV = getImageView("resources\\art\\menuOff.jpg");
+        final ImageView MOFF_IV = getImageView("resources\\art\\menuOff.jpg");
 
         // arrange objects in window
         BorderPane root = new BorderPane(); // better arrangement style
         root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
         root.setStyle("-fx-background-color: black");
-        root.setTop(MON_IV); // display titlescreen
+        System.out.println("SFX again: " + sfxOn);
+        if (sfxOn) {
+            root.setTop(MON_IV); // display titlescreen
+        } else {
+            root.setTop(MOFF_IV); // display titlescreen
+        }
 
         Scene scene = new Scene(root, WIDTH, HEIGHT);
 
@@ -111,11 +140,29 @@ public class Snake extends Application {
             @Override
             public void handle(long now) {
                 frame++;
+                if (frame % 30 == 0) {
+                    try {
+                        PrintWriter printer = new PrintWriter(settingsLocation, "UTF-8");
+                        FileWriter creator = new FileWriter(new File(settingsLocation));
+                        int tempSFX = sfxOn ? 1 : 0, tempNightMode = nightMode ? 1 : 0;
+                        printer.print("" + tempSFX + " - volume (0 for off, 1 for on)");
+                        printer.println();
+                        printer.print("" + tempNightMode + " - appearance (0 for normal, 1 for night mode)");
+                        printer.println();
+                        printer.close();
+                        creator.close();
+                    } catch (Exception x) {
+                        System.out.println(x.getLocalizedMessage() + " oof.");
+                    }
+                }
                 if (board.getSoundOn()) {
+                    sfxOn = true;
                     menuMusic.unmute();
                 } else {
+                    sfxOn = false;
                     menuMusic.mute();
                 }
+                nightMode = board.getNightTheme();
                 if (board.getShowMenu() && !board.getGrid().getGameOver()) {
                     // If we're supposed to be showing the menu and we're not already, show it
                     if (board.getSoundOn()) {
@@ -314,7 +361,7 @@ public class Snake extends Application {
         try {
             File highScore = new File(fileName);
             Scanner reader = new Scanner(highScore);
-            reader.useDelimiter("Y33T");
+            reader.useDelimiter("YeetCommunismChungusMan");
             String temp = reader.next().trim();
             try {
                 decodedScore = Enigma.decode(temp);
