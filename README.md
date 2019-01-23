@@ -12,6 +12,7 @@ Play by downloading this repository as a .zip file, extracting, navigating to th
 | **H** | Switches between menu and high scores     |
 | **M** | Toggles mute (background music *and* sfx) |
 | **N** | Toggles night mode                        |
+| **R** | 'Restarts' to menu if on lose screen      |
 
 
 # Game Modes
