@@ -45,7 +45,7 @@ public class Grid /*
     // sounds
     private boolean soundOn = true;
     private Sound warp;
-    private Sound loseSound;
+    private ArrayList<Sound> loseSounds = new ArrayList<>();
     private Sound bite;
 
     int[] applePos = new int[2];
@@ -68,7 +68,9 @@ public class Grid /*
         }
         this.warp = new Sound("resources/sounds/warp.mp3");
         warp.setVolume(0.5);
-        this.loseSound = new Sound("resources/sounds/lose.mp3");
+        this.loseSounds.add(new Sound("resources/sounds/lose.mp3"));
+        this.loseSounds.add(new Sound("resources/sounds/lose2.mp3"));
+        this.loseSounds.add(new Sound("resources/sounds/lose3.mp3"));
         this.bite = new Sound("resources/sounds/bite2.wav");
     }
 
@@ -84,7 +86,9 @@ public class Grid /*
         setCell(startX, startY, 1); // init head
         this.warp = new Sound("resources/sounds/warp.mp3");
         warp.setVolume(0.5);
-        this.loseSound = new Sound("resources/sounds/lose.mp3");
+        this.loseSounds.add(new Sound("resources/sounds/lose.mp3"));
+        this.loseSounds.add(new Sound("resources/sounds/lose2.mp3"));
+        this.loseSounds.add(new Sound("resources/sounds/lose3.mp3"));
         this.bite = new Sound("resources/sounds/bite2.wav");
     }
 
@@ -414,6 +418,11 @@ public class Grid /*
         return this.playArea[yPos][xPos] == 4;
     }
 
+    public Sound pick(ArrayList<Sound> list) {
+        int index = (int) (Math.random() * list.size());
+        return list.get(index);
+    }
+
     public void nextGen() {
         this.direction = this.tempDir;
         int nextX = nextPos()[0];
@@ -489,25 +498,25 @@ public class Grid /*
             if (nextX < 0) {
                 this.gameOver = true;
                 if (soundOn) {
-                    loseSound.play();
+                    pick(loseSounds).play();
                 }
             }
             if (nextX >= this.width) {
                 this.gameOver = true;
                 if (soundOn) {
-                    loseSound.play();
+                    pick(loseSounds).play();
                 }
             }
             if (nextY < 0) {
                 this.gameOver = true;
                 if (soundOn) {
-                    loseSound.play();
+                    pick(loseSounds).play();
                 }
             }
             if (nextY >= this.length) {
                 this.gameOver = true;
                 if (soundOn) {
-                    loseSound.play();
+                    pick(loseSounds).play();
                 }
             }
         }
@@ -516,13 +525,13 @@ public class Grid /*
             // collision with wall or rock
             this.gameOver = true;
             if (soundOn) {
-                loseSound.play();
+                pick(loseSounds).play();
             }
         } else if (!this.gameOver && isSnake(nextX, nextY)) {
             // collision with self
             this.gameOver = true;
             if (soundOn) {
-                loseSound.play();
+                pick(loseSounds).play();
             }
         } else if (!this.gameOver && this.isApple(nextX, nextY)) {
             // ate an apple
