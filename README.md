@@ -9,10 +9,10 @@ Play by downloading this repository as a .zip file, extracting, navigating to th
 | **2** | Selects medium mode if on home screen     |
 | **3** | Selects hard mode if on home screen       |
 | **4** | Selects extreme mode if on home screen    |
-| **H** | Switches between menu and high scores     |
-| **M** | Toggles mute (background music *and* sfx) |
-| **N** | Toggles night mode                        |
-| **R** | 'Restarts' to menu if on lose screen      |
+| **H** | Switches between menu and **h**igh scores     |
+| **M** | Toggles **m**ute (background music *and* sfx) |
+| **N** | Toggles **n**ight mode                        |
+| **R** | '**R**estarts' to menu if on lose screen      |
 
 
 # Game Modes
