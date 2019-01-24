@@ -69,8 +69,11 @@ public class Grid /*
         this.warp = new Sound("resources/sounds/warp.mp3");
         warp.setVolume(0.5);
         this.loseSounds.add(new Sound("resources/sounds/lose.mp3"));
-        this.loseSounds.add(new Sound("resources/sounds/lose2.mp3"));
         this.loseSounds.add(new Sound("resources/sounds/lose3.mp3"));
+        this.loseSounds.add(new Sound("resources/sounds/lose4oof.mp3"));
+        this.loseSounds.add(new Sound("resources/sounds/lose5mc.mp3"));
+        loseSounds.get(loseSounds.size() - 1).setVolume(0.25);
+
         this.bite = new Sound("resources/sounds/bite2.wav");
     }
 
@@ -87,8 +90,11 @@ public class Grid /*
         this.warp = new Sound("resources/sounds/warp.mp3");
         warp.setVolume(0.5);
         this.loseSounds.add(new Sound("resources/sounds/lose.mp3"));
-        this.loseSounds.add(new Sound("resources/sounds/lose2.mp3"));
         this.loseSounds.add(new Sound("resources/sounds/lose3.mp3"));
+        this.loseSounds.add(new Sound("resources/sounds/lose4oof.mp3"));
+        this.loseSounds.add(new Sound("resources/sounds/lose5mc.mp3"));
+        loseSounds.get(loseSounds.size() - 1).setVolume(0.25);
+
         this.bite = new Sound("resources/sounds/bite2.wav");
     }
 
