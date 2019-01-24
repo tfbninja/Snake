@@ -72,7 +72,7 @@ public class Grid /*
         this.loseSounds.add(new Sound("resources/sounds/lose3.mp3"));
         this.loseSounds.add(new Sound("resources/sounds/lose4oof.mp3"));
         this.loseSounds.add(new Sound("resources/sounds/lose5mc.mp3"));
-        loseSounds.get(loseSounds.size() - 1).setVolume(0.25);
+        this.loseSounds.add(new Sound("resources/sounds/lose6Stark.mp3"));
 
         this.bite = new Sound("resources/sounds/bite2.wav");
     }
@@ -93,7 +93,7 @@ public class Grid /*
         this.loseSounds.add(new Sound("resources/sounds/lose3.mp3"));
         this.loseSounds.add(new Sound("resources/sounds/lose4oof.mp3"));
         this.loseSounds.add(new Sound("resources/sounds/lose5mc.mp3"));
-        loseSounds.get(loseSounds.size() - 1).setVolume(0.25);
+        this.loseSounds.add(new Sound("resources/sounds/lose6Stark.mp3"));
 
         this.bite = new Sound("resources/sounds/bite2.wav");
     }
