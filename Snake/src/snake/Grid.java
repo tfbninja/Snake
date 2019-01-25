@@ -398,8 +398,14 @@ public class Grid /*
         int[] yAdd = {-1, 0, 1, 0};
 
         //System.out.println("direction = " + direction);
-        newPos[0] += xAdd[direction - 1];
-        newPos[1] += yAdd[direction - 1];
+        try {
+            newPos[0] += xAdd[direction - 1];
+            newPos[1] += yAdd[direction - 1];
+        } catch (Exception e) {
+            System.out.println("ERROR");
+            System.out.println("Current direction: " + direction);
+            System.out.println("New Position: " + newPos[0] + " " + newPos[1]);
+        }
         return newPos;
     }
 

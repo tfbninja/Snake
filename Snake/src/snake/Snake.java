@@ -43,7 +43,8 @@ public class Snake extends Application {
 
     private int frame = 0;
 
-    private boolean AI = false;
+    private boolean AI = true;
+    private static boolean lastWasLeft = true;
 
     private static Board board;
 
@@ -395,21 +396,36 @@ public class Snake extends Application {
                 } else {
                     board.getGrid().attemptSetDirection(2);
                 }
-            } else {
+            } else if (Math.abs(applePos[1] - y) > 0) {
                 if (applePos[1] < y) {
                     board.getGrid().attemptSetDirection(1);
                 } else {
                     board.getGrid().attemptSetDirection(3);
                 }
+            } else {
+
             }
+            nextPos = board.getGrid().nextPos();
             int nextSquare = board.getGrid().safeCheck(nextPos[0], nextPos[1]);
-            for (int i = 0; i < 5; i++) {
-                if (nextSquare != 3 && nextSquare > 0) {
-                    board.getGrid().turnRight();
+            if (nextSquare != 3 && nextSquare != 0) {
+                int left = board.getGrid().getEast();
+                int right = board.getGrid().getWest();
+                int top = board.getGrid().getNorth();
+                int bottom = board.getGrid().getSouth();
+                if (left == 0 || left == 3) {
+                    board.getGrid().attemptSetDirection(4);
+                    lastWasLeft = true;
+                } else if (right == 0 || right == 3) {
+                    board.getGrid().attemptSetDirection(2);
+                    lastWasLeft = false;
+                } else if (top == 0 || top == 3) {
+                    board.getGrid().attemptSetDirection(1);
+                } else if (bottom > 0 && bottom != 3) {
+                    board.getGrid().attemptSetDirection(3);
                 }
             }
         } else {
-            board.getGrid().setDirection(1);
+
         }
     }
 
