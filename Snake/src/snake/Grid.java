@@ -92,6 +92,7 @@ public class Grid /*
     }
 
     public String formatFilePath(String badlyFormattedPath) {
+        // replaces all "\" or "\\" characters with a "/"
         return badlyFormattedPath.replaceAll("\\\\", "/").replaceAll("//", "/");
     }
 

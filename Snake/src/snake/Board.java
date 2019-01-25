@@ -44,31 +44,34 @@ public class Board {
     private boolean playing = false;
 
     //menu variables
-    private boolean showMenu = true;
-    private boolean showHighScores = false;
     private boolean soundOn = true;
-    private boolean showHelp = false;
 
     // in order, xPos, yPos, Width, Height
     private int[] easyButton = {12, 292, 194, 51};
     private int[] medButton = {219, 292, 194, 51};
     private int[] hardButton = {12, 353, 194, 51};
     private int[] impButton = {219, 353, 194, 51};
-    private int[] muteButton = {99, 14, 29, 29};
-    private int[] helpButton = {12, 12, 64, 34};
+    private int[] musicButton = {12, 18, 55, 37};
+    private int[] SFXButton = {83, 18, 28, 37};
+    private int[] helpButton = {13, 255, 47, 22};
 
     // settings variables
     private boolean showSettings = false;
 
     private boolean nightTheme = false;
 
-    public Board(int w, int h) {
+    private MenuManager mm;
+
+    private MainMenu menu;
+
+    public Board(int w, int h, MenuManager mm, MainMenu menu) {
         this.width = w;
         this.height = h;
+        this.mm = mm;
+        this.menu = menu;
         canvas = new Canvas(width, height);
         createGrid();
         grid.clearApples();
-        //setDarkMode();
     }
 
     public void setDarkMode() {
@@ -96,7 +99,7 @@ public class Board {
     }
 
     public boolean getShowHelp() {
-        return this.showHelp;
+        return mm.getCurrent() == 2;
     }
 
     public void createGrid() {
@@ -104,7 +107,7 @@ public class Board {
     }
 
     public boolean getShowHighScores() {
-        return this.showHighScores;
+        return mm.getCurrent() == 1;
     }
 
     public boolean getPlaying() {
@@ -112,7 +115,7 @@ public class Board {
     }
 
     public boolean getShowMenu() {
-        return this.showMenu;
+        return mm.getCurrent() == 0;
     }
 
     public Grid getGrid() {
@@ -145,7 +148,7 @@ public class Board {
         GraphicsContext gc = this.canvas.getGraphicsContext2D();
 
         // don't bother drawing the game if the menu is up, it'll just get drawn over
-        if (!this.showMenu) {
+        if (mm.getCurrent() != 0) {
 
             //clear background
             gc.setFill(Color.web(this.bg));
@@ -217,19 +220,19 @@ public class Board {
     public void reset() {
         keyPresses = 0;
         this.lost = false;
-        this.showMenu = true;
+        mm.setCurrent(0);
         this.playing = false;
         createGrid();
         this.grid.setSoundOn(this.soundOn);
     }
 
-    public boolean getSoundOn() {
+    public boolean getSFXOn() {
         return this.soundOn;
     }
 
-    public void setSoundOn(boolean amt) {
-        this.soundOn = amt;
-        this.grid.setSoundOn(amt);
+    public void setSFX(boolean val) {
+        this.soundOn = val;
+        this.grid.setSoundOn(val);
     }
 
     public boolean isDirectional(KeyEvent i) {
@@ -241,7 +244,7 @@ public class Board {
     }
 
     public void keyPressed(KeyEvent e) {
-        if (e.getCode() == KeyCode.R && !this.showMenu && !this.showHelp && !this.showHighScores) {
+        if (e.getCode() == KeyCode.R && mm.getCurrent() == 3) {
             reset();
         }
         if (e.getCode() == KeyCode.N) {
@@ -249,37 +252,46 @@ public class Board {
             this.setNightTheme(nightTheme);
         }
 
-        if (this.showMenu) {
+        if (mm.getCurrent() == 0) {
             if (e.getCode() == KeyCode.DIGIT1) {
                 // easy mode chosen
                 this.grid.setDiffLevel(1);
-                this.showMenu = false;
+                mm.setCurrent(4);
             } else if (e.getCode() == KeyCode.DIGIT2) {
                 // medium mode chosen
                 this.grid.setDiffLevel(2);
-                this.showMenu = false;
+                mm.setCurrent(4);
             } else if (e.getCode() == KeyCode.DIGIT3) {
                 // hard mode chosen
                 this.grid.setDiffLevel(3);
-                this.showMenu = false;
+                mm.setCurrent(4);
             } else if (e.getCode() == KeyCode.DIGIT4) {
                 // impossible mode chosen
                 this.grid.setDiffLevel(4);
-                this.showMenu = false;
+                mm.setCurrent(4);
             }
         }
-        if (isDirectional(e) && !this.showMenu && !this.showHelp) {
+        if (isDirectional(e) && mm.getCurrent() == 4) {
             keyPresses++;
         }
-        if (!this.playing && !this.showMenu && isDirectional(e) && !this.showHelp && !this.showHighScores) {
+        if (!this.playing && mm.getCurrent() == 4 && isDirectional(e)) {
             this.playing = true;
         }
-        if (e.getCode() == KeyCode.H && (this.showMenu || this.showHighScores)) {
-            this.showHighScores = !this.showHighScores;
-            this.showMenu = !this.showMenu;
+        if (e.getCode() == KeyCode.H) {
+            if (mm.getCurrent() == 0) {
+                mm.setCurrent(1);
+            } else if (mm.getCurrent() == 1) {
+                mm.setCurrent(0);
+            }
         }
         if (e.getCode() == KeyCode.M) {
-            toggleSound();
+            toggleMusic();
+        }
+        if (e.getCode() == KeyCode.X) {
+            toggleSFX();
+        }
+        if (this.lost && (mm.getCurrent() == 3 || mm.getCurrent() == 4) && (e.getCode() == KeyCode.R || e.getCode() == KeyCode.SPACE)) {
+            reset();
         }
         if (this.playing && keyPresses > 1) {
             if (e.getCode() == KeyCode.UP || e.getCode() == KeyCode.W) {
@@ -294,8 +306,6 @@ public class Board {
             } else if (e.getCode() == KeyCode.RIGHT || e.getCode() == KeyCode.D) {
                 // user pressed right key
                 this.grid.attemptSetDirection(2);
-            } else if (this.lost && !this.showMenu && (e.getCode() == KeyCode.R || e.getCode() == KeyCode.SPACE)) {
-                reset();
             }
         } else if (this.playing) {
             if (e.getCode() == KeyCode.UP || e.getCode() == KeyCode.W) {
@@ -314,9 +324,22 @@ public class Board {
         }
     }
 
-    public void toggleSound() {
-        this.soundOn = !this.soundOn;
-        this.grid.setSoundOn(soundOn);
+    public void toggleMusic() {
+        if (menu.getMusic()) {
+            menu.turnOffMusic();
+        } else {
+            menu.turnOnMusic();
+        }
+        this.soundOn = menu.getMusic();
+    }
+
+    public void toggleSFX() {
+        if (menu.getSFX()) {
+            menu.turnOffSFX();
+        } else {
+            menu.turnOnSFX();
+        }
+        this.grid.setSoundOn(menu.getSFX());
     }
 
     public void mouseClicked(MouseEvent e) {
@@ -335,37 +358,46 @@ public class Board {
             // left click
 
             // menu catching
-            if (this.showMenu) {
+            if (mm.getCurrent() == 0) {
                 if (mX >= easyButton[0] && mY >= easyButton[1] && mX <= easyButton[0] + easyButton[2] && mY <= easyButton[1] + easyButton[3]) {
                     // easy mode chosen
                     this.grid.setDiffLevel(1);
-                    this.showMenu = false;
+                    mm.setCurrent(4);
                 } else if (mX >= medButton[0] && mY >= medButton[1] && mX <= medButton[0] + medButton[2] && mY <= medButton[1] + medButton[3]) {
                     // medium mode chosen
                     this.grid.setDiffLevel(2);
-                    this.showMenu = false;
+                    mm.setCurrent(4);
                 } else if (mX >= hardButton[0] && mY >= hardButton[1] && mX <= hardButton[0] + hardButton[2] && mY <= hardButton[1] + hardButton[3]) {
                     // hard mode chosen
                     this.grid.setDiffLevel(3);
-                    this.showMenu = false;
+                    mm.setCurrent(4);
                 } else if (mX >= impButton[0] && mY >= impButton[1] && mX <= impButton[0] + impButton[2] && mY <= impButton[1] + impButton[3]) {
                     // impossible mode chosen
                     this.grid.setDiffLevel(4);
-                    this.showMenu = false;
-                } else if (mX >= muteButton[0] && mY >= muteButton[1] && mX <= muteButton[0] + muteButton[2] && mY <= muteButton[1] + muteButton[3]) {
-                    // mute
-                    toggleSound();
-                } else if (mX >= helpButton[0] && mY >= helpButton[0] && mX <= helpButton[0] + helpButton[2] && mY <= helpButton[1] + helpButton[3]) {
+                    mm.setCurrent(4);
+                } else if (mX >= musicButton[0] && mY >= musicButton[1] && mX <= musicButton[0] + musicButton[2] && mY <= musicButton[1] + musicButton[3]) {
+                    // toggle music
+                    if (menu.getMusic()) {
+                        menu.turnOffMusic();
+                    } else {
+                        menu.turnOnMusic();
+                    }
+                } else if (mX >= SFXButton[0] && mY >= SFXButton[1] && mX <= SFXButton[0] + SFXButton[2] && mY <= SFXButton[1] + SFXButton[3]) {
+                    // toggle sfx
+                    if (menu.getSFX()) {
+                        menu.turnOffSFX();
+                    } else {
+                        menu.turnOnSFX();
+                    }
+                } else if (mX >= helpButton[0] && mY >= helpButton[1] && mX <= helpButton[0] + helpButton[2] && mY <= helpButton[1] + helpButton[3]) {
                     // help screen
-                    this.showHelp = true;
-                    this.showMenu = false;
+                    mm.setCurrent(2);
                     StringSelection tmpSel = new StringSelection("github.com/tfbninja/snake");
                     Clipboard tmpClp = Toolkit.getDefaultToolkit().getSystemClipboard();
                     tmpClp.setContents(tmpSel, null);
                 }
-            } else if (this.showHelp) {
-                this.showHelp = false;
-                this.showMenu = true;
+            } else if (mm.getCurrent() == 2) {
+                mm.setCurrent(0);
             }
         } else if (e.isSecondaryButtonDown()) {
             // right click

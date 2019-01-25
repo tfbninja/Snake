@@ -36,7 +36,6 @@ import javax.imageio.ImageIO;
 public class Snake extends Application {
 
     private int canvasMargin = 10;
-    private int sizeMultiplier = 1;
     private int canvasW = 430;
     private int canvasH = 430;
     private int WIDTH = 430 + canvasMargin * 2;
@@ -48,25 +47,34 @@ public class Snake extends Application {
 
     private static Board board;
 
-    //button constants
-    private int bW = 50; // button Width
-    private int bH = 25; // button Height
-
     private Sound menuMusic = new Sound("resources/sounds/menuMusic.wav");
     private static ArrayList<Integer> scores = new ArrayList<>();
-    private ImageView HS_IV;
+    private ImageView HS_IV; // High Score screen stored in an 'ImageView' class
 
     private boolean scoresOverwritten = false;
 
     private File settings;
     private String settingsLocation = "resources/settings.snk";
     private boolean sfxOn = true;
+    private boolean musicOn = true;
     private boolean nightMode = false;
+
+    private static ArrayList<String> menuNames = new ArrayList<String>() {
+        {
+            add("Main");
+            add("High Scores");
+            add("Help");
+            add("Death");
+            add("Game");
+        }
+    };
+    private MenuManager mm = new MenuManager(menuNames);
+    private MainMenu menu = new MainMenu();
 
     @Override
     public void start(Stage primaryStage) {
         // Create Board of block objects
-        board = new Board(canvasW, canvasH);
+        board = new Board(canvasW, canvasH, mm, menu);
         board.setOutsideMargin(canvasMargin);
 
         // initialize settings to last used
@@ -79,15 +87,33 @@ public class Snake extends Application {
             reader.nextLine();
             temp = reader.next().trim();
             nightMode = temp.equals("1");
+            reader.nextLine();
+            temp = reader.next().trim();
+            musicOn = temp.equals("1");
         } catch (FileNotFoundException x) {
             System.out.println("bad file: " + settingsLocation);
+            sfxOn = true;
+            nightMode = false;
+            musicOn = true;
+            menu.turnOnMusic();
+            menu.turnOnSFX();
         }
-        System.out.println("SFX: " + sfxOn + "\nNight mode: " + nightMode);
+        System.out.println("SFX: " + sfxOn + "\nNight mode: " + nightMode + "\nMusic: " + musicOn);
         if (nightMode) {
             board.setDarkMode();
         }
-        board.setSoundOn(sfxOn);
-
+        board.setSFX(sfxOn);
+        if (sfxOn) {
+            menu.turnOnSFX();
+        } else {
+            menu.turnOffSFX();
+        }
+        if (musicOn) {
+            menuMusic.loop();
+            menu.turnOnMusic();
+        } else {
+            menu.turnOffMusic();
+        }
         getScores();
         // if local files unreadable, set to 0
         for (int i = 0; i < scores.size(); i += 2) { // loop through local scores
@@ -104,29 +130,11 @@ public class Snake extends Application {
         // set up help screen
         ImageView HELP_IV = getImageView("resources\\art\\help.jpg");
 
-        // background music
-        menuMusic.setVolume(0.15);
-        if (!sfxOn) {
-            menuMusic.mute();
-        }
-        menuMusic.loop();
-
-        // set up menu screen with sound on
-        final ImageView MON_IV = getImageView("resources\\art\\menuOn.jpg");
-
-        // set up menu screen with sound off
-        final ImageView MOFF_IV = getImageView("resources\\art\\menuOff.jpg");
-
         // arrange objects in window
         BorderPane root = new BorderPane(); // better arrangement style
         root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
         root.setStyle("-fx-background-color: black");
-        System.out.println("SFX again: " + sfxOn);
-        if (sfxOn) {
-            root.setTop(MON_IV); // display titlescreen
-        } else {
-            root.setTop(MOFF_IV); // display titlescreen
-        }
+        root.setTop(menu.getMenu()); // display titlescreen        
 
         Scene scene = new Scene(root, WIDTH, HEIGHT);
 
@@ -144,10 +152,12 @@ public class Snake extends Application {
                     try {
                         PrintWriter printer = new PrintWriter(settingsLocation, "UTF-8");
                         FileWriter creator = new FileWriter(new File(settingsLocation));
-                        int tempSFX = sfxOn ? 1 : 0, tempNightMode = nightMode ? 1 : 0;
-                        printer.print("" + tempSFX + " - volume (0 for off, 1 for on)");
+                        int tempSFX = menu.getSFX() ? 1 : 0, tempNightMode = nightMode ? 1 : 0, tempMusic = menu.getMusic() ? 1 : 0;
+                        printer.print("" + tempSFX + " - SFX toggle (0 for off, 1 for on)");
                         printer.println();
                         printer.print("" + tempNightMode + " - appearance (0 for normal, 1 for night mode)");
+                        printer.println();
+                        printer.print("" + tempMusic + " - background music toggle (0 for normal, 1 for night mode)");
                         printer.println();
                         printer.close();
                         creator.close();
@@ -155,28 +165,20 @@ public class Snake extends Application {
                         System.out.println(x.getLocalizedMessage() + " oof.");
                     }
                 }
-                if (board.getSoundOn()) {
-                    sfxOn = true;
+                board.setSFX(menu.getSFX());
+                if (menu.getMusic()) {
                     menuMusic.unmute();
                 } else {
-                    sfxOn = false;
                     menuMusic.mute();
                 }
+
                 nightMode = board.getNightTheme();
-                if (board.getShowMenu() && !board.getGrid().getGameOver()) {
+                if (mm.getCurrent() == 0 && !board.getGrid().getGameOver()) {
                     // If we're supposed to be showing the menu and we're not already, show it
-                    if (board.getSoundOn()) {
-                        if (root.getTop() != MON_IV) {
-                            root.setTop(MON_IV);
-                        }
-                    } else {
-                        if (root.getTop() != MOFF_IV) {
-                            root.setTop(MOFF_IV);
-                        }
-                    }
-                } else if (board.getShowHighScores()) {
+                    root.setTop(menu.getMenu());
+                } else if (mm.getCurrent() == 1) {
                     root.setTop(HS_IV);
-                } else if (board.getShowHelp()) {
+                } else if (mm.getCurrent() == 2) {
                     root.setTop(HELP_IV);
                 } else {
                     // If we're supposed to be showing the game graphics and we're not already, show it
@@ -299,6 +301,7 @@ public class Snake extends Application {
             iv.setCache(true);
             return iv;
         } catch (FileNotFoundException f) {
+            System.out.println(f.getLocalizedMessage());
             return null;
         }
     }
@@ -346,14 +349,14 @@ public class Snake extends Application {
 
     public static void getScores() {
         scores = new ArrayList<>();
-        scores.add(readDecodedFile("resources\\scores\\local\\localHighScore1.local"));
-        scores.add(readDecodedFile("resources\\scores\\world\\worldHighScore1.world"));
-        scores.add(readDecodedFile("resources\\scores\\local\\localHighScore2.local"));
-        scores.add(readDecodedFile("resources\\scores\\world\\worldHighScore2.world"));
-        scores.add(readDecodedFile("resources\\scores\\local\\localHighScore3.local"));
-        scores.add(readDecodedFile("resources\\scores\\world\\worldHighScore3.world"));
-        scores.add(readDecodedFile("resources\\scores\\local\\localHighScore4.local"));
-        scores.add(readDecodedFile("resources\\scores\\world\\worldhighScore4.world"));
+        scores.add(readDecodedFile("resources/scores/local/localHighScore1.local"));
+        scores.add(readDecodedFile("resources/scores/world/worldHighScore1.world"));
+        scores.add(readDecodedFile("resources/scores/local/localHighScore2.local"));
+        scores.add(readDecodedFile("resources/scores/world/worldHighScore2.world"));
+        scores.add(readDecodedFile("resources/scores/local/localHighScore3.local"));
+        scores.add(readDecodedFile("resources/scores/world/worldHighScore3.world"));
+        scores.add(readDecodedFile("resources/scores/local/localHighScore4.local"));
+        scores.add(readDecodedFile("resources/scores/world/worldhighScore4.world"));
     }
 
     public static int readDecodedFile(String fileName) {
