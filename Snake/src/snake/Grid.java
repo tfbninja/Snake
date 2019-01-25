@@ -2,6 +2,7 @@ package snake;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.io.File;
 import java.util.Random;
 import javafx.util.Pair;
 
@@ -68,11 +69,7 @@ public class Grid /*
         }
         this.warp = new Sound("resources/sounds/warp.mp3");
         warp.setVolume(0.5);
-        this.loseSounds.add(new Sound("resources/sounds/lose.mp3"));
-        this.loseSounds.add(new Sound("resources/sounds/lose3.mp3"));
-        this.loseSounds.add(new Sound("resources/sounds/lose4oof.mp3"));
-        this.loseSounds.add(new Sound("resources/sounds/lose5mc.mp3"));
-        this.loseSounds.add(new Sound("resources/sounds/lose6Stark.mp3"));
+        addDeathSounds();
 
         this.bite = new Sound("resources/sounds/bite2.wav");
     }
@@ -89,13 +86,27 @@ public class Grid /*
         setCell(startX, startY, 1); // init head
         this.warp = new Sound("resources/sounds/warp.mp3");
         warp.setVolume(0.5);
-        this.loseSounds.add(new Sound("resources/sounds/lose.mp3"));
-        this.loseSounds.add(new Sound("resources/sounds/lose3.mp3"));
-        this.loseSounds.add(new Sound("resources/sounds/lose4oof.mp3"));
-        this.loseSounds.add(new Sound("resources/sounds/lose5mc.mp3"));
-        this.loseSounds.add(new Sound("resources/sounds/lose6Stark.mp3"));
+        addDeathSounds();
 
         this.bite = new Sound("resources/sounds/bite2.wav");
+    }
+
+    public String formatFilePath(String badlyFormattedPath) {
+        return badlyFormattedPath.replaceAll("\\\\", "/").replaceAll("//", "/");
+    }
+
+    public void addDeathSounds() {
+        // addes all files in resources/sounds/death to the list of sounds to play when game is lost
+        File deathSoundsFolder = new File("resources/sounds/death");
+        File[] directoryListing = deathSoundsFolder.listFiles();
+        if (directoryListing != null) {
+            for (File child : directoryListing) {
+                //System.out.println(formatFilePath(child.getPath()));
+                this.loseSounds.add(new Sound(formatFilePath(child.getPath())));
+            }
+        } else {
+            System.out.println("Cannot find the resources/sounds/death folder... try setting the working directory to the folder that Snake.java or Snake.jar is contained in.");
+        }
     }
 
     public void setSoundOn(boolean sound) {
