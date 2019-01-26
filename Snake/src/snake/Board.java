@@ -126,7 +126,7 @@ public class Board {
         this.grid = newGrid;
     }
 
-    public int[] getPixelDimensions() {
+    private int[] getPixelDimensions() {
         int[] dimensions = {margin * (gridSize - 1) + size * gridSize, margin * (gridSize - 1) + size * gridSize};
         return dimensions;
     }
@@ -235,7 +235,7 @@ public class Board {
         this.grid.setSoundOn(val);
     }
 
-    public boolean isDirectional(KeyEvent i) {
+    private boolean isDirectional(KeyEvent i) {
         //System.out.println(i.getCode());
         return i.getCode() == KeyCode.UP || i.getCode() == KeyCode.W
                 || i.getCode() == KeyCode.DOWN || i.getCode() == KeyCode.S

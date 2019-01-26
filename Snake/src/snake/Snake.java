@@ -10,7 +10,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.PrintWriter;
-import java.net.*;
+import java.net.URL;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -35,32 +36,32 @@ import javax.imageio.ImageIO;
  */
 public class Snake extends Application {
 
-    private int canvasMargin = 10;
-    private int canvasW = 430;
-    private int canvasH = 430;
-    private int WIDTH = 430 + canvasMargin * 2;
-    private int HEIGHT = 430 + canvasMargin * 2;
+    private final int canvasMargin = 10;
+    private final int canvasW = 430;
+    private final int canvasH = 430;
+    private final int WIDTH = 430 + canvasMargin * 2;
+    private final int HEIGHT = 430 + canvasMargin * 2;
 
     private int frame = 0;
 
-    private boolean AI = true;
+    private final boolean AI = true;
     private static boolean lastWasLeft = true;
 
     private static Board board;
 
-    private Sound menuMusic = new Sound("resources/sounds/menuMusic.wav");
+    private final Sound menuMusic = new Sound("resources/sounds/menuMusic.wav");
     private static ArrayList<Integer> scores = new ArrayList<>();
     private ImageView HS_IV; // High Score screen stored in an 'ImageView' class
 
     private boolean scoresOverwritten = false;
 
     private File settings;
-    private String settingsLocation = "resources/settings.snk";
+    private final String settingsLocation = "resources/settings.snk";
     private boolean sfxOn = true;
     private boolean musicOn = true;
     private boolean nightMode = false;
 
-    private static ArrayList<String> menuNames = new ArrayList<String>() {
+    private static final ArrayList<String> MENUNAMES = new ArrayList<String>() {
         {
             add("Main");
             add("High Scores");
@@ -69,13 +70,13 @@ public class Snake extends Application {
             add("Game");
         }
     };
-    private MenuManager mm = new MenuManager(menuNames);
-    private MainMenu menu = new MainMenu();
+    private final MenuManager MM = new MenuManager(MENUNAMES);
+    private final MainMenu MENU = new MainMenu();
 
     @Override
     public void start(Stage primaryStage) {
         // Create Board of block objects
-        board = new Board(canvasW, canvasH, mm, menu);
+        board = new Board(canvasW, canvasH, MM, MENU);
         board.setOutsideMargin(canvasMargin);
 
         // initialize settings to last used
@@ -96,8 +97,8 @@ public class Snake extends Application {
             sfxOn = true;
             nightMode = false;
             musicOn = true;
-            menu.turnOnMusic();
-            menu.turnOnSFX();
+            MENU.turnOnMusic();
+            MENU.turnOnSFX();
         }
         System.out.println("SFX: " + sfxOn + "\nNight mode: " + nightMode + "\nMusic: " + musicOn);
         if (nightMode) {
@@ -105,15 +106,15 @@ public class Snake extends Application {
         }
         board.setSFX(sfxOn);
         if (sfxOn) {
-            menu.turnOnSFX();
+            MENU.turnOnSFX();
         } else {
-            menu.turnOffSFX();
+            MENU.turnOffSFX();
         }
         if (musicOn) {
             menuMusic.loop();
-            menu.turnOnMusic();
+            MENU.turnOnMusic();
         } else {
-            menu.turnOffMusic();
+            MENU.turnOffMusic();
         }
         getScores();
         // if local files unreadable, set to 0
@@ -135,7 +136,7 @@ public class Snake extends Application {
         BorderPane root = new BorderPane(); // better arrangement style
         root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
         root.setStyle("-fx-background-color: black");
-        root.setTop(menu.getMenu()); // display titlescreen        
+        root.setTop(MENU.getMenu()); // display titlescreen        
 
         Scene scene = new Scene(root, WIDTH, HEIGHT);
 
@@ -153,7 +154,7 @@ public class Snake extends Application {
                     try {
                         PrintWriter printer = new PrintWriter(settingsLocation, "UTF-8");
                         FileWriter creator = new FileWriter(new File(settingsLocation));
-                        int tempSFX = menu.getSFX() ? 1 : 0, tempNightMode = nightMode ? 1 : 0, tempMusic = menu.getMusic() ? 1 : 0;
+                        int tempSFX = MENU.getSFX() ? 1 : 0, tempNightMode = nightMode ? 1 : 0, tempMusic = MENU.getMusic() ? 1 : 0;
                         printer.print("" + tempSFX + " - SFX toggle (0 for off, 1 for on)");
                         printer.println();
                         printer.print("" + tempNightMode + " - appearance (0 for normal, 1 for night mode)");
@@ -166,20 +167,20 @@ public class Snake extends Application {
                         System.out.println(x.getLocalizedMessage() + " oof.");
                     }
                 }
-                board.setSFX(menu.getSFX());
-                if (menu.getMusic()) {
+                board.setSFX(MENU.getSFX());
+                if (MENU.getMusic()) {
                     menuMusic.unmute();
                 } else {
                     menuMusic.mute();
                 }
 
                 nightMode = board.getNightTheme();
-                if (mm.getCurrent() == 0 && !board.getGrid().getGameOver()) {
+                if (MM.getCurrent() == 0 && !board.getGrid().getGameOver()) {
                     // If we're supposed to be showing the menu and we're not already, show it
-                    root.setTop(menu.getMenu());
-                } else if (mm.getCurrent() == 1) {
+                    root.setTop(MENU.getMenu());
+                } else if (MM.getCurrent() == 1) {
                     root.setTop(HS_IV);
-                } else if (mm.getCurrent() == 2) {
+                } else if (MM.getCurrent() == 2) {
                     root.setTop(HELP_IV);
                 } else {
                     // If we're supposed to be showing the game graphics and we're not already, show it
@@ -307,7 +308,7 @@ public class Snake extends Application {
         }
     }
 
-    public static ImageView createHighScoreScreen() {
+    private static ImageView createHighScoreScreen() {
         // re-grab scores
         getScores();
         // copy the master image
@@ -348,7 +349,7 @@ public class Snake extends Application {
         return true;
     }
 
-    public static void getScores() {
+    private static void getScores() {
         scores = new ArrayList<>();
         scores.add(readDecodedFile("resources/scores/local/localHighScore1.local"));
         scores.add(readDecodedFile("resources/scores/world/worldHighScore1.world"));
@@ -391,51 +392,51 @@ public class Snake extends Application {
             int[] nextPos = board.getGrid().nextPos();
             int[] applePos = board.getGrid().getApplePos();
             if (Math.abs(applePos[0] - x) > 0) {
+                // apple is not in same column
                 if (applePos[0] < x) {
                     board.getGrid().attemptSetDirection(4);
                 } else {
                     board.getGrid().attemptSetDirection(2);
                 }
             } else if (Math.abs(applePos[1] - y) > 0) {
+                // apple is in same column but not same row
                 if (applePos[1] < y) {
                     board.getGrid().attemptSetDirection(1);
                 } else {
                     board.getGrid().attemptSetDirection(3);
                 }
             } else {
+                // there is no apple -- it's probably being re-positioned
 
             }
+
+            // update nextPos with new direction
             nextPos = board.getGrid().nextPos();
+            // value of the square in front of the snake
             int nextSquare = board.getGrid().safeCheck(nextPos[0], nextPos[1]);
-            if (nextSquare != 3 && nextSquare != 0) {
+            // if the square in front is not empty or an apple...
+            if (nextSquare != 3 && nextSquare > 0) {
                 int left = board.getGrid().getEast();
                 int right = board.getGrid().getWest();
                 int top = board.getGrid().getNorth();
                 int bottom = board.getGrid().getSouth();
-                if (left == 0 || left == 3) {
-                    board.getGrid().attemptSetDirection(4);
-                    lastWasLeft = true;
+                // choose the first free direction
+                if (top == 0 || top == 3) {
+                    board.getGrid().attemptSetDirection(1);
                 } else if (right == 0 || right == 3) {
                     board.getGrid().attemptSetDirection(2);
                     lastWasLeft = false;
-                } else if (top == 0 || top == 3) {
-                    board.getGrid().attemptSetDirection(1);
+                } else if (left == 0 || left == 3) {
+                    board.getGrid().attemptSetDirection(4);
+                    lastWasLeft = true;
                 } else if (bottom > 0 && bottom != 3) {
                     board.getGrid().attemptSetDirection(3);
+                } else {
+                    // completely surrounded, nothing can be done
                 }
             }
         } else {
-
-        }
-    }
-
-    public static void playSound(String name) {
-        // Taken from https://www.cs.cmu.edu/~illah/CLASSDOCS/javasound.pdf
-        try {
-            AudioClip clip = Applet.newAudioClip(new URL("file:" + name));
-            clip.play();
-        } catch (MalformedURLException malURL) {
-            System.out.println(malURL);
+            // game is not in session
         }
     }
 

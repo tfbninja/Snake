@@ -10,9 +10,7 @@ import javafx.util.Pair;
  *
  * @author Tim Barber
  */
-public class Grid /*
- * implements squares
- */ {
+public class Grid implements squares {
 
     /*
      * 0 - Blank
@@ -91,12 +89,48 @@ public class Grid /*
         this.bite = new Sound("resources/sounds/bite2.wav");
     }
 
-    public String formatFilePath(String badlyFormattedPath) {
+    @Override
+    public int[][] getPlayArea() {
+        return this.playArea;
+    }
+
+    public int getContiguousSize(int xPos, int yPos) {
+        int size = 1;
+        int type = this.safeCheck(xPos, yPos);
+        int[][] simplified = this.playArea;
+        for (int y = 0; y < simplified.length; y++) {
+            for (int x = 0; x < simplified[y].length; x++) {
+                if (simplified[y][x] != type) {
+                    simplified[y][x] = -1;
+                }
+            }
+        }
+        return size;
+    }
+
+    private int touchingNeighbors(int xPos, int yPos) {
+        int count = 0;
+        if (safeCheck(xPos - 1, yPos) == safeCheck(xPos, yPos)) {
+            count++;
+        }
+        if (safeCheck(xPos + 1, yPos) == safeCheck(xPos, yPos)) {
+            count++;
+        }
+        if (safeCheck(xPos, yPos - 1) == safeCheck(xPos, yPos)) {
+            count++;
+        }
+        if (safeCheck(xPos, yPos + 1) == safeCheck(xPos, yPos)) {
+            count++;
+        }
+        return count;
+    }
+
+    private String formatFilePath(String badlyFormattedPath) {
         // replaces all "\" or "\\" characters with a "/"
         return badlyFormattedPath.replaceAll("\\\\", "/").replaceAll("//", "/");
     }
 
-    public void addDeathSounds() {
+    private void addDeathSounds() {
         // addes all files in resources/sounds/death to the list of sounds to play when game is lost
         File deathSoundsFolder = new File("resources/sounds/death");
         File[] directoryListing = deathSoundsFolder.listFiles();
@@ -245,7 +279,7 @@ public class Grid /*
         return genRepeats[diffLevel - 1];
     }
 
-    public void removeExtra() {
+    private void removeExtra() {
         while (pos.size() > snakeSize) {
             pos.remove(pos.size() - 1);
         }
@@ -255,18 +289,6 @@ public class Grid /*
                     setCell(x, y, 0);
                 }
             }
-        }
-    }
-
-    public void setVertRockLine(int topX, int length) {
-        for (int i = 0; i < length; i++) {
-            this.setCell(topX, ((this.width / 2) - (length / 2)) + i, 4);
-        }
-    }
-
-    public void setHorzRockLine(int topY, int length) {
-        for (int i = 0; i < length; i++) {
-            this.setCell(((this.width / 2) - (length / 2)) + i, topY, 4);
         }
     }
 
@@ -294,7 +316,7 @@ public class Grid /*
         return applePos;
     }
 
-    public int[] newApple() {
+    private int[] newApple() {
         int[] newPos = {-1, -1};
         while (newPos[0] < 0 || newPos[1] < 0 || this.isOccupied(newPos[0], newPos[1])) {
             newPos[0] = random.nextInt(this.width);
@@ -634,7 +656,7 @@ public class Grid /*
             xPos = xPos % width;
         }
         if (yPos > length) {
-            yPos = yPos & length;
+            yPos = yPos % length;
         }
         try {
             return this.playArea[yPos][xPos];
