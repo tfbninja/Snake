@@ -11,7 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 public class Board {
-
+    
     private final int width;
     private final int height;
     private Grid grid;
@@ -24,7 +24,7 @@ public class Board {
     private final int borderSize = 2;
     private final int edgeSize = 2;
     private final int gridSize = 25;
-
+    
     private int mouseClicks = 0;
 
     // colors (day theme)
@@ -35,11 +35,12 @@ public class Board {
     private String bg = "ceceb5";
     private String rock = "53585e";
     private String applesEaten = "750BE0";
-
+    private String[] portalColors = {"e842f4", "#f44141", "f49a41", "f4e541", "c1f441"};
+    
     private boolean lost = false;
-
+    
     private int keyPresses = 0;
-
+    
     private boolean playing = false;
 
     //menu variables
@@ -53,14 +54,16 @@ public class Board {
     private final int[] musicButton = {12, 18, 55, 37};
     private final int[] SFXButton = {83, 18, 28, 37};
     private final int[] helpButton = {13, 255, 47, 22};
-
     
     private boolean nightTheme = false;
-
+    
     private final MenuManager mm;
-
+    
     private final MainMenu menu;
-
+    
+    private boolean sandboxExists = false;
+    private int[][] sandbox;
+    
     public Board(int w, int h, MenuManager mm, MainMenu menu) {
         this.width = w;
         this.height = h;
@@ -70,7 +73,7 @@ public class Board {
         createGrid();
         grid.clearApples();
     }
-
+    
     public void setDarkMode() {
         blank = "444444";
         apple = "E51B39";
@@ -80,7 +83,7 @@ public class Board {
         rock = "1e1e1e";
         applesEaten = "EDDDD4";
     }
-
+    
     public void setLightMode() {
         blank = "74bfb0";
         apple = "cc1212";
@@ -90,48 +93,48 @@ public class Board {
         rock = "53585e";
         applesEaten = "750BE0";
     }
-
+    
     public void setOutsideMargin(int amt) {
         this.outsideMargin = amt;
     }
-
+    
     public boolean getShowHelp() {
         return mm.getCurrent() == 2;
     }
-
-    private void createGrid() {
+    
+    public void createGrid() {
         grid = new Grid(gridSize, gridSize, 21, 20);
     }
-
+    
     public boolean getShowHighScores() {
         return mm.getCurrent() == 1;
     }
-
+    
     public boolean getPlaying() {
         return this.playing;
     }
-
+    
     public boolean getShowMenu() {
         return mm.getCurrent() == 0;
     }
-
+    
     public Grid getGrid() {
         return this.grid;
     }
-
+    
     public void setGrid(Grid newGrid) {
         this.grid = newGrid;
     }
-
+    
     private int[] getPixelDimensions() {
         int[] dimensions = {margin * (gridSize - 1) + size * gridSize, margin * (gridSize - 1) + size * gridSize};
         return dimensions;
     }
-
+    
     public boolean getNightTheme() {
         return this.nightTheme;
     }
-
+    
     public void setNightTheme(boolean val) {
         this.nightTheme = val;
         if (val) {
@@ -140,7 +143,7 @@ public class Board {
             setLightMode();
         }
     }
-
+    
     public void drawBlocks() {
         GraphicsContext gc = this.canvas.getGraphicsContext2D();
 
@@ -155,7 +158,7 @@ public class Board {
             gc.setStroke(Color.BLACK);
             gc.setLineWidth(borderSize);
             gc.fillRect(borderSize / 2, borderSize / 2, width - borderSize, height - borderSize);
-
+            
             if (this.grid.getEdgeKills()) {
                 // draw red border indicating that edge kills
                 gc.setStroke(Color.CRIMSON.darker());
@@ -183,6 +186,8 @@ public class Board {
                         temp.setColor(Color.web(this.blank)); // light blue
                     } else if (this.grid.isRock(x, y)) {
                         temp.setColor(Color.web(this.rock));
+                    } else if (this.grid.isPortal(x, y)) {
+                        temp.setColor(Color.web(portalColors[grid.safeCheck(x, y) - 10]));
                     } else { // there's a problem
                         //System.out.println(this.grid.getCell(x, y));
                         temp.setColor(Color.BLUEVIOLET);
@@ -201,7 +206,7 @@ public class Board {
             gc.setFill(Color.web(applesEaten));
             gc.setFont(Font.font("Impact", 22));
             gc.fillText("Apples eaten: " + this.getGrid().getApplesEaten(), XMARGIN + width / 2 - 100, YMARGIN + getPixelDimensions()[1] + 22);
-
+            
             if (!this.lost && this.grid.getGameOver()) {
                 this.lost = true;
             }
@@ -210,10 +215,10 @@ public class Board {
             if (this.lost == true) {
             }
         } else {
-
+            
         }
     }
-
+    
     public void reset() {
         keyPresses = 0;
         this.lost = false;
@@ -222,16 +227,16 @@ public class Board {
         createGrid();
         this.grid.setSoundOn(this.soundOn);
     }
-
+    
     public boolean getSFXOn() {
         return this.soundOn;
     }
-
+    
     public void setSFX(boolean val) {
         this.soundOn = val;
         this.grid.setSoundOn(val);
     }
-
+    
     private boolean isDirectional(KeyEvent i) {
         //System.out.println(i.getCode());
         return i.getCode() == KeyCode.UP || i.getCode() == KeyCode.W
@@ -239,7 +244,12 @@ public class Board {
                 || i.getCode() == KeyCode.LEFT || i.getCode() == KeyCode.A
                 || i.getCode() == KeyCode.RIGHT || i.getCode() == KeyCode.D;
     }
-
+    
+    public void setSandbox(int[][] playArea) {
+        sandboxExists = true;
+        sandbox = playArea;
+    }
+    
     public void keyPressed(KeyEvent e) {
         if (e.getCode() == KeyCode.R && mm.getCurrent() == 3) {
             reset();
@@ -248,7 +258,10 @@ public class Board {
             this.nightTheme = !this.nightTheme;
             this.setNightTheme(nightTheme);
         }
-
+        if (e.getCode() == KeyCode.ESCAPE) {
+            mm.setCurrent(0);
+        }
+        
         if (mm.getCurrent() == 0) {
             if (e.getCode() == KeyCode.DIGIT1) {
                 // easy mode chosen
@@ -265,6 +278,10 @@ public class Board {
             } else if (e.getCode() == KeyCode.DIGIT4) {
                 // impossible mode chosen
                 this.grid.setDiffLevel(4);
+                mm.setCurrent(4);
+            } else if (e.getCode() == KeyCode.DIGIT0 && e.isShiftDown() && sandboxExists) {
+                this.grid.setDiffLevel(0);
+                this.grid.setPlayArea(sandbox);
                 mm.setCurrent(4);
             }
         }
@@ -320,7 +337,7 @@ public class Board {
             }
         }
     }
-
+    
     public void toggleMusic() {
         if (menu.getMusic()) {
             menu.turnOffMusic();
@@ -329,7 +346,7 @@ public class Board {
         }
         this.soundOn = menu.getMusic();
     }
-
+    
     public void toggleSFX() {
         if (menu.getSFX()) {
             menu.turnOffSFX();
@@ -338,10 +355,10 @@ public class Board {
         }
         this.grid.setSoundOn(menu.getSFX());
     }
-
+    
     public void mouseClicked(MouseEvent e) {
         this.mouseClicks++;
-
+        
         double mouseX = e.getX();
         double mouseY = e.getY();
         // account for border outside of canvas
@@ -349,7 +366,7 @@ public class Board {
         mouseX -= outsideMargin;
         int mX = (int) mouseX;
         int mY = (int) mouseY;
-
+        
         boolean leftClick = e.isPrimaryButtonDown();
         if (leftClick) {
             // left click
@@ -402,18 +419,18 @@ public class Board {
             // middle button
         }
     }
-
+    
     public void mouseMoved(MouseEvent e) {
         double mouseX = e.getX();
         double mouseY = e.getY();
         int mX = (int) mouseX;
         int mY = (int) mouseY;
     }
-
+    
     public Canvas getCanvas() {
         return canvas;
     }
-
+    
     @Override
     public String toString() {
         return "";

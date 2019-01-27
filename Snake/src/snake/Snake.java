@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InvalidObjectException;
+import javafx.util.Pair;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -53,6 +54,12 @@ public class Snake extends Application {
 
     private File settings;
     private final String settingsLocation = "resources/settings.snk";
+    private File sandbox;
+    private final String sandboxLocation = "resources/sandbox.sandbox";
+    private int[][] sandboxPlayArea = new int[25][25];
+    private boolean sandboxEdge;
+    private Pair<Integer, Integer> sandboxHeadPos;
+
     private boolean sfxOn = true;
     private boolean musicOn = true;
     private boolean nightMode = false;
@@ -112,6 +119,47 @@ public class Snake extends Application {
         } else {
             MENU.turnOffMusic();
         }
+
+        // init sandbox file
+        try {
+            sandbox = new File(sandboxLocation);
+            Scanner reader = new Scanner(sandbox);
+            reader.useDelimiter(" ");
+            int frmSpd = reader.nextInt();
+            board.getGrid().setSandboxFrameSpeed(frmSpd);
+            reader.nextLine();
+            int initLen = reader.nextInt();
+            board.getGrid().setSandboxLen(initLen);
+            reader.nextLine();
+            int growBy = reader.nextInt();
+            board.getGrid().setSandboxGrowBy(growBy);
+            reader.nextLine();
+            boolean edge = reader.nextInt() == 1;
+            board.getGrid().setSandboxEdgeKills(edge);
+            reader.nextLine();
+            String temp = reader.nextLine();
+            while (temp.contains("*")) {
+                reader.nextLine();
+                temp = reader.nextLine();
+            }
+            // begin reading in grid
+            int num;
+            for (int y = 0; y < 25; y++) {
+                for (int x = 0; x < 25; x++) {
+                    num = reader.nextInt();
+                    if (num == 1) {
+                        System.out.println("worked");
+                        this.sandboxHeadPos = new Pair<Integer, Integer>(x, y);
+                    }
+                    sandboxPlayArea[y][x] = num;
+                }
+                reader.nextLine();
+            }
+            board.setSandbox(sandboxPlayArea.clone());
+            board.getGrid().setSandboxHeadPos(sandboxHeadPos.getKey(), sandboxHeadPos.getValue());
+        } catch (FileNotFoundException x) {
+            System.out.println("Cannot find sandbox file in " + sandboxLocation + ", try setting the working dir to src/snake.");
+        }
         getScores();
         // if local files unreadable, set to 0
         for (int i = 0; i < scores.size(); i += 2) { // loop through local scores
@@ -140,6 +188,7 @@ public class Snake extends Application {
         primaryStage.setTitle("JSnake");
         primaryStage.setScene(scene);
         primaryStage.show();
+        board.getGrid().addPortal(16, 16, 4, 9);
 
         // Main loop
         new AnimationTimer() {
@@ -200,7 +249,14 @@ public class Snake extends Application {
                     } else {
                         // game over
                         board.drawBlocks();
-                        if (!scoresOverwritten) {
+                        if (board.getGrid().getDiffLevel() == 0) {
+                            board.reset();
+                            board.getGrid().setDiffLevel(0);
+                            board.getGrid().setPlayArea(sandboxPlayArea.clone());
+                            board.getGrid().setSandboxEdgeKills(sandboxEdge);
+                            board.getGrid().setSandboxHeadPos(sandboxHeadPos.getKey(), sandboxHeadPos.getValue());
+                            MM.setCurrent(4);
+                        } else if (!scoresOverwritten) {
                             int thisDifficulty = board.getGrid().getDiffLevel();
                             int thisScore = board.getGrid().getApplesEaten();
                             boolean highScore = thisScore > scores.get((thisDifficulty - 1) * 2) || thisScore > scores.get((thisDifficulty - 1) * 2 + 1);
