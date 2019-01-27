@@ -1,7 +1,7 @@
 3 - number of frames to wait before waiting (min 1)
 5 - initial snake length
 9 - snake grow amt
-1 - edge kills (0 for false, 1 for true)
+0 - edge kills (0 for false, 1 for true)
  *
  * Square types:
  * 0 - blank
