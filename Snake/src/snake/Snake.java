@@ -1,6 +1,5 @@
 package snake;
 
-import java.applet.*;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -10,8 +9,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.PrintWriter;
-import java.net.URL;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -44,8 +41,7 @@ public class Snake extends Application {
 
     private int frame = 0;
 
-    private final boolean AI = true;
-    private static boolean lastWasLeft = true;
+    private final boolean AI = false;
 
     private static Board board;
 
@@ -425,10 +421,8 @@ public class Snake extends Application {
                     board.getGrid().attemptSetDirection(1);
                 } else if (right == 0 || right == 3) {
                     board.getGrid().attemptSetDirection(2);
-                    lastWasLeft = false;
                 } else if (left == 0 || left == 3) {
                     board.getGrid().attemptSetDirection(4);
-                    lastWasLeft = true;
                 } else if (bottom > 0 && bottom != 3) {
                     board.getGrid().attemptSetDirection(3);
                 } else {

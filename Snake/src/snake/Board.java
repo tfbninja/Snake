@@ -12,23 +12,22 @@ import javafx.scene.text.Font;
 
 public class Board {
 
-    private int width;
-    private int height;
+    private final int width;
+    private final int height;
     private Grid grid;
-    private Canvas canvas;
-
+    private final Canvas canvas;
     private int outsideMargin = 10;
-    private int margin = 1; // margin between individual squares
+    private final int margin = 1; // margin between individual squares
     private final int XMARGIN = 15; // margin inside the stackpane
     private final int YMARGIN = 5;
-    private int size = 15;
-    private int borderSize = 2;
-    private int edgeSize = 2;
+    private final int size = 15;
+    private final int borderSize = 2;
+    private final int edgeSize = 2;
+    private final int gridSize = 25;
 
     private int mouseClicks = 0;
 
-    private int gridSize = 25;
-
+    // colors (day theme)
     private String blank = "74bfb0";
     private String apple = "cc1212";
     private String body = "249b0f";
@@ -47,22 +46,20 @@ public class Board {
     private boolean soundOn = true;
 
     // in order, xPos, yPos, Width, Height
-    private int[] easyButton = {12, 292, 194, 51};
-    private int[] medButton = {219, 292, 194, 51};
-    private int[] hardButton = {12, 353, 194, 51};
-    private int[] impButton = {219, 353, 194, 51};
-    private int[] musicButton = {12, 18, 55, 37};
-    private int[] SFXButton = {83, 18, 28, 37};
-    private int[] helpButton = {13, 255, 47, 22};
+    private final int[] easyButton = {12, 292, 194, 51};
+    private final int[] medButton = {219, 292, 194, 51};
+    private final int[] hardButton = {12, 353, 194, 51};
+    private final int[] impButton = {219, 353, 194, 51};
+    private final int[] musicButton = {12, 18, 55, 37};
+    private final int[] SFXButton = {83, 18, 28, 37};
+    private final int[] helpButton = {13, 255, 47, 22};
 
-    // settings variables
-    private boolean showSettings = false;
-
+    
     private boolean nightTheme = false;
 
-    private MenuManager mm;
+    private final MenuManager mm;
 
-    private MainMenu menu;
+    private final MainMenu menu;
 
     public Board(int w, int h, MenuManager mm, MainMenu menu) {
         this.width = w;
@@ -102,7 +99,7 @@ public class Board {
         return mm.getCurrent() == 2;
     }
 
-    public void createGrid() {
+    private void createGrid() {
         grid = new Grid(gridSize, gridSize, 21, 20);
     }
 
