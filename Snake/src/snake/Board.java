@@ -9,6 +9,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import java.util.ArrayList;
 
 public class Board {
 
@@ -64,6 +65,8 @@ public class Board {
     private boolean sandboxExists = false;
     private int[][] sandbox;
 
+    private Window toolbox;
+
     public Board(int w, int h, MenuManager mm, MainMenu menu) {
         this.width = w;
         this.height = h;
@@ -84,6 +87,18 @@ public class Board {
         applesEaten = "EDDDD4";
     }
 
+    public ArrayList<String> getColorScheme() {
+        ArrayList<String> colors = new ArrayList<>();
+        colors.add(blank);
+        colors.add(apple);
+        colors.add(body);
+        colors.add(head);
+        colors.add(bg);
+        colors.add(rock);
+        colors.add(applesEaten);
+        return colors;
+    }
+
     public void setLightMode() {
         blank = "74bfb0";
         apple = "cc1212";
@@ -92,6 +107,10 @@ public class Board {
         bg = "ceceb5";
         rock = "53585e";
         applesEaten = "750BE0";
+    }
+
+    public void addToolbox(Window tb) {
+        this.toolbox = tb;
     }
 
     public void setOutsideMargin(int amt) {
@@ -260,6 +279,7 @@ public class Board {
         }
         if (e.getCode() == KeyCode.ESCAPE) {
             mm.setCurrent(0);
+            toolbox.hide();
         }
 
         if (mm.getCurrent() == 0) {
@@ -280,6 +300,7 @@ public class Board {
                 this.grid.setDiffLevel(4);
                 mm.setCurrent(4);
             } else if (e.getCode() == KeyCode.DIGIT0 && e.isShiftDown() && sandboxExists) {
+                toolbox.show();
                 this.grid.setDiffLevel(0);
                 this.grid.setPlayArea(sandbox);
                 mm.setCurrent(4);

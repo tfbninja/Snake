@@ -23,9 +23,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javax.imageio.ImageIO;
 
 /**
@@ -34,11 +37,22 @@ import javax.imageio.ImageIO;
  */
 public class Snake extends Application {
 
+    // primary game window
     private final int canvasMargin = 10;
     private final int canvasW = 430;
     private final int canvasH = 430;
     private final int WIDTH = 430 + canvasMargin * 2;
     private final int HEIGHT = 430 + canvasMargin * 2;
+
+    // secondary sandbox tool window
+    private final int toolCanvasW = 180;
+    private final int toolCanvasH = 450;
+    private final int TOOLWIDTH = toolCanvasW + 20;
+    private final int TOOLHEIGHT = toolCanvasH + 20;
+    private final int TOOLX = 300;
+    private Scene toolScene;
+    private Window toolbox;
+    private ToolPicker toolPicker;
 
     private int frame = 0;
 
@@ -55,7 +69,7 @@ public class Snake extends Application {
     private File settings;
     private final String settingsLocation = "resources/settings.snk";
     private static File sandbox;
-    private static final String sandboxLocation = "resources/sandbox.sandbox";
+    private static final String SANDBOXLOCATION = "resources/sandbox.sandbox";
     private static int[][] sandboxPlayArea = new int[25][25];
     private static boolean sandboxEdge;
     private static Pair<Integer, Integer> sandboxHeadPos;
@@ -151,6 +165,28 @@ public class Snake extends Application {
         primaryStage.setTitle("JSnake");
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        // set up toolbox for sandbox mode
+        BorderPane toolPane = new BorderPane();
+        toolPane.setPadding(new Insets(0, 0, 0, 0));
+        toolPane.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+        toolPane.setStyle("-fx-background-color: black");
+        toolPicker = new ToolPicker(toolCanvasW, toolCanvasH);
+        toolPicker.setFont(new Font("Verdana", 13));
+        toolPane.setCenter(toolPicker.getCanvas());
+
+        toolScene = new Scene(toolPane, toolCanvasW, toolCanvasH);
+        toolbox = new Window("Toolbox", TOOLWIDTH, (int) primaryStage.getHeight(), TOOLX, (int) primaryStage.getY(), toolScene);
+        board.addToolbox(toolbox);
+
+        toolPicker.addTool("Blank", Color.web(board.getColorScheme().get(0)));
+        toolPicker.addTool("Apple", Color.web(board.getColorScheme().get(1)));
+        toolPicker.addTool("Body", Color.web(board.getColorScheme().get(2)));
+        toolPicker.addTool("Head", Color.web(board.getColorScheme().get(3)));
+        toolPicker.addTool("Rock", Color.web(board.getColorScheme().get(5)));
+        toolPicker.addTool("Portal", Color.web("f142f4"));
+        toolPicker.drawTools();
+
         board.getGrid().addPortal(16, 16, 4, 9);
 
         // Main loop
@@ -171,7 +207,7 @@ public class Snake extends Application {
                         printer.println();
                         printer.close();
                         creator.close();
-                    } catch (Exception x) {
+                    } catch (IOException x) {
                         System.out.println(x.getLocalizedMessage() + " oof.");
                     }
                 }
@@ -216,6 +252,7 @@ public class Snake extends Application {
                             board.reset();
                             initSandboxFile();
                             board.getGrid().setDiffLevel(0);
+                            board.getGrid().setPlayArea(sandboxPlayArea);
                             board.drawBlocks();
                             MM.setCurrent(4);
                         } else if (!scoresOverwritten) {
@@ -275,17 +312,12 @@ public class Snake extends Application {
         }.start();
 
         // Input handling
-        scene.setOnMousePressed(new EventHandler<MouseEvent>() {
-
-            public void handle(MouseEvent event) {
-                board.mouseClicked(event);
-            }
+        scene.setOnMousePressed((MouseEvent event) -> {
+            board.mouseClicked(event);
         });
 
-        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            public void handle(KeyEvent eventa) {
-                board.keyPressed(eventa);
-            }
+        scene.setOnKeyPressed((KeyEvent eventa) -> {
+            board.keyPressed(eventa);
         });
     }
 
@@ -324,7 +356,7 @@ public class Snake extends Application {
 
     private static void initSandboxFile() {
         try {
-            sandbox = new File(sandboxLocation);
+            sandbox = new File(SANDBOXLOCATION);
             Scanner reader = new Scanner(sandbox);
             reader.useDelimiter(" ");
             int frmSpd = reader.nextInt();
@@ -344,6 +376,7 @@ public class Snake extends Application {
                 reader.nextLine();
                 temp = reader.nextLine();
             }
+
             // begin reading in grid
             int num;
             for (int y = 0; y < 25; y++) {
@@ -351,7 +384,7 @@ public class Snake extends Application {
                     num = reader.nextInt();
                     if (num == 1) {
                         System.out.println("worked");
-                        sandboxHeadPos = new Pair<Integer, Integer>(x, y);
+                        sandboxHeadPos = new Pair<>(x, y);
                     }
                     sandboxPlayArea[y][x] = num;
                 }
@@ -360,7 +393,7 @@ public class Snake extends Application {
             board.setSandbox(sandboxPlayArea.clone());
             board.getGrid().setSandboxHeadPos(sandboxHeadPos.getKey(), sandboxHeadPos.getValue());
         } catch (FileNotFoundException x) {
-            System.out.println("Cannot find sandbox file in " + sandboxLocation + ", try setting the working dir to src/snake.");
+            System.out.println("Cannot find sandbox file in " + SANDBOXLOCATION + ", try setting the working dir to src/snake.");
         }
     }
 

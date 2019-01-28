@@ -223,12 +223,15 @@ public class Grid implements squares {
 
     private void setObstacles() {
         this.setGrowBy(1);
+        this.clear();
         switch (this.diffLevel) {
             case 0:
+                System.out.println("Position set");
                 this.edgeKills = sandboxEdge;
                 this.setGrowBy(sandboxGrow);
                 this.snakeSize = sandboxLen;
                 this.pos.set(0, sandboxPos);
+                setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
                 clear();
                 break;
             case 1:
@@ -237,6 +240,7 @@ public class Grid implements squares {
                 clearObstacles();
                 clearApples();
                 newApple(); // add an apple
+                setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
                 break;
             case 2:
                 this.edgeKills = true;
@@ -246,7 +250,7 @@ public class Grid implements squares {
                 clearApples();
                 //setCell(this.width / 2, this.length / 2, 4);
                 newApple(); // add an apple
-
+                setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
                 break;
             case 3:
                 this.growBy = 4;
@@ -266,6 +270,7 @@ public class Grid implements squares {
                 }
                 clearApples();
                 newApple(); // add an apple
+                setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
                 break;
             case 4:
                 this.setGrowBy(5);
@@ -305,10 +310,12 @@ public class Grid implements squares {
                 clearObstacles();
                 clearApples();
                 newApple(); // add an apple
+                setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
                 break;
             default:
                 clearApples();
                 newApple(); // add an apple
+                setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
                 break;
         }
 
