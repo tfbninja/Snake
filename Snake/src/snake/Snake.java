@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -24,11 +23,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javax.imageio.ImageIO;
 
 /**
@@ -53,19 +50,19 @@ public class Snake extends Application {
     private Scene toolScene;
     private Window toolbox;
     private ToolPicker toolPicker;
-
+    
     private int frame = 0;
-
-    private final boolean AI = false;
-
+    
+    private final boolean AI = true;
+    
     private static Board board;
-
+    
     private final Sound menuMusic = new Sound("resources/sounds/menuMusic.wav");
     private static ArrayList<Integer> scores = new ArrayList<>();
     private ImageView HS_IV; // High Score screen stored in an 'ImageView' class
 
     private boolean scoresOverwritten = false;
-
+    
     private File settings;
     private final String settingsLocation = "resources/settings.snk";
     private static File sandbox;
@@ -73,11 +70,11 @@ public class Snake extends Application {
     private static int[][] sandboxPlayArea = new int[25][25];
     private static boolean sandboxEdge;
     private static Pair<Integer, Integer> sandboxHeadPos;
-
+    
     private boolean sfxOn = true;
     private boolean musicOn = true;
     private boolean nightMode = false;
-
+    
     private static final ArrayList<String> MENUNAMES = new ArrayList<String>() {
         {
             add("Main");
@@ -89,11 +86,11 @@ public class Snake extends Application {
     };
     private final MenuManager MM = new MenuManager(MENUNAMES);
     private final MainMenu MENU = new MainMenu();
-
+    
     @Override
     public void start(Stage primaryStage) {
         // Create Board of block objects
-        board = new Board(canvasW, canvasH, MM, MENU);
+        board = new Board(canvasW, canvasH, MM, MENU, primaryStage);
         board.setOutsideMargin(canvasMargin);
 
         // initialize settings to last used
@@ -136,7 +133,7 @@ public class Snake extends Application {
 
         // init sandbox file
         initSandboxFile();
-
+        
         getScores();
         // if local files unreadable, set to 0
         for (int i = 0; i < scores.size(); i += 2) { // loop through local scores
@@ -160,10 +157,13 @@ public class Snake extends Application {
         root.setTop(MENU.getMenu()); // display titlescreen        
 
         Scene scene = new Scene(root, WIDTH, HEIGHT);
-
+        
         board.drawBlocks();
         primaryStage.setTitle("JSnake");
         primaryStage.setScene(scene);
+        primaryStage.setOnCloseRequest(event -> {
+            toolbox.close();
+        });
         primaryStage.show();
 
         // set up toolbox for sandbox mode
@@ -174,11 +174,11 @@ public class Snake extends Application {
         toolPicker = new ToolPicker(toolCanvasW, toolCanvasH);
         toolPicker.setFont(new Font("Verdana", 13));
         toolPane.setCenter(toolPicker.getCanvas());
-
+        
         toolScene = new Scene(toolPane, toolCanvasW, toolCanvasH);
         toolbox = new Window("Toolbox", TOOLWIDTH, (int) primaryStage.getHeight(), TOOLX, (int) primaryStage.getY(), toolScene);
         board.addToolbox(toolbox);
-
+        
         toolPicker.addTool("Blank", Color.web(board.getColorScheme().get(0)));
         toolPicker.addTool("Apple", Color.web(board.getColorScheme().get(1)));
         toolPicker.addTool("Body", Color.web(board.getColorScheme().get(2)));
@@ -186,7 +186,7 @@ public class Snake extends Application {
         toolPicker.addTool("Rock", Color.web(board.getColorScheme().get(5)));
         toolPicker.addTool("Portal", Color.web("f142f4"));
         toolPicker.drawTools();
-
+        
         board.getGrid().addPortal(16, 16, 4, 9);
 
         // Main loop
@@ -217,7 +217,7 @@ public class Snake extends Application {
                 } else {
                     menuMusic.mute();
                 }
-
+                
                 nightMode = board.getNightTheme();
                 if (MM.getCurrent() == 0 && !board.getGrid().getGameOver()) {
                     // If we're supposed to be showing the menu and we're not already, show it
@@ -231,7 +231,7 @@ public class Snake extends Application {
                     if (root.getTop() != board.getCanvas() && !board.getGrid().getGameOver()) {
                         root.setTop(board.getCanvas());
                     }
-
+                    
                     if (!board.getGrid().getGameOver()) {
                         if (AI) {
                             AI();
@@ -260,13 +260,13 @@ public class Snake extends Application {
                             int thisScore = board.getGrid().getApplesEaten();
                             boolean highScore = thisScore > scores.get((thisDifficulty - 1) * 2) || thisScore > scores.get((thisDifficulty - 1) * 2 + 1);
                             int[] oldScores = toList(scores);
-
+                            
                             if (highScore) {
                                 //  (if score is higher than local or world)
 
                                 // write scores to files
                                 writeEncodedScore("resources\\scores\\local\\localHighScore" + thisDifficulty + ".local", thisScore);
-
+                                
                                 if (thisScore > scores.get((thisDifficulty - 1) * 2 + 1)) {
                                     if (checkFileExists("resources\\scores\\world\\worldHighScore" + thisDifficulty + ".world")) {
                                         writeEncodedScore("resources\\scores\\world\\worldHighScore" + thisDifficulty + ".world", thisScore);
@@ -297,7 +297,7 @@ public class Snake extends Application {
                                     overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 22), 177, 96, 15);
                                 }
                             }
-
+                            
                             if (highScore) {
                                 overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", "NEW HIGHSCORE", 105, 34, new Font("Impact", 34), 255, 0, 0);
                             }
@@ -315,7 +315,7 @@ public class Snake extends Application {
         scene.setOnMousePressed((MouseEvent event) -> {
             board.mouseClicked(event);
         });
-
+        
         scene.setOnKeyPressed((KeyEvent eventa) -> {
             board.keyPressed(eventa);
         });
@@ -327,7 +327,7 @@ public class Snake extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-
+    
     public static int[] toList(ArrayList<Integer> obj) {
         int[] list = new int[obj.size()];
         int index = 0;
@@ -337,7 +337,7 @@ public class Snake extends Application {
         }
         return list;
     }
-
+    
     public static ImageView getImageView(String filename) {
         try {
             FileInputStream tempStream = new FileInputStream(filename);
@@ -353,7 +353,7 @@ public class Snake extends Application {
             return null;
         }
     }
-
+    
     private static void initSandboxFile() {
         try {
             sandbox = new File(SANDBOXLOCATION);
@@ -396,7 +396,7 @@ public class Snake extends Application {
             System.out.println("Cannot find sandbox file in " + SANDBOXLOCATION + ", try setting the working dir to src/snake.");
         }
     }
-
+    
     private static ImageView createHighScoreScreen() {
         // re-grab scores
         getScores();
@@ -419,7 +419,7 @@ public class Snake extends Application {
         ImageView iv = getImageView("resources\\art\\HighScoreScreen.png");
         return iv;
     }
-
+    
     public static boolean copyFile(String srcName, String destName) {
         try {
             File src = new File(srcName);
@@ -437,7 +437,7 @@ public class Snake extends Application {
         }
         return true;
     }
-
+    
     private static void getScores() {
         scores = new ArrayList<>();
         scores.add(readDecodedFile("resources/scores/local/localHighScore1.local"));
@@ -449,7 +449,7 @@ public class Snake extends Application {
         scores.add(readDecodedFile("resources/scores/local/localHighScore4.local"));
         scores.add(readDecodedFile("resources/scores/world/worldhighScore4.world"));
     }
-
+    
     public static int readDecodedFile(String fileName) {
         int decodedScore = -1;
         try {
@@ -469,25 +469,28 @@ public class Snake extends Application {
         }
         return decodedScore;
     }
-
+    
     public int distanceToPoint(int targetXPos, int targetYPos, int selfX, int selfY) {
         // Manhattan/Taxicab distance
         return Math.abs(selfX - targetXPos) + Math.abs(selfY - targetYPos);
     }
-
+    
     public static void AI() {
         if (board.getPlaying()) {
+            int direction = board.getGrid().getDirection();
+            int randomizer = 0;
             int x = board.getGrid().getHeadX(), y = board.getGrid().getHeadY();
             int[] nextPos = board.getGrid().nextPos();
             int[] applePos = board.getGrid().getApplePos();
-            if (Math.abs(applePos[0] - x) > 0) {
+            if (Math.abs(applePos[0] - x) > 0 && randomizer < 5) {
                 // apple is not in same column
                 if (applePos[0] < x) {
                     board.getGrid().attemptSetDirection(4);
                 } else {
                     board.getGrid().attemptSetDirection(2);
                 }
-            } else if (Math.abs(applePos[1] - y) > 0) {
+                randomizer++;
+            } else if (Math.abs(applePos[1] - y) > 0 && randomizer < 10) {
                 // apple is in same column but not same row
                 if (applePos[1] < y) {
                     board.getGrid().attemptSetDirection(1);
@@ -495,8 +498,14 @@ public class Snake extends Application {
                     board.getGrid().attemptSetDirection(3);
                 }
             } else {
+                randomizer = 0;
+                board.getGrid().attemptSetDirection(board.getGrid().getDirection());
                 // there is no apple -- it's probably being re-positioned
-
+            }
+            if ((x < 1 && direction == 4 || y < 1 && direction == 1) && board.getGrid().getEdgeKills()) {
+                board.getGrid().turnRight();
+            } else if ((x > board.getGrid().getWidth() - 2 && direction == 2 || y > board.getGrid().getLength() - 2 && direction == 3) && board.getGrid().getEdgeKills()) {
+                board.getGrid().turnLeft();
             }
 
             // update nextPos with new direction
@@ -526,7 +535,7 @@ public class Snake extends Application {
             // game is not in session
         }
     }
-
+    
     public static boolean checkFileExists(String filename) {
         try {
             Scanner temp = new Scanner(new File(filename));
@@ -535,7 +544,7 @@ public class Snake extends Application {
             return false;
         }
     }
-
+    
     public static void writeEncodedScore(String filename, int score) {
         try {
             PrintWriter printer = new PrintWriter(filename, "UTF-8");
@@ -547,18 +556,18 @@ public class Snake extends Application {
             System.out.println(x.getLocalizedMessage() + " oof.");
         }
     }
-
+    
     public static boolean overlayImage(String filename, String newFilename, String text, int xPos, int yPos, Font font, int red, int green, int blue) {
         try {
             final BufferedImage image = ImageIO.read(new File(filename));
-
+            
             Graphics g = image.getGraphics();
             g.setFont(new java.awt.Font(font.getName(), 0, (int) font.getSize()));
             java.awt.Color c = new java.awt.Color(red, green, blue);
             g.setColor(c);
             g.drawString(text, xPos, yPos);
             g.dispose();
-
+            
             ImageIO.write(image, "png", new File(newFilename));
         } catch (IOException e) {
             System.out.println(e.getLocalizedMessage());
@@ -566,12 +575,12 @@ public class Snake extends Application {
         }
         return true;
     }
-
+    
     public static boolean overlayImage(String filename, String newFilename, String addFilename, int xPos, int yPos) {
         try {
             BufferedImage oldImage = ImageIO.read(new File(filename));
             BufferedImage addImage = ImageIO.read(new File(addFilename));
-
+            
             Graphics g = oldImage.getGraphics();
             g.drawImage(addImage, xPos, yPos, null);
             g.dispose();

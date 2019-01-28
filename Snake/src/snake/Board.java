@@ -8,6 +8,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import javafx.scene.text.Font;
 import java.util.ArrayList;
 
@@ -66,8 +67,9 @@ public class Board {
     private int[][] sandbox;
 
     private Window toolbox;
+    private Stage primaryStage;
 
-    public Board(int w, int h, MenuManager mm, MainMenu menu) {
+    public Board(int w, int h, MenuManager mm, MainMenu menu, Stage primary) {
         this.width = w;
         this.height = h;
         this.mm = mm;
@@ -75,6 +77,7 @@ public class Board {
         canvas = new Canvas(width, height);
         createGrid();
         grid.clearApples();
+        primaryStage = primary;
     }
 
     public void setDarkMode() {
@@ -301,6 +304,7 @@ public class Board {
                 mm.setCurrent(4);
             } else if (e.getCode() == KeyCode.DIGIT0 && e.isShiftDown() && sandboxExists) {
                 toolbox.show();
+                primaryStage.requestFocus();
                 this.grid.setDiffLevel(0);
                 this.grid.setPlayArea(sandbox);
                 mm.setCurrent(4);

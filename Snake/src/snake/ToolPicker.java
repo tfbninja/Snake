@@ -54,7 +54,7 @@ public class ToolPicker {
         toolYMargin = HEIGHT > 100 ? MINTOOLH / 2 : HEIGHT / 20;
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setFill(Color.WHITE);
-        gc.fillRect(WIDTH / 2, 0, 1, HEIGHT);
+        //gc.fillRect(WIDTH / 2, 0, 1, HEIGHT);
         int xCounter = WIDTH / 2 - toolSize / 2;
         int yCounter = toolYMargin;
         int toolsOnCurrentLine = 0;

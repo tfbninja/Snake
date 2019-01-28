@@ -490,6 +490,11 @@ public class Grid implements squares {
         tempDir = tempDir % 4;
     }
 
+    public void turnLeft() {
+        this.tempDir--;
+        tempDir = tempDir % 4;
+    }
+
     public int getSize() {
         return this.snakeSize;
     }
