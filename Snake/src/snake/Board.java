@@ -37,7 +37,7 @@ public class Board {
     private String bg = "ceceb5";
     private String rock = "53585e";
     private String applesEaten = "750BE0";
-    private String[] portalColors = {"90094E", "550C74", "c4df09", "dcce49"};
+    private String[] portalColors = {"90094E", "550C74", "c4df09", "7CEA9C", "BD6B73"};
 
     private boolean lost = false;
 
@@ -209,7 +209,7 @@ public class Board {
                     } else if (this.grid.isRock(x, y)) {
                         temp.setColor(Color.web(this.rock));
                     } else if (this.grid.isPortal(x, y)) {
-                        temp.setColor(Color.web(portalColors[grid.safeCheck(x, y) - 10]));
+                        temp.setColor(Color.web(portalColors[(grid.safeCheck(x, y) - 10) % this.portalColors.length]));
                     } else { // there's a problem
                         //System.out.println(this.grid.getCell(x, y));
                         temp.setColor(Color.BLUEVIOLET);
@@ -281,6 +281,7 @@ public class Board {
             this.setNightTheme(nightTheme);
         }
         if (e.getCode() == KeyCode.ESCAPE) {
+            reset();
             mm.setCurrent(0);
             toolbox.hide();
         }

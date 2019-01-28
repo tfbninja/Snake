@@ -114,7 +114,7 @@ public class Snake extends Application {
             MENU.turnOnMusic();
             MENU.turnOnSFX();
         }
-        System.out.println("SFX: " + sfxOn + "\nNight mode: " + nightMode + "\nMusic: " + musicOn);
+        //System.out.println("SFX: " + sfxOn + "\nNight mode: " + nightMode + "\nMusic: " + musicOn);
         if (nightMode) {
             board.setDarkMode();
         }
@@ -261,6 +261,7 @@ public class Snake extends Application {
                             board.drawBlocks();
                             MM.setCurrent(4);
                         } else if (!scoresOverwritten) {
+
                             int thisDifficulty = board.getGrid().getDiffLevel();
                             int thisScore = board.getGrid().getApplesEaten();
                             boolean highScore = thisScore > scores.get((thisDifficulty - 1) * 2) || thisScore > scores.get((thisDifficulty - 1) * 2 + 1);
@@ -388,7 +389,6 @@ public class Snake extends Application {
                 for (int x = 0; x < 25; x++) {
                     num = reader.nextInt();
                     if (num == 1) {
-                        System.out.println("worked");
                         sandboxHeadPos = new Pair<>(x, y);
                     }
                     sandboxPlayArea[y][x] = num;

@@ -31,7 +31,7 @@ public class ToolPicker {
         WIDTH = width;
         HEIGHT = height;
 
-        System.out.println("tools per line: " + toolsPerLine + ", toolXMargin: " + toolXMargin + ", toolYMargin: " + toolYMargin);
+        //System.out.println("tools per line: " + toolsPerLine + ", toolXMargin: " + toolXMargin + ", toolYMargin: " + toolYMargin);
         canvas = new Canvas(width, height);
     }
 
