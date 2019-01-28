@@ -37,7 +37,7 @@ public class Board {
     private String bg = "ceceb5";
     private String rock = "53585e";
     private String applesEaten = "750BE0";
-    private String[] portalColors = {"e842f4", "f49a41", "f4e541", "c1f441"};
+    private String[] portalColors = {"90094E", "550C74", "c4df09", "dcce49"};
 
     private boolean lost = false;
 
@@ -393,6 +393,9 @@ public class Board {
         int mY = (int) mouseY;
 
         boolean leftClick = e.isPrimaryButtonDown();
+        if (grid.getDiffLevel() == 0) {
+            toolbox.show();
+        }
         if (leftClick) {
             // left click
 
