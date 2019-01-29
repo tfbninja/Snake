@@ -58,6 +58,7 @@ public class Grid implements squares {
     private int sandboxLen;
     private boolean sandboxEdge = false;
     private Pair<Integer, Integer> sandboxPos;
+    private int[][] sandboxPlayArea = new int[25][25];
 
 
     /*
@@ -109,6 +110,10 @@ public class Grid implements squares {
         }
     }
 
+    public void setSandbox(int[][] playArea) {
+        this.sandboxPlayArea = playArea;
+    }
+
     public void setSandboxEdgeKills(boolean val) {
         this.sandboxEdge = val;
     }
@@ -123,6 +128,7 @@ public class Grid implements squares {
 
     public void setSandboxHeadPos(int x, int y) {
         sandboxPos = new Pair<Integer, Integer>(x, y);
+
     }
 
     @Override
@@ -226,11 +232,13 @@ public class Grid implements squares {
         this.clear();
         switch (this.diffLevel) {
             case 0:
-                System.out.println("Position set");
+                //System.out.println("Position set");
                 this.edgeKills = sandboxEdge;
+                this.playArea = this.sandboxPlayArea;
                 this.setGrowBy(sandboxGrow);
                 this.snakeSize = sandboxLen;
-                this.pos.set(0, sandboxPos);
+                this.pos.clear();
+                this.pos.add(sandboxPos);
                 setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
                 clear();
                 break;
@@ -715,25 +723,28 @@ public class Grid implements squares {
             //nextGen(); // don't pause
         } else if (!this.gameOver && this.isPortal(nextX, nextY)) {
             // if next square is a portal
+
             while (this.isPortal(nextX, nextY)) {
+                // while the square being teleported to contains a portal...
+                // teleport to the next portal
                 int oldX = nextX, oldY = nextY;
-
-                nextX = this.otherPortalPos(oldX, oldY)[0];
-                nextY = this.otherPortalPos(oldX, oldY)[1];
-                this.setCell(headX, headY, 2);
-
-                headX = nextX + XADD[direction - 1];
-                headY = nextY + YADD[direction - 1];
-                this.safeSetCell(headX, headY, 1);
-                this.pos.add(0, new Pair<Integer, Integer>(headX, headY)); // add segment in front
-                this.removeExtra();
-                if (countVal(2) < pos.size() - 1) {
-                    pos.add(new Pair<Integer, Integer>(headX, headY));
-                    this.safeSetCell(headX, headY, 2);
-                } else {
-                    this.safeSetCell(headX, headY, 0);
-                }
+                nextX = this.otherPortalPos(oldX, oldY)[0] + XADD[direction - 1];
+                nextY = this.otherPortalPos(oldX, oldY)[1] + YADD[direction - 1];
             }
+            // set the last open square where the head used to be as a body segment
+            this.setCell(headX, headY, 2);
+            headX = nextX;
+            headY = nextY;
+            this.safeSetCell(headX, headY, 1);
+            this.pos.add(0, new Pair<Integer, Integer>(headX, headY)); // add segment in front
+            this.removeExtra();
+            if (countVal(2) < pos.size() - 1) {
+                pos.add(new Pair<Integer, Integer>(headX, headY));
+                this.safeSetCell(headX, headY, 2);
+            } else {
+                this.safeSetCell(headX, headY, 0);
+            }
+
         } else if (!this.gameOver && this.isBlank(nextX, nextY)) {
             this.pos.add(0, new Pair<Integer, Integer>(nextX, nextY)); // add segment in front
             this.setCell(nextX, nextY, 1); // update grid

@@ -20,6 +20,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -323,6 +324,9 @@ public class Snake extends Application {
         });
 
         scene.setOnKeyPressed((KeyEvent eventa) -> {
+            if (eventa.getCode() == KeyCode.DIGIT0 && eventa.isShiftDown() && MM.getCurrent() == 0) {
+                initSandboxFile();
+            }
             board.keyPressed(eventa);
         });
     }
@@ -389,14 +393,13 @@ public class Snake extends Application {
                 for (int x = 0; x < 25; x++) {
                     num = reader.nextInt();
                     if (num == 1) {
-                        sandboxHeadPos = new Pair<>(x, y);
+                        board.getGrid().setSandboxHeadPos(x, y);
                     }
                     sandboxPlayArea[y][x] = num;
                 }
                 reader.nextLine();
             }
             board.setSandbox(sandboxPlayArea.clone());
-            board.getGrid().setSandboxHeadPos(sandboxHeadPos.getKey(), sandboxHeadPos.getValue());
         } catch (FileNotFoundException x) {
             System.out.println("Cannot find sandbox file in " + SANDBOXLOCATION + ", try setting the working dir to src/snake.");
         }

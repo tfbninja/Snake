@@ -273,6 +273,7 @@ public class Board {
     public void setSandbox(int[][] playArea) {
         sandboxExists = true;
         sandbox = playArea;
+        grid.setSandbox(playArea);
     }
 
     public void keyPressed(KeyEvent e) {
