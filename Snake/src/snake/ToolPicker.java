@@ -27,6 +27,8 @@ public class ToolPicker {
     private int toolYMargin;
     private int toolsPerLine;
 
+    private int currentTool = 0;
+
     public ToolPicker(int width, int height) {
         WIDTH = width;
         HEIGHT = height;

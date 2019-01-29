@@ -47,7 +47,7 @@ public class Snake extends Application {
     private final int toolCanvasH = 450;
     private final int TOOLWIDTH = toolCanvasW + 20;
     private final int TOOLHEIGHT = toolCanvasH + 20;
-    private final int TOOLX = 300;
+    private final int TOOLX = 290;
     private Scene toolScene;
     private Window toolbox;
     private ToolPicker toolPicker;
@@ -178,7 +178,7 @@ public class Snake extends Application {
         toolPane.setCenter(toolPicker.getCanvas());
 
         toolScene = new Scene(toolPane, toolCanvasW, toolCanvasH);
-        toolbox = new Window("Toolbox", TOOLWIDTH, (int) primaryStage.getHeight(), TOOLX, (int) primaryStage.getY(), toolScene);
+        toolbox = new Window("Toolbox", TOOLWIDTH, (int) primaryStage.getHeight(), (int) (primaryStage.getX() - this.TOOLWIDTH), (int) primaryStage.getY(), toolScene);
         toolbox.getStage().setOnCloseRequest(event -> {
             toolbox.hide();
             toolbox.getStage().show();
