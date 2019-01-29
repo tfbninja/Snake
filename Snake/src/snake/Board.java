@@ -166,6 +166,9 @@ public class Board {
         }
     }
 
+    /**
+     * draws the blox
+     */
     public void drawBlocks() {
         GraphicsContext gc = this.canvas.getGraphicsContext2D();
 

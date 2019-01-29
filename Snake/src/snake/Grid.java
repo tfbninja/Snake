@@ -714,22 +714,25 @@ public class Grid implements squares {
             newApple();
             //nextGen(); // don't pause
         } else if (!this.gameOver && this.isPortal(nextX, nextY)) {
-            int oldX = nextX, oldY = nextY;
+            // if next square is a portal
+            while (this.isPortal(nextX, nextY)) {
+                int oldX = nextX, oldY = nextY;
 
-            nextX = this.otherPortalPos(oldX, oldY)[0];
-            nextY = this.otherPortalPos(oldX, oldY)[1];
-            this.setCell(headX, headY, 2);
-
-            headX = nextX + XADD[direction - 1];
-            headY = nextY + YADD[direction - 1];
-            this.setCell(headX, headY, 1);
-            this.pos.add(0, new Pair<Integer, Integer>(headX, headY)); // add segment in front
-            this.removeExtra();
-            if (countVal(2) < pos.size() - 1) {
-                pos.add(new Pair<Integer, Integer>(headX, headY));
+                nextX = this.otherPortalPos(oldX, oldY)[0];
+                nextY = this.otherPortalPos(oldX, oldY)[1];
                 this.setCell(headX, headY, 2);
-            } else {
-                this.setCell(headX, headY, 0);
+
+                headX = nextX + XADD[direction - 1];
+                headY = nextY + YADD[direction - 1];
+                this.safeSetCell(headX, headY, 1);
+                this.pos.add(0, new Pair<Integer, Integer>(headX, headY)); // add segment in front
+                this.removeExtra();
+                if (countVal(2) < pos.size() - 1) {
+                    pos.add(new Pair<Integer, Integer>(headX, headY));
+                    this.safeSetCell(headX, headY, 2);
+                } else {
+                    this.safeSetCell(headX, headY, 0);
+                }
             }
         } else if (!this.gameOver && this.isBlank(nextX, nextY)) {
             this.pos.add(0, new Pair<Integer, Integer>(nextX, nextY)); // add segment in front
@@ -773,6 +776,22 @@ public class Grid implements squares {
     }
 
     public void setCell(int x, int y, int value) {
+        this.playArea[y][x] = value;
+    }
+
+    public void safeSetCell(int x, int y, int value) {
+        while (x < 0) {
+            x = width + x;
+        }
+        while (x > width - 1) {
+            x -= (width - 1);
+        }
+        while (y < 0) {
+            y = length + y;
+        }
+        while (y > length - 1) {
+            y -= (length - 1);
+        }
         this.playArea[y][x] = value;
     }
 
