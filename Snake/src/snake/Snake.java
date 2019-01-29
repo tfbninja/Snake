@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InvalidObjectException;
+import javafx.util.Pair;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -15,14 +16,15 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javax.imageio.ImageIO;
@@ -33,11 +35,22 @@ import javax.imageio.ImageIO;
  */
 public class Snake extends Application {
 
+    // primary game window
     private final int canvasMargin = 10;
     private final int canvasW = 430;
     private final int canvasH = 430;
     private final int WIDTH = 430 + canvasMargin * 2;
     private final int HEIGHT = 430 + canvasMargin * 2;
+
+    // secondary sandbox tool window
+    private final int toolCanvasW = 180;
+    private final int toolCanvasH = 450;
+    private final int TOOLWIDTH = toolCanvasW + 20;
+    private final int TOOLHEIGHT = toolCanvasH + 20;
+    private final int TOOLX = 300;
+    private Scene toolScene;
+    private Window toolbox;
+    private ToolPicker toolPicker;
 
     private int frame = 0;
 
@@ -53,6 +66,12 @@ public class Snake extends Application {
 
     private File settings;
     private final String settingsLocation = "resources/settings.snk";
+    private static File sandbox;
+    private static final String SANDBOXLOCATION = "resources/sandbox.sandbox";
+    private static int[][] sandboxPlayArea = new int[25][25];
+    private static boolean sandboxEdge;
+    private static Pair<Integer, Integer> sandboxHeadPos;
+
     private boolean sfxOn = true;
     private boolean musicOn = true;
     private boolean nightMode = false;
@@ -72,7 +91,7 @@ public class Snake extends Application {
     @Override
     public void start(Stage primaryStage) {
         // Create Board of block objects
-        board = new Board(canvasW, canvasH, MM, MENU);
+        board = new Board(canvasW, canvasH, MM, MENU, primaryStage);
         board.setOutsideMargin(canvasMargin);
 
         // initialize settings to last used
@@ -96,7 +115,7 @@ public class Snake extends Application {
             MENU.turnOnMusic();
             MENU.turnOnSFX();
         }
-        System.out.println("SFX: " + sfxOn + "\nNight mode: " + nightMode + "\nMusic: " + musicOn);
+        //System.out.println("SFX: " + sfxOn + "\nNight mode: " + nightMode + "\nMusic: " + musicOn);
         if (nightMode) {
             board.setDarkMode();
         }
@@ -112,6 +131,10 @@ public class Snake extends Application {
         } else {
             MENU.turnOffMusic();
         }
+
+        // init sandbox file
+        initSandboxFile();
+
         getScores();
         // if local files unreadable, set to 0
         for (int i = 0; i < scores.size(); i += 2) { // loop through local scores
@@ -139,7 +162,38 @@ public class Snake extends Application {
         board.drawBlocks();
         primaryStage.setTitle("JSnake");
         primaryStage.setScene(scene);
+        primaryStage.setOnCloseRequest(event -> {
+            toolbox.close();
+        });
+
         primaryStage.show();
+
+        // set up toolbox for sandbox mode
+        BorderPane toolPane = new BorderPane();
+        toolPane.setPadding(new Insets(0, 0, 0, 0));
+        toolPane.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+        toolPane.setStyle("-fx-background-color: black");
+        toolPicker = new ToolPicker(toolCanvasW, toolCanvasH);
+        toolPicker.setFont(new Font("Verdana", 13));
+        toolPane.setCenter(toolPicker.getCanvas());
+
+        toolScene = new Scene(toolPane, toolCanvasW, toolCanvasH);
+        toolbox = new Window("Toolbox", TOOLWIDTH, (int) primaryStage.getHeight(), TOOLX, (int) primaryStage.getY(), toolScene);
+        toolbox.getStage().setOnCloseRequest(event -> {
+            toolbox.hide();
+            toolbox.getStage().show();
+        });
+        board.addToolbox(toolbox);
+
+        toolPicker.addTool("Blank", Color.web(board.getColorScheme().get(0)));
+        toolPicker.addTool("Apple", Color.web(board.getColorScheme().get(1)));
+        toolPicker.addTool("Body", Color.web(board.getColorScheme().get(2)));
+        toolPicker.addTool("Head", Color.web(board.getColorScheme().get(3)));
+        toolPicker.addTool("Rock", Color.web(board.getColorScheme().get(5)));
+        toolPicker.addTool("Portal", Color.web("f142f4"));
+        toolPicker.drawTools();
+
+        board.getGrid().addPortal(16, 16, 4, 9);
 
         // Main loop
         new AnimationTimer() {
@@ -159,7 +213,7 @@ public class Snake extends Application {
                         printer.println();
                         printer.close();
                         creator.close();
-                    } catch (Exception x) {
+                    } catch (IOException x) {
                         System.out.println(x.getLocalizedMessage() + " oof.");
                     }
                 }
@@ -200,7 +254,15 @@ public class Snake extends Application {
                     } else {
                         // game over
                         board.drawBlocks();
-                        if (!scoresOverwritten) {
+                        if (board.getGrid().getDiffLevel() == 0) {
+                            board.reset();
+                            initSandboxFile();
+                            board.getGrid().setDiffLevel(0);
+                            board.getGrid().setPlayArea(sandboxPlayArea);
+                            board.drawBlocks();
+                            MM.setCurrent(4);
+                        } else if (!scoresOverwritten) {
+
                             int thisDifficulty = board.getGrid().getDiffLevel();
                             int thisScore = board.getGrid().getApplesEaten();
                             boolean highScore = thisScore > scores.get((thisDifficulty - 1) * 2) || thisScore > scores.get((thisDifficulty - 1) * 2 + 1);
@@ -257,17 +319,15 @@ public class Snake extends Application {
         }.start();
 
         // Input handling
-        scene.setOnMousePressed(new EventHandler<MouseEvent>() {
-
-            public void handle(MouseEvent event) {
-                board.mouseClicked(event);
-            }
+        scene.setOnMousePressed((MouseEvent event) -> {
+            board.mouseClicked(event);
         });
 
-        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            public void handle(KeyEvent eventa) {
-                board.keyPressed(eventa);
+        scene.setOnKeyPressed((KeyEvent eventa) -> {
+            if (eventa.getCode() == KeyCode.DIGIT0 && eventa.isShiftDown() && MM.getCurrent() == 0) {
+                initSandboxFile();
             }
+            board.keyPressed(eventa);
         });
     }
 
@@ -301,6 +361,47 @@ public class Snake extends Application {
         } catch (FileNotFoundException f) {
             System.out.println(f.getLocalizedMessage());
             return null;
+        }
+    }
+
+    private static void initSandboxFile() {
+        try {
+            sandbox = new File(SANDBOXLOCATION);
+            Scanner reader = new Scanner(sandbox);
+            reader.useDelimiter(" ");
+            int frmSpd = reader.nextInt();
+            board.getGrid().setSandboxFrameSpeed(frmSpd);
+            reader.nextLine();
+            int initLen = reader.nextInt();
+            board.getGrid().setSandboxLen(initLen);
+            reader.nextLine();
+            int growBy = reader.nextInt();
+            board.getGrid().setSandboxGrowBy(growBy);
+            reader.nextLine();
+            boolean edge = reader.nextInt() == 1;
+            board.getGrid().setSandboxEdgeKills(edge);
+            reader.nextLine();
+            String temp = reader.nextLine();
+            while (temp.contains("*")) {
+                reader.nextLine();
+                temp = reader.nextLine();
+            }
+
+            // begin reading in grid
+            int num;
+            for (int y = 0; y < 25; y++) {
+                for (int x = 0; x < 25; x++) {
+                    num = reader.nextInt();
+                    if (num == 1) {
+                        board.getGrid().setSandboxHeadPos(x, y);
+                    }
+                    sandboxPlayArea[y][x] = num;
+                }
+                reader.nextLine();
+            }
+            board.setSandbox(sandboxPlayArea.clone());
+        } catch (FileNotFoundException x) {
+            System.out.println("Cannot find sandbox file in " + SANDBOXLOCATION + ", try setting the working dir to src/snake.");
         }
     }
 
@@ -384,17 +485,20 @@ public class Snake extends Application {
 
     public static void AI() {
         if (board.getPlaying()) {
+            int direction = board.getGrid().getDirection();
+            int randomizer = 0;
             int x = board.getGrid().getHeadX(), y = board.getGrid().getHeadY();
             int[] nextPos = board.getGrid().nextPos();
             int[] applePos = board.getGrid().getApplePos();
-            if (Math.abs(applePos[0] - x) > 0) {
+            if (Math.abs(applePos[0] - x) > 0 && randomizer < 5) {
                 // apple is not in same column
                 if (applePos[0] < x) {
                     board.getGrid().attemptSetDirection(4);
                 } else {
                     board.getGrid().attemptSetDirection(2);
                 }
-            } else if (Math.abs(applePos[1] - y) > 0) {
+                randomizer++;
+            } else if (Math.abs(applePos[1] - y) > 0 && randomizer < 10) {
                 // apple is in same column but not same row
                 if (applePos[1] < y) {
                     board.getGrid().attemptSetDirection(1);
@@ -402,8 +506,14 @@ public class Snake extends Application {
                     board.getGrid().attemptSetDirection(3);
                 }
             } else {
+                randomizer = 0;
+                board.getGrid().attemptSetDirection(board.getGrid().getDirection());
                 // there is no apple -- it's probably being re-positioned
-
+            }
+            if ((x < 1 && direction == 4 || y < 1 && direction == 1) && board.getGrid().getEdgeKills()) {
+                board.getGrid().turnRight();
+            } else if ((x > board.getGrid().getWidth() - 2 && direction == 2 || y > board.getGrid().getLength() - 2 && direction == 3) && board.getGrid().getEdgeKills()) {
+                board.getGrid().turnLeft();
             }
 
             // update nextPos with new direction

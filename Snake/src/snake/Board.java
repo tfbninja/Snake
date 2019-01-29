@@ -8,7 +8,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import javafx.scene.text.Font;
+import java.util.ArrayList;
 
 public class Board {
 
@@ -35,6 +37,7 @@ public class Board {
     private String bg = "ceceb5";
     private String rock = "53585e";
     private String applesEaten = "750BE0";
+    private String[] portalColors = {"90094E", "550C74", "c4df09", "7CEA9C", "BD6B73"};
 
     private boolean lost = false;
 
@@ -54,14 +57,19 @@ public class Board {
     private final int[] SFXButton = {83, 18, 28, 37};
     private final int[] helpButton = {13, 255, 47, 22};
 
-    
     private boolean nightTheme = false;
 
     private final MenuManager mm;
 
     private final MainMenu menu;
 
-    public Board(int w, int h, MenuManager mm, MainMenu menu) {
+    private boolean sandboxExists = false;
+    private int[][] sandbox;
+
+    private Window toolbox;
+    private Stage primaryStage;
+
+    public Board(int w, int h, MenuManager mm, MainMenu menu, Stage primary) {
         this.width = w;
         this.height = h;
         this.mm = mm;
@@ -69,6 +77,7 @@ public class Board {
         canvas = new Canvas(width, height);
         createGrid();
         grid.clearApples();
+        primaryStage = primary;
     }
 
     public void setDarkMode() {
@@ -81,6 +90,18 @@ public class Board {
         applesEaten = "EDDDD4";
     }
 
+    public ArrayList<String> getColorScheme() {
+        ArrayList<String> colors = new ArrayList<>();
+        colors.add(blank);
+        colors.add(apple);
+        colors.add(body);
+        colors.add(head);
+        colors.add(bg);
+        colors.add(rock);
+        colors.add(applesEaten);
+        return colors;
+    }
+
     public void setLightMode() {
         blank = "74bfb0";
         apple = "cc1212";
@@ -91,6 +112,10 @@ public class Board {
         applesEaten = "750BE0";
     }
 
+    public void addToolbox(Window tb) {
+        this.toolbox = tb;
+    }
+
     public void setOutsideMargin(int amt) {
         this.outsideMargin = amt;
     }
@@ -99,7 +124,7 @@ public class Board {
         return mm.getCurrent() == 2;
     }
 
-    private void createGrid() {
+    public void createGrid() {
         grid = new Grid(gridSize, gridSize, 21, 20);
     }
 
@@ -141,6 +166,9 @@ public class Board {
         }
     }
 
+    /**
+     * draws the blox
+     */
     public void drawBlocks() {
         GraphicsContext gc = this.canvas.getGraphicsContext2D();
 
@@ -183,6 +211,8 @@ public class Board {
                         temp.setColor(Color.web(this.blank)); // light blue
                     } else if (this.grid.isRock(x, y)) {
                         temp.setColor(Color.web(this.rock));
+                    } else if (this.grid.isPortal(x, y)) {
+                        temp.setColor(Color.web(portalColors[(grid.safeCheck(x, y) - 10) % this.portalColors.length]));
                     } else { // there's a problem
                         //System.out.println(this.grid.getCell(x, y));
                         temp.setColor(Color.BLUEVIOLET);
@@ -240,6 +270,12 @@ public class Board {
                 || i.getCode() == KeyCode.RIGHT || i.getCode() == KeyCode.D;
     }
 
+    public void setSandbox(int[][] playArea) {
+        sandboxExists = true;
+        sandbox = playArea;
+        grid.setSandbox(playArea);
+    }
+
     public void keyPressed(KeyEvent e) {
         if (e.getCode() == KeyCode.R && mm.getCurrent() == 3) {
             reset();
@@ -247,6 +283,11 @@ public class Board {
         if (e.getCode() == KeyCode.N) {
             this.nightTheme = !this.nightTheme;
             this.setNightTheme(nightTheme);
+        }
+        if (e.getCode() == KeyCode.ESCAPE) {
+            reset();
+            mm.setCurrent(0);
+            toolbox.hide();
         }
 
         if (mm.getCurrent() == 0) {
@@ -265,6 +306,12 @@ public class Board {
             } else if (e.getCode() == KeyCode.DIGIT4) {
                 // impossible mode chosen
                 this.grid.setDiffLevel(4);
+                mm.setCurrent(4);
+            } else if (e.getCode() == KeyCode.DIGIT0 && e.isShiftDown() && sandboxExists) {
+                toolbox.show();
+                primaryStage.requestFocus();
+                this.grid.setDiffLevel(0);
+                this.grid.setPlayArea(sandbox);
                 mm.setCurrent(4);
             }
         }
@@ -351,6 +398,9 @@ public class Board {
         int mY = (int) mouseY;
 
         boolean leftClick = e.isPrimaryButtonDown();
+        if (grid.getDiffLevel() == 0) {
+            toolbox.show();
+        }
         if (leftClick) {
             // left click
 
