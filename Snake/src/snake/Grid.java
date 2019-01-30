@@ -164,8 +164,9 @@ public class Grid implements squares {
     }
 
     public void setSandboxHeadPos(int x, int y) {
+        pos.clear();
         sandboxPos = new Pair<Integer, Integer>(x, y);
-
+        pos.add(sandboxPos);
     }
 
     @Override

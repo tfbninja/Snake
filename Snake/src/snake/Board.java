@@ -261,6 +261,14 @@ public class Board {
         this.grid.setSoundOn(this.soundOn);
     }
 
+    public void resetKeepGrid() {
+        keyPresses = 0;
+        this.lost = false;
+        mm.setCurrent(0);
+        this.playing = false;
+        this.grid.setSoundOn(this.soundOn);
+    }
+
     public boolean getSFXOn() {
         return this.soundOn;
     }
@@ -411,10 +419,18 @@ public class Board {
 
     public int AWTToolToRealTool(int AWTTool) {
         switch (AWTTool) {
+            case 0:
+                return 0;
             case 1:
+                // apple
                 return 3;
-            case 3:
+            case 2:
+                // head
                 return 1;
+            case 3:
+                return 4;
+            case 4:
+                return 5;
             default:
                 return AWTTool;
         }
@@ -430,6 +446,14 @@ public class Board {
         mouseX -= outsideMargin;
         int mX = (int) mouseX;
         int mY = (int) mouseY;
+        // top right:
+        // margin * x + xPos + (size * (x-1)) : += size
+        //solve:
+        //margin * (x+1)) + (size * (x-1)) = z, z = margin * x + xPos + margin + size * x - size, z = x(margin + size) + xPos + margin - size, (z + size - margin)/(margin + size) = x
+        int xVal = (mX + size - XMARGIN) / (margin + size) - 1;
+        int yVal = (mY + size - YMARGIN) / (margin + size) - 1;
+        xVal %= this.gridSize;
+        yVal %= this.gridSize;
 
         boolean leftClick = e.isPrimaryButtonDown();
         if (grid.getDiffLevel() == 0) {
@@ -439,28 +463,27 @@ public class Board {
 
             // sandbox mode editing
             if (mm.getCurrent() == 4 && grid.getDiffLevel() == 0) {
-                // top right:
-                // margin * x + xPos + (size * (x-1)) : += size
-                //solve:
-                //margin * (x+1)) + (size * (x-1)) = z, z = margin * x + xPos + margin + size * x - size, z = x(margin + size) + xPos + margin - size, (z + size - margin)/(margin + size) = x
-                int xVal = (mX + size - XMARGIN) / (margin + size) - 1;
-                int yVal = (mY + size - YMARGIN) / (margin + size) - 1;
-                xVal %= this.gridSize;
-                yVal %= this.gridSize;
-                int tool = AWTToolToRealTool(AWTToolbox.getCurrentTool());
-                if (tool == 1 || tool == 3) {
-                    // if the tool is a head or apple, clear the others
-                    grid.removeAll(tool);
-                } else if (tool == 4) {
-                    if (grid.containsUnmatchedPortal() == -1) {
-                        tool = findUnusedPortalNum();
-                    } else {
-                        tool = grid.containsUnmatchedPortal();
-                        grid.setCell(grid.findUnmatchedPortal(), findUnusedPortalNum());
-                    }
-                } else {
-                    grid.setCell(xVal, yVal, tool);
 
+                int tool = AWTToolToRealTool(AWTToolbox.getCurrentTool());
+                switch (tool) {
+                    case 1:
+                        grid.setSandboxHeadPos(xVal, yVal);
+                    case 3:
+                        // if the tool is a head or apple, clear the others
+                        grid.removeAll(tool);
+                        grid.setCell(xVal, yVal, tool);
+                        break;
+                    case 5:
+                        if (grid.containsUnmatchedPortal() == -1) {
+                            tool = findUnusedPortalNum();
+                        } else {
+                            tool = grid.containsUnmatchedPortal();
+                            grid.setCell(grid.findUnmatchedPortal(), findUnusedPortalNum());
+                        }
+                        break;
+                    default:
+                        grid.setCell(xVal, yVal, tool);
+                        break;
                 }
             }
 
@@ -508,6 +531,9 @@ public class Board {
             }
         } else if (e.isSecondaryButtonDown()) {
             // right click
+            if (mm.getCurrent() == 4 && grid.getDiffLevel() == 0) {
+                grid.safeSetCell(xVal, yVal, 0);
+            }
         } else {
             // middle button
         }
