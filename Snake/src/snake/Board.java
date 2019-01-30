@@ -66,7 +66,8 @@ public class Board {
     private boolean sandboxExists = false;
     private int[][] sandbox;
 
-    private Window toolbox;
+    private ToolPicker toolbox;
+    private AWTToolbox AWTToolbox;
     private Stage primaryStage;
 
     public Board(int w, int h, MenuManager mm, MainMenu menu, Stage primary) {
@@ -88,6 +89,10 @@ public class Board {
         bg = "212121";
         rock = "1e1e1e";
         applesEaten = "EDDDD4";
+    }
+
+    public void addAWTToolbox(AWTToolbox tb) {
+        this.AWTToolbox = tb;
     }
 
     public ArrayList<String> getColorScheme() {
@@ -112,7 +117,7 @@ public class Board {
         applesEaten = "750BE0";
     }
 
-    public void addToolbox(Window tb) {
+    public void addToolbox(ToolPicker tb) {
         this.toolbox = tb;
     }
 
@@ -308,7 +313,8 @@ public class Board {
                 this.grid.setDiffLevel(4);
                 mm.setCurrent(4);
             } else if (e.getCode() == KeyCode.DIGIT0 && e.isShiftDown() && sandboxExists) {
-                toolbox.show();
+                //toolbox.show();
+                AWTToolbox.setVisible(true);
                 primaryStage.requestFocus();
                 this.grid.setDiffLevel(0);
                 this.grid.setPlayArea(sandbox);
@@ -403,6 +409,11 @@ public class Board {
         }
         if (leftClick) {
             // left click
+
+            // sandbox mode editing
+            if (mm.getCurrent() == 4 && grid.getDiffLevel() == 0) {
+
+            }
 
             // menu catching
             if (mm.getCurrent() == 0) {

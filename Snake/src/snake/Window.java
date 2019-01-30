@@ -1,13 +1,14 @@
 package snake;
 
 import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 /**
  *
  * @author Timothy
  */
-public class Window {
+public abstract class Window {
 
     private final String TITLE;
     private final int WIDTH;
@@ -38,6 +39,14 @@ public class Window {
         stage.hide();
     }
 
+    public int getWidth() {
+        return WIDTH;
+    }
+
+    public int getHeight() {
+        return HEIGHT;
+    }
+
     public boolean getVisible() {
         return stage.isShowing();
     }
@@ -48,5 +57,18 @@ public class Window {
 
     public Stage getStage() {
         return this.stage;
+    }
+
+    public Scene getScene() {
+        return SCENE;
+    }
+
+    public void handleMouseClicked(MouseEvent event) {
+    }
+
+    public void setMousePressedHandler() {
+        SCENE.setOnMousePressed((MouseEvent event) -> {
+            handleMouseClicked(event);
+        });
     }
 }

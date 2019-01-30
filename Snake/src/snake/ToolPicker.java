@@ -1,8 +1,8 @@
 package snake;
 
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import java.util.ArrayList;
+import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
@@ -11,35 +11,29 @@ import javafx.scene.paint.Color;
  *
  * @author Timothy
  */
-public class ToolPicker {
+public class ToolPicker extends Window {
 
     private Canvas canvas;
-    private final int WIDTH;
-    private final int HEIGHT;
-    private ArrayList<String> toolNames = new ArrayList<>();
-    private ArrayList<Color> toolColors = new ArrayList<>();
+    private ArrayList<Block> tools = new ArrayList<>();
     private Font font;
 
-    private final int MINTOOLW = 50;
-    private final int MINTOOLH = 50;
-    private int toolSize = 15;
-    private int toolXMargin;
-    private int toolYMargin;
-    private int toolsPerLine;
+    private final int TOOLX = 10;
+    private final int TOOLY = 10;
+    private final int TOOLW = 30;
+    private final int TOOLH = 30;
+    private final int TOOLYSPACE = 15;
 
-    private int currentTool = 0;
+    private Block currentTool;
+    private int toolNum = 0;
 
-    public ToolPicker(int width, int height) {
-        WIDTH = width;
-        HEIGHT = height;
-
-        //System.out.println("tools per line: " + toolsPerLine + ", toolXMargin: " + toolXMargin + ", toolYMargin: " + toolYMargin);
+    public ToolPicker(String title, int width, int height, int xPos, int yPos, Scene scene) {
+        super(title, width, height, xPos, yPos, scene);
+        currentTool = new Block(width - (TOOLW + TOOLX), TOOLY, TOOLW, TOOLH, Color.web("2b2b2b"));
         canvas = new Canvas(width, height);
     }
 
-    public void addTool(String name, Color color) {
-        toolNames.add(name);
-        toolColors.add(color);
+    public void addTool(Color color, String name) {
+        tools.add(new Block(TOOLX, TOOLY + (tools.size() * (TOOLH + TOOLYSPACE)), TOOLW, TOOLH, color, name));
     }
 
     public Canvas getCanvas() {
@@ -50,29 +44,40 @@ public class ToolPicker {
         this.font = fontToUse;
     }
 
+    public String getName(int index) {
+        return this.tools.get(index).getName();
+    }
+
+    public Color getColor(int index) {
+        return this.tools.get(index).getColor();
+    }
+
+    public int getWidth(int index) {
+        return this.tools.get(index).getWidth();
+    }
+
+    public int getHeight(int index) {
+        return this.tools.get(index).getHeight();
+    }
+
+    public int getX(int index) {
+        return this.tools.get(index).getX();
+    }
+
+    public int getY(int index) {
+        return this.tools.get(index).getY();
+    }
+
     public void drawTools() {
-        toolsPerLine = WIDTH / (2 * MINTOOLW);
-        toolXMargin = (WIDTH - toolsPerLine * MINTOOLW) / (2 + toolsPerLine);
-        toolYMargin = HEIGHT > 100 ? MINTOOLH / 2 : HEIGHT / 20;
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.setFill(Color.WHITE);
-        //gc.fillRect(WIDTH / 2, 0, 1, HEIGHT);
-        int xCounter = WIDTH / 2 - toolSize / 2;
-        int yCounter = toolYMargin;
-        int toolsOnCurrentLine = 0;
-        for (int i = 0; i < toolNames.size(); i++) {
-            toolsOnCurrentLine++;
-            gc.setFill(toolColors.get(i));
+
+        // Rectangle showing the current tool
+        currentTool.draw(canvas);
+
+        for (int i = 0; i < tools.size(); i++) {
             gc.setFont(font);
-            gc.fillRect(xCounter, yCounter, toolSize, toolSize);
-            gc.fillText(toolNames.get(i), xCounter - 10, yCounter - 5);
-            xCounter += this.MINTOOLH - toolSize * 2;
-            if (toolsOnCurrentLine < this.toolsPerLine) {
-                xCounter += toolSize * 2;
-            } else {
-                yCounter += MINTOOLH + this.toolYMargin;
-                xCounter = WIDTH / 2 - toolSize / 2;
-            }
+            tools.get(i).draw(canvas);
+            gc.fillText(tools.get(i).getName(), super.getWidth() - 4, tools.get(i).getY() - 5);
         }
     }
 }

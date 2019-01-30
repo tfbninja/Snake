@@ -11,6 +11,7 @@ public class Block implements Locatable {
     private int width;
     private int height;
     private Color color;
+    private String name;
 
     public Block() {
         this.xPos = 0;
@@ -26,6 +27,15 @@ public class Block implements Locatable {
         this.width = width;
         this.height = height;
         this.color = color;
+    }
+
+    public Block(int xPos, int yPos, int width, int height, Color color, String name) {
+        this.xPos = xPos;
+        this.yPos = yPos;
+        this.width = width;
+        this.height = height;
+        this.color = color;
+        this.name = name;
     }
 
     public Block(int xPos, int yPos, int width, int height) {
@@ -44,6 +54,14 @@ public class Block implements Locatable {
     @Override
     public void setY(int yPos) {
         this.yPos = yPos;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override

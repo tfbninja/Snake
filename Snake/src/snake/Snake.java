@@ -28,6 +28,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javax.imageio.ImageIO;
+import javax.swing.JFrame;
 
 /**
  *
@@ -43,14 +44,13 @@ public class Snake extends Application {
     private final int HEIGHT = 430 + canvasMargin * 2;
 
     // secondary sandbox tool window
-    private final int toolCanvasW = 180;
-    private final int toolCanvasH = 450;
-    private final int TOOLWIDTH = toolCanvasW + 20;
-    private final int TOOLHEIGHT = toolCanvasH + 20;
+    private final int TOOLWIDTH = 200;
+    private final int TOOLHEIGHT = 450;
     private final int TOOLX = 290;
+    private final int indivToolSize = 30;
     private Scene toolScene;
-    private Window toolbox;
     private ToolPicker toolPicker;
+    private AWTToolbox AWTToolbox;
 
     private int frame = 0;
 
@@ -163,7 +163,8 @@ public class Snake extends Application {
         primaryStage.setTitle("JSnake");
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(event -> {
-            toolbox.close();
+            toolPicker.close();
+            AWTToolbox.dispose();
         });
 
         primaryStage.show();
@@ -171,29 +172,37 @@ public class Snake extends Application {
         // set up toolbox for sandbox mode
         BorderPane toolPane = new BorderPane();
         toolPane.setPadding(new Insets(0, 0, 0, 0));
-        toolPane.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
         toolPane.setStyle("-fx-background-color: black");
-        toolPicker = new ToolPicker(toolCanvasW, toolCanvasH);
+        ArrayList<String> toolNames = new ArrayList<>();
+        ArrayList<String> toolColors = new ArrayList<>();
+        toolNames.add("Blank");
+        toolNames.add("Apple");
+        toolNames.add("Body");
+        toolNames.add("Head");
+        toolNames.add("Rock");
+        toolNames.add("Portal");
+        toolColors.add(board.getColorScheme().get(0));
+        toolColors.add(board.getColorScheme().get(1));
+        toolColors.add(board.getColorScheme().get(2));
+        toolColors.add(board.getColorScheme().get(3));
+        toolColors.add(board.getColorScheme().get(5));
+        toolColors.add("f142f4");
+        AWTToolbox = new AWTToolbox("Toolbox", TOOLWIDTH, TOOLHEIGHT, (int) (primaryStage.getX() - this.TOOLWIDTH), (int) primaryStage.getY(), toolColors, toolNames);
+        toolScene = new Scene(toolPane, TOOLWIDTH, TOOLHEIGHT);
+        toolPicker = new ToolPicker("Toolbox", TOOLWIDTH, (int) primaryStage.getHeight(), (int) (primaryStage.getX() - this.TOOLWIDTH), (int) primaryStage.getY(), toolScene);
         toolPicker.setFont(new Font("Verdana", 13));
         toolPane.setCenter(toolPicker.getCanvas());
 
-        toolScene = new Scene(toolPane, toolCanvasW, toolCanvasH);
-        toolbox = new Window("Toolbox", TOOLWIDTH, (int) primaryStage.getHeight(), (int) (primaryStage.getX() - this.TOOLWIDTH), (int) primaryStage.getY(), toolScene);
-        toolbox.getStage().setOnCloseRequest(event -> {
-            toolbox.hide();
-            toolbox.getStage().show();
+        toolPicker.getStage().setOnCloseRequest(event -> {
+            toolPicker.hide();
+            toolPicker.getStage().show();
         });
-        board.addToolbox(toolbox);
 
-        toolPicker.addTool("Blank", Color.web(board.getColorScheme().get(0)));
-        toolPicker.addTool("Apple", Color.web(board.getColorScheme().get(1)));
-        toolPicker.addTool("Body", Color.web(board.getColorScheme().get(2)));
-        toolPicker.addTool("Head", Color.web(board.getColorScheme().get(3)));
-        toolPicker.addTool("Rock", Color.web(board.getColorScheme().get(5)));
-        toolPicker.addTool("Portal", Color.web("f142f4"));
+        AWTToolbox.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        board.addToolbox(toolPicker);
+        board.addAWTToolbox(AWTToolbox);
+
         toolPicker.drawTools();
-
-        board.getGrid().addPortal(16, 16, 4, 9);
 
         // Main loop
         new AnimationTimer() {
