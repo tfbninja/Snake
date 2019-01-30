@@ -392,6 +392,27 @@ public class Board {
         this.grid.setSoundOn(menu.getSFX());
     }
 
+    public int findUnusedPortalNum() {
+        int num = 10;
+        while (grid.find(10).size() > 0) {
+            num++;
+        }
+        return num;
+    }
+
+    public int AWTToolToRealTool(int AWTTool) {
+        switch (AWTTool) {
+            case 1:
+                return 3;
+            case 3:
+                return 1;
+            case 5:
+                return findUnusedPortalNum();
+            default:
+                return AWTTool;
+        }
+    }
+
     public void mouseClicked(MouseEvent e) {
         this.mouseClicks++;
 
@@ -405,14 +426,21 @@ public class Board {
 
         boolean leftClick = e.isPrimaryButtonDown();
         if (grid.getDiffLevel() == 0) {
-            toolbox.show();
         }
         if (leftClick) {
             // left click
 
             // sandbox mode editing
             if (mm.getCurrent() == 4 && grid.getDiffLevel() == 0) {
-
+                // top right:
+                // margin * x + xPos + (size * (x-1)) : += size
+                //solve:
+                //margin * (x+1)) + (size * (x-1)) = z, z = margin * x + xPos + margin + size * x - size, z = x(margin + size) + xPos + margin - size, (z + size - margin)/(margin + size) = x
+                int xVal = (mX + size - XMARGIN) / (margin + size) - 1;
+                int yVal = (mY + size - YMARGIN) / (margin + size) - 1;
+                xVal %= this.gridSize;
+                yVal %= this.gridSize;
+                grid.setCell(xVal, yVal, AWTToolToRealTool(AWTToolbox.getCurrentTool()));
             }
 
             // menu catching
