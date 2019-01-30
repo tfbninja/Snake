@@ -216,11 +216,12 @@ public class Board {
                     } else if (this.grid.isBlank(x, y)) {
                         temp.setColor(Color.web(this.blank)); // light blue
                     } else if (this.grid.isRock(x, y)) {
-                        temp.setColor(Color.web(this.rock));
-                    } else if (this.grid.isPortal(x, y)) {
+                        temp.setColor(Color.web(this.rock)); // gray
+                    } else if (this.grid.isPortal(x, y) && grid.find(grid.safeCheck(x, y)).size() == 2) {
                         temp.setColor(Color.web(portalColors[(grid.safeCheck(x, y) - 10) % this.portalColors.length]));
                     } else if (this.grid.safeCheck(x, y) == 5) {
-                        temp.setColor(Color.CORAL);
+                        System.out.println("Unmatched portal color");
+                        temp.setColor(Color.BLACK);
                     } else { // there's a problem
                         //System.out.println(this.grid.getCell(x, y));
                         temp.setColor(Color.BLUEVIOLET);
@@ -411,7 +412,6 @@ public class Board {
     public int findUnusedPortalNum() {
         int num = 10;
         while (grid.find(num).size() > 1) {
-            System.out.println(grid.find(num));
             num++;
         }
         return num;
@@ -452,8 +452,8 @@ public class Board {
         //margin * (x+1)) + (size * (x-1)) = z, z = margin * x + xPos + margin + size * x - size, z = x(margin + size) + xPos + margin - size, (z + size - margin)/(margin + size) = x
         int xVal = (mX + size - XMARGIN) / (margin + size) - 1;
         int yVal = (mY + size - YMARGIN) / (margin + size) - 1;
-        xVal %= this.gridSize;
-        yVal %= this.gridSize;
+        //xVal %= this.gridSize;
+        //yVal %= this.gridSize;
 
         boolean leftClick = e.isPrimaryButtonDown();
         if (grid.getDiffLevel() == 0) {
@@ -462,7 +462,7 @@ public class Board {
             // left click
 
             // sandbox mode editing
-            if (mm.getCurrent() == 4 && grid.getDiffLevel() == 0) {
+            if (mm.getCurrent() == 4 && grid.getDiffLevel() == 0 && xVal >= 0 && xVal < grid.getWidth() && yVal >= 0 && yVal < grid.getLength()) {
 
                 int tool = AWTToolToRealTool(AWTToolbox.getCurrentTool());
                 switch (tool) {
@@ -474,11 +474,17 @@ public class Board {
                         grid.setCell(xVal, yVal, tool);
                         break;
                     case 5:
+                        System.out.println("Portal attempt");
                         if (grid.containsUnmatchedPortal() == -1) {
+                            System.out.println("no open portals");
                             tool = findUnusedPortalNum();
+                            grid.setCell(xVal, yVal, tool);
                         } else {
+                            int newPortalNum = findUnusedPortalNum();
                             tool = grid.containsUnmatchedPortal();
-                            grid.setCell(grid.findUnmatchedPortal(), findUnusedPortalNum());
+                            grid.setCell(grid.findUnmatchedPortal(), newPortalNum);
+                            System.out.println("open portal at " + grid.findUnmatchedPortal());
+                            grid.setCell(xVal, yVal, newPortalNum);
                         }
                         break;
                     default:
