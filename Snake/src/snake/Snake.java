@@ -177,13 +177,11 @@ public class Snake extends Application {
         ArrayList<String> toolColors = new ArrayList<>();
         toolNames.add("Blank");
         toolNames.add("Apple");
-        toolNames.add("Body");
         toolNames.add("Head");
         toolNames.add("Rock");
         toolNames.add("Portal");
         toolColors.add(board.getColorScheme().get(0));
         toolColors.add(board.getColorScheme().get(1));
-        toolColors.add(board.getColorScheme().get(2));
         toolColors.add(board.getColorScheme().get(3));
         toolColors.add(board.getColorScheme().get(5));
         toolColors.add("f142f4");

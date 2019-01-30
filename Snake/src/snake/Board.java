@@ -37,6 +37,7 @@ public class Board {
     private String bg = "ceceb5";
     private String rock = "53585e";
     private String applesEaten = "750BE0";
+    private String unmatchedPortal = "a079aa";
     private String[] portalColors = {"90094E", "550C74", "c4df09", "7CEA9C", "BD6B73"};
 
     private boolean lost = false;
@@ -218,6 +219,8 @@ public class Board {
                         temp.setColor(Color.web(this.rock));
                     } else if (this.grid.isPortal(x, y)) {
                         temp.setColor(Color.web(portalColors[(grid.safeCheck(x, y) - 10) % this.portalColors.length]));
+                    } else if (this.grid.safeCheck(x, y) == 5) {
+                        temp.setColor(Color.CORAL);
                     } else { // there's a problem
                         //System.out.println(this.grid.getCell(x, y));
                         temp.setColor(Color.BLUEVIOLET);
@@ -325,7 +328,12 @@ public class Board {
             keyPresses++;
         }
         if (!this.playing && mm.getCurrent() == 4 && isDirectional(e)) {
-            this.playing = true;
+            if (grid.containsUnmatchedPortal() > -1) {
+                // can't play with unmatched portals
+                Toolkit.getDefaultToolkit().beep();
+            } else {
+                this.playing = true;
+            }
         }
         if (e.getCode() == KeyCode.H) {
             if (mm.getCurrent() == 0) {
@@ -394,7 +402,8 @@ public class Board {
 
     public int findUnusedPortalNum() {
         int num = 10;
-        while (grid.find(10).size() > 0) {
+        while (grid.find(num).size() > 1) {
+            System.out.println(grid.find(num));
             num++;
         }
         return num;
@@ -406,8 +415,6 @@ public class Board {
                 return 3;
             case 3:
                 return 1;
-            case 5:
-                return findUnusedPortalNum();
             default:
                 return AWTTool;
         }
@@ -440,7 +447,21 @@ public class Board {
                 int yVal = (mY + size - YMARGIN) / (margin + size) - 1;
                 xVal %= this.gridSize;
                 yVal %= this.gridSize;
-                grid.setCell(xVal, yVal, AWTToolToRealTool(AWTToolbox.getCurrentTool()));
+                int tool = AWTToolToRealTool(AWTToolbox.getCurrentTool());
+                if (tool == 1 || tool == 3) {
+                    // if the tool is a head or apple, clear the others
+                    grid.removeAll(tool);
+                } else if (tool == 4) {
+                    if (grid.containsUnmatchedPortal() == -1) {
+                        tool = findUnusedPortalNum();
+                    } else {
+                        tool = grid.containsUnmatchedPortal();
+                        grid.setCell(grid.findUnmatchedPortal(), findUnusedPortalNum());
+                    }
+                } else {
+                    grid.setCell(xVal, yVal, tool);
+
+                }
             }
 
             // menu catching

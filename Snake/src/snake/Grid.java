@@ -18,6 +18,7 @@ public class Grid implements squares {
      * 2 - Snake body
      * 3 - Apple
      * 4 - Rock
+     * 5 - Unmatched portal
      * 10 and higher - portals
      */
     private int width;
@@ -108,6 +109,42 @@ public class Grid implements squares {
         for (int i = 0; i < this.length; i++) {
             Arrays.fill(this.savedPlayArea[i], 0);
         }
+    }
+
+    public void removeAll(int type) {
+        for (int y = 0; y < length; y++) {
+            for (int x = 0; x < width; x++) {
+                if (safeCheck(x, y) == type) {
+                    safeSetCell(x, y, 0);
+                }
+            }
+        }
+    }
+
+    public Pair<Integer, Integer> findUnmatchedPortal() {
+        if (containsUnmatchedPortal() > -1) {
+            for (int y = 0; y < length; y++) {
+                for (int x = 0; x < width; x++) {
+                    if (isPortal(x, y) && find(safeCheck(x, y)).size() == 1) {
+                        return new Pair<Integer, Integer>(x, y);
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public int containsUnmatchedPortal() {
+        // if there are no unmatched portals, returns -1
+        // if there are, it returns the lowest unmatched portal number
+        for (int y = 0; y < length; y++) {
+            for (int x = 0; x < width; x++) {
+                if (isPortal(x, y) && find(safeCheck(x, y)).size() == 1) {
+                    return safeCheck(x, y);
+                }
+            }
+        }
+        return -1;
     }
 
     public void setSandbox(int[][] playArea) {
