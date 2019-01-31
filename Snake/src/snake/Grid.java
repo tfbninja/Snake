@@ -265,6 +265,14 @@ public class Grid implements squares {
         sandboxGrow = amt;
     }
 
+    public void reset() {
+        applesEaten = 0;
+        direction = 0;
+        tempDir = 0;
+        gameOver = false;
+        snakeSize = 5;
+    }
+
     private void setObstacles() {
         this.setGrowBy(1);
         this.clear();
@@ -277,6 +285,7 @@ public class Grid implements squares {
                 this.snakeSize = sandboxLen;
                 this.pos.clear();
                 this.pos.add(sandboxPos);
+                System.out.println("setting head cell at " + pos.get(0).getKey() + ", " + pos.get(0).getValue());
                 setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
                 clear();
                 break;
@@ -301,6 +310,7 @@ public class Grid implements squares {
             case 3:
                 this.growBy = 4;
                 this.edgeKills = false;
+
                 clearObstacles();
 
                 //add 5 random rocks
@@ -789,9 +799,9 @@ public class Grid implements squares {
             this.removeExtra();
             if (countVal(2) < pos.size() - 1) {
                 pos.add(new Pair<Integer, Integer>(headX, headY));
-                this.setCell(headX, headY, 2);
+                this.safeSetCell(headX, headY, 2);
             } else {
-                this.setCell(headX, headY, 0);
+                this.safeSetCell(headX, headY, 0);
             }
         }
     }

@@ -73,6 +73,7 @@ public class Snake extends Application {
     private boolean sfxOn = true;
     private boolean musicOn = true;
     private boolean nightMode = false;
+    private boolean sandboxReset = false;
 
     private static final ArrayList<String> MENUNAMES = new ArrayList<String>() {
         {
@@ -204,6 +205,9 @@ public class Snake extends Application {
             public void handle(long now) {
                 frame++;
                 if (frame % 30 == 0) {
+                    if (board.getPlaying()) {
+                        sandboxReset = false;
+                    }
                     try {
                         PrintWriter printer = new PrintWriter(settingsLocation, "UTF-8");
                         FileWriter creator = new FileWriter(new File(settingsLocation));
@@ -245,6 +249,7 @@ public class Snake extends Application {
                         if (AI) {
                             AI();
                         }
+
                         board.drawBlocks();
                         scoresOverwritten = false;
                         if (frame % board.getGrid().getFrameSpeed() == 0) {
@@ -257,7 +262,8 @@ public class Snake extends Application {
                     } else {
                         // game over
                         board.drawBlocks();
-                        if (board.getGrid().getDiffLevel() == 0) {
+                        if (board.getGrid().getDiffLevel() == 0 && !sandboxReset) {
+                            sandboxReset = true;
                             board.resetKeepGrid();
                             board.getGrid().removeAll(1);
                             board.getGrid().removeAll(2);
@@ -265,8 +271,7 @@ public class Snake extends Application {
                             board.getGrid().setDiffLevel(0);
                             board.getGrid().setPlayArea(sandboxPlayArea);
                             board.drawBlocks();
-                            MM.setCurrent(4);
-                        } else if (!scoresOverwritten) {
+                        } else if (!scoresOverwritten && board.getGrid().getDiffLevel() != 0) {
 
                             int thisDifficulty = board.getGrid().getDiffLevel();
                             int thisScore = board.getGrid().getApplesEaten();

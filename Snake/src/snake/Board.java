@@ -263,9 +263,10 @@ public class Board {
     }
 
     public void resetKeepGrid() {
+        grid.reset();
         keyPresses = 0;
         this.lost = false;
-        mm.setCurrent(0);
+        mm.setCurrent(4);
         this.playing = false;
         this.grid.setSoundOn(this.soundOn);
     }
