@@ -46,8 +46,6 @@ public class Snake extends Application {
     // secondary sandbox tool window
     private final int TOOLWIDTH = 200;
     private final int TOOLHEIGHT = 450;
-    private Scene toolScene;
-//    private ToolPicker toolPicker;
     private AWTToolbox AWTToolbox;
 
     private int frame = 0;
@@ -184,21 +182,11 @@ public class Snake extends Application {
         toolColors.add(board.getColorScheme().get(3));
         toolColors.add(board.getColorScheme().get(5));
         toolColors.add("f142f4");
-        AWTToolbox = new AWTToolbox("Toolbox", TOOLWIDTH, TOOLHEIGHT, (int) (primaryStage.getX() - this.TOOLWIDTH), (int) primaryStage.getY(), toolColors, toolNames);
-        toolScene = new Scene(toolPane, TOOLWIDTH, TOOLHEIGHT);
-        //toolPicker = new ToolPicker("Toolbox", TOOLWIDTH, (int) primaryStage.getHeight(), (int) (primaryStage.getX() - this.TOOLWIDTH), (int) primaryStage.getY(), toolScene);
-        //toolPicker.setFont(new Font("Verdana", 13));
-//        toolPane.setCenter(toolPicker.getCanvas());
+        AWTToolbox = new AWTToolbox("Toolbox", TOOLWIDTH, TOOLHEIGHT, (int) (primaryStage.getX() - this.TOOLWIDTH) - 10, (int) primaryStage.getY() + 5, toolColors, toolNames, board.getGrid());
 
-//        toolPicker.getStage().setOnCloseRequest(event -> {
-//            toolPicker.hide();
-//            toolPicker.getStage().show();
-//        });
         AWTToolbox.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-//        board.addToolbox(toolPicker);
         board.addAWTToolbox(AWTToolbox);
 
-//        toolPicker.drawTools();
         // Main loop
         new AnimationTimer() {
             @Override
@@ -269,6 +257,8 @@ public class Snake extends Application {
                             board.getGrid().removeAll(2);
                             //initSandboxFile();
                             board.getGrid().setDiffLevel(0);
+                            board.getGrid().setGrowBy(AWTToolbox.getGrowBy());
+                            board.getGrid().setEdgeKills(AWTToolbox.getEdgeKills());
                             board.getGrid().setPlayArea(sandboxPlayArea);
                             board.drawBlocks();
                         } else if (!scoresOverwritten && board.getGrid().getDiffLevel() != 0) {
@@ -331,6 +321,10 @@ public class Snake extends Application {
         // Input handling
         scene.setOnMousePressed((MouseEvent event) -> {
             board.mouseClicked(event);
+        });
+
+        scene.setOnMouseDragged((MouseEvent event) -> {
+            board.mouseDragged(event);
         });
 
         scene.setOnKeyPressed((KeyEvent eventa) -> {

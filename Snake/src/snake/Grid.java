@@ -40,7 +40,9 @@ public class Grid implements squares {
     private int direction = 0;
     private int tempDir = 0;
     private ArrayList<Pair<Integer, Integer>> pos = new ArrayList<>();
-    private int snakeSize = 5;
+    private int initialSize = 5;
+    private int snakeSize = initialSize;
+
     private int applesEaten = 0;
 
     // sounds
@@ -266,11 +268,19 @@ public class Grid implements squares {
     }
 
     public void reset() {
-        applesEaten = 0;
+        //applesEaten = 0;
         direction = 0;
         tempDir = 0;
         gameOver = false;
-        snakeSize = 5;
+        snakeSize = initialSize;
+    }
+
+    public void resetSize() {
+        snakeSize = initialSize;
+    }
+
+    public void setApplesEaten(int amt) {
+        applesEaten = amt;
     }
 
     private void setObstacles() {
@@ -640,177 +650,199 @@ public class Grid implements squares {
         return otherPos;
     }
 
+    public void setInitialSize(int amt) {
+        initialSize = amt;
+    }
+
     public void nextGen() {
-        this.direction = this.tempDir;
-        int nextX = nextPos()[0];
-        int nextY = nextPos()[1];
-        int headX = pos.get(0).getKey();
-        int headY = pos.get(0).getValue();
+        if (!this.gameOver) {
+            if (this.snakeSize < 1) {
+                this.gameOver = true;
+                pick(loseSounds).play();
+                return;
+            }
 
-        if (this.countVal(2) + 2 > pos.size()) {
-            // if the amt of snake body + the head + the square about to be filled is more than the length, we need to chop the last part
-            this.chopTail();
-        }
+            this.direction = this.tempDir;
+            int nextX = nextPos()[0];
+            int nextY = nextPos()[1];
+            int headX = pos.get(0).getKey();
+            int headY = pos.get(0).getValue();
 
-        if (!this.edgeKills) {
-            boolean playWarpSound = false;
-            if (this.diffLevel < 4) {
-                if (nextX < 0) {
-                    nextX = this.width - 1;
-                    playWarpSound = true;
-                } else if (nextX >= this.width) {
-                    nextX = 0;
-                    playWarpSound = true;
-                }
-                if (nextY < 0) {
-                    nextY = this.length - 1;
-                    playWarpSound = true;
-                } else if (nextY >= this.length) {
-                    nextY = 0;
-                    playWarpSound = true;
-                }
-                if (playWarpSound && soundOn) {
-                    warp.play();
-                }
-            } else {
-                // extreme mode, warp x with y
-                boolean playWarpSound2 = false;
-                while (nextX < 0 || nextX >= this.width || nextY < 0 || nextY >= this.length) {
+            if (this.countVal(2) + 2 > pos.size()) {
+                // if the amt of snake body + the head + the square about to be filled is more than the length, we need to chop the last part
+                this.chopTail();
+            }
+
+            if (!this.edgeKills) {
+                boolean playWarpSound = false;
+                if (this.diffLevel < 4) {
                     if (nextX < 0) {
-                        nextX = this.width - nextY - 1;
-                        nextY = 0;
-                        this.direction = 3;
-                        this.tempDir = 3;
-                        playWarpSound2 = true;
-                    }
-                    if (nextX >= this.width) {
-                        nextX = this.width - nextY - 1;
-                        nextY = this.length - 1;
-                        this.direction = 1;
-                        this.tempDir = 1;
-                        playWarpSound2 = true;
-                    }
-
-                    if (nextY < 0) {
-                        nextY = nextX;
                         nextX = this.width - 1;
-                        this.direction = 4;
-                        this.tempDir = 4;
-                        playWarpSound2 = true;
-                    }
-                    if (nextY >= this.length) {
-                        nextY = nextX;
+                        playWarpSound = true;
+                    } else if (nextX >= this.width) {
                         nextX = 0;
-                        this.direction = 2;
-                        this.tempDir = 2;
-                        playWarpSound2 = true;
+                        playWarpSound = true;
                     }
-                    if (playWarpSound2 && soundOn) {
+                    if (nextY < 0) {
+                        nextY = this.length - 1;
+                        playWarpSound = true;
+                    } else if (nextY >= this.length) {
+                        nextY = 0;
+                        playWarpSound = true;
+                    }
+                    if (playWarpSound && soundOn) {
                         warp.play();
                     }
-                }
-            }
-        } else {
-            // edge kills
-            if (nextX < 0) {
-                this.gameOver = true;
-                if (soundOn) {
-                    pick(loseSounds).play();
-                }
-            }
-            if (nextX >= this.width) {
-                this.gameOver = true;
-                if (soundOn) {
-                    pick(loseSounds).play();
-                }
-            }
-            if (nextY < 0) {
-                this.gameOver = true;
-                if (soundOn) {
-                    pick(loseSounds).play();
-                }
-            }
-            if (nextY >= this.length) {
-                this.gameOver = true;
-                if (soundOn) {
-                    pick(loseSounds).play();
-                }
-            }
-        }
+                } else {
+                    // extreme mode, warp x with y
+                    boolean playWarpSound2 = false;
+                    while (nextX < 0 || nextX >= this.width || nextY < 0 || nextY >= this.length) {
+                        if (nextX < 0) {
+                            nextX = this.width - nextY - 1;
+                            nextY = 0;
+                            this.direction = 3;
+                            this.tempDir = 3;
+                            playWarpSound2 = true;
+                        }
+                        if (nextX >= this.width) {
+                            nextX = this.width - nextY - 1;
+                            nextY = this.length - 1;
+                            this.direction = 1;
+                            this.tempDir = 1;
+                            playWarpSound2 = true;
+                        }
 
-        if (!this.gameOver && this.isRock(nextX, nextY) || this.edgeKills && (nextX >= this.width || nextY >= this.length || nextX < 0 || nextY < 0)) {
-            // collision with wall or rock
-            this.gameOver = true;
-            if (soundOn) {
-                pick(loseSounds).play();
-            }
-        } else if (!this.gameOver && isSnake(nextX, nextY)) {
-            // collision with self
-            this.gameOver = true;
-            if (soundOn) {
-                pick(loseSounds).play();
-            }
-        } else if (!this.gameOver && this.isApple(nextX, nextY)) {
-            // ate an apple
-            this.applesEaten++;
-            if (soundOn) {
-                bite.play();
-            }
-            grow();
-            this.pos.add(0, new Pair<Integer, Integer>(nextX, nextY)); // add segment in front
-            this.setCell(nextX, nextY, 1); // update grid
-            this.removeExtra();
-            if (countVal(2) < pos.size() - 1) {
-                pos.add(new Pair<Integer, Integer>(headX, headY));
-                this.setCell(headX, headY, 2);
+                        if (nextY < 0) {
+                            nextY = nextX;
+                            nextX = this.width - 1;
+                            this.direction = 4;
+                            this.tempDir = 4;
+                            playWarpSound2 = true;
+                        }
+                        if (nextY >= this.length) {
+                            nextY = nextX;
+                            nextX = 0;
+                            this.direction = 2;
+                            this.tempDir = 2;
+                            playWarpSound2 = true;
+                        }
+                        if (playWarpSound2 && soundOn) {
+                            warp.play();
+                        }
+                    }
+                }
             } else {
-                this.setCell(headX, headY, 0);
+                // edge kills
+                if (nextX < 0) {
+                    this.gameOver = true;
+                    if (soundOn) {
+                        pick(loseSounds).play();
+                    }
+                }
+                if (nextX >= this.width) {
+                    this.gameOver = true;
+                    if (soundOn) {
+                        pick(loseSounds).play();
+                    }
+                }
+                if (nextY < 0) {
+                    this.gameOver = true;
+                    if (soundOn) {
+                        pick(loseSounds).play();
+                    }
+                }
+                if (nextY >= this.length) {
+                    this.gameOver = true;
+                    if (soundOn) {
+                        pick(loseSounds).play();
+                    }
+                }
             }
-            clearApples();
-            newApple();
-            //nextGen(); // don't pause
-        } else if (!this.gameOver && this.isPortal(nextX, nextY)) {
-            // if next square is a portal
 
-            while (this.isPortal(nextX, nextY)) {
-                // while the square being teleported to contains a portal...
-                // teleport to the next portal
-                int oldX = nextX, oldY = nextY;
-                nextX = this.otherPortalPos(oldX, oldY)[0] + XADD[direction - 1];
-                nextY = this.otherPortalPos(oldX, oldY)[1] + YADD[direction - 1];
-            }
-            // set the last open square where the head used to be as a body segment
-            this.setCell(headX, headY, 2);
-            headX = nextX;
-            headY = nextY;
-            this.safeSetCell(headX, headY, 1);
-            this.pos.add(0, new Pair<Integer, Integer>(headX, headY)); // add segment in front
-            this.removeExtra();
-            if (countVal(2) < pos.size() - 1) {
-                pos.add(new Pair<Integer, Integer>(headX, headY));
+            if (!this.gameOver && this.isRock(nextX, nextY) || this.edgeKills && (nextX >= this.width || nextY >= this.length || nextX < 0 || nextY < 0)) {
+                // collision with wall or rock
+                this.gameOver = true;
+                if (soundOn) {
+                    pick(loseSounds).play();
+                }
+            } else if (!this.gameOver && isSnake(nextX, nextY)) {
+                // collision with self
+                this.gameOver = true;
+                if (soundOn) {
+                    pick(loseSounds).play();
+                }
+            } else if (!this.gameOver && this.isApple(nextX, nextY)) {
+                // ate an apple
+                this.applesEaten++;
+                if (soundOn) {
+                    bite.play();
+                }
+                grow();
+                clearApples();
+                newApple();
+                if (this.snakeSize < 1) {
+                    this.gameOver = true;
+                    pick(loseSounds).play();
+                    return;
+                }
+                this.pos.add(0, new Pair<Integer, Integer>(nextX, nextY)); // add segment in front
+                this.setCell(nextX, nextY, 1); // update grid
+                this.removeExtra();
+                if (countVal(2) < pos.size() - 1) {
+                    pos.add(new Pair<Integer, Integer>(headX, headY));
+                    this.setCell(headX, headY, 2);
+                } else {
+                    this.setCell(headX, headY, 0);
+                }
+
+                //nextGen(); // don't pause
+            } else if (!this.gameOver && this.isPortal(nextX, nextY)) {
+                // if next square is a portal
+
+                while (isPortal(nextX, nextY)) {
+                    // while the square being teleported to contains a portal...
+                    // teleport to the next portal
+                    int oldX = nextX, oldY = nextY;
+                    nextX = this.otherPortalPos(oldX, oldY)[0] + XADD[direction - 1];
+                    nextY = this.otherPortalPos(oldX, oldY)[1] + YADD[direction - 1];
+                }
+                // set the last open square where the head used to be as a body segment
                 this.safeSetCell(headX, headY, 2);
-            } else {
-                this.safeSetCell(headX, headY, 0);
-            }
 
-        } else if (!this.gameOver && this.isBlank(nextX, nextY)) {
-            this.pos.add(0, new Pair<Integer, Integer>(nextX, nextY)); // add segment in front
-            this.setCell(nextX, nextY, 1); // update grid
-            this.removeExtra();
-            if (countVal(2) < pos.size() - 1) {
-                pos.add(new Pair<Integer, Integer>(headX, headY));
-                this.safeSetCell(headX, headY, 2);
-            } else {
-                this.safeSetCell(headX, headY, 0);
+                headX = nextX;
+                headY = nextY;
+                while (isPortal(nextX, nextY)) {
+                    // while the square being teleported to contains a portal...
+                    // teleport to the next portal
+                    int oldX = nextX, oldY = nextY;
+                    nextX = this.otherPortalPos(oldX, oldY)[0] + XADD[direction - 1];
+                    nextY = this.otherPortalPos(oldX, oldY)[1] + YADD[direction - 1];
+                }
+                this.safeSetCell(headX, headY, 1);
+
+                this.pos.add(0, new Pair<Integer, Integer>(headX, headY)); // add segment in front
+                this.removeExtra();
+                if (countVal(2) < pos.size() - 1) {
+                    pos.add(new Pair<Integer, Integer>(headX, headY));
+                    this.safeSetCell(headX, headY, 2);
+                } else {
+                    this.safeSetCell(headX, headY, 0);
+                }
+
+            } else if (!this.gameOver && this.isBlank(nextX, nextY)) {
+                this.pos.add(0, new Pair<Integer, Integer>(nextX, nextY)); // add segment in front
+                this.setCell(nextX, nextY, 1); // update grid
+                this.removeExtra();
+                if (countVal(2) < pos.size() - 1) {
+                    pos.add(new Pair<Integer, Integer>(headX, headY));
+                    this.safeSetCell(headX, headY, 2);
+                } else {
+                    this.safeSetCell(headX, headY, 0);
+                }
             }
         }
     }
 
-    /*
-     * public int[][] getPlayArea() {
-     * return this.playArea;
-     * }
-     */
     public int[][] getSavedPlayArea() {
         return this.savedPlayArea;
     }
@@ -874,6 +906,10 @@ public class Grid implements squares {
         } catch (ArrayIndexOutOfBoundsException b) {
             return -1;
         }
+    }
+
+    public int safeCheck(Pair<Integer, Integer> square) {
+        return safeCheck(square.getKey(), square.getValue());
     }
 
     public int countVal(int value) {

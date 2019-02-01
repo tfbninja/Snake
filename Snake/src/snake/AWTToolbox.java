@@ -8,20 +8,22 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseEvent;
+import java.awt.Image;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.ImageIcon;
-import java.net.URL;
-import java.util.List;
+import java.awt.Checkbox;
+import javax.swing.JSpinner;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
-import java.util.Collections;
-import javafx.scene.input.KeyCode;
+import java.awt.Rectangle;
+import java.awt.GraphicsConfiguration;
 
 public class AWTToolbox extends JFrame implements ActionListener {
 
@@ -70,12 +72,31 @@ public class AWTToolbox extends JFrame implements ActionListener {
 
     private JLabel savedMsg;
 
+    private JSpinner growBySpinner;
+    private JLabel growByLabel;
+
+    private JSpinner initialSizeSpinner;
+    private JLabel initialSizeLabel;
+
+    private Checkbox edgeKillsBox;
+
+    private Grid grid;
+
     /**
      * The coordinates of the tools
      */
     private Point[] toolCoords;
 
-    public AWTToolbox(String title, int width, int height, int xPos, int yPos, ArrayList<String> toolColors, ArrayList<String> toolNames) {
+    public AWTToolbox(String title, int width, int height, int xPos, int yPos, ArrayList<String> toolColors, ArrayList<String> toolNames, Grid grid) {
+        this.grid = grid;
+        Image icon = Toolkit.getDefaultToolkit().getImage("resources/art/icon16.jpg");
+        this.setIconImage(icon);
+        GraphicsConfiguration gc = this.getGraphicsConfiguration();
+        Rectangle bounds = gc.getBounds();
+        Dimension size = this.getPreferredSize();
+        this.setLocation(xPos, yPos);
+        this.setTitle(title);
+
         XPOS = xPos;
         YPOS = yPos;
         WIDTH = width;
@@ -111,6 +132,14 @@ public class AWTToolbox extends JFrame implements ActionListener {
         panel.repaint();
     }
 
+    public int getGrowBy() {
+        return (int) growBySpinner.getValue();
+    }
+
+    public boolean getEdgeKills() {
+        return edgeKillsBox.getState();
+    }
+
     /**
      * Initialize the display.
      */
@@ -122,8 +151,9 @@ public class AWTToolbox extends JFrame implements ActionListener {
         };
 
         panel.setLayout(null);
-        panel.setBounds(XPOS, YPOS, WIDTH - 20, HEIGHT - 20);
-        panel.setPreferredSize(new Dimension(WIDTH - 20, HEIGHT - 20));
+        panel.setBounds(XPOS, YPOS, WIDTH, HEIGHT);
+        this.setResizable(false);
+        panel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         panel.setFocusable(true);
         panel.addKeyListener(new KeyListener() {
             public void keyTyped(KeyEvent ke) {
@@ -149,6 +179,63 @@ public class AWTToolbox extends JFrame implements ActionListener {
             tools.get(i).setVisible(true);
         }
 
+        growBySpinner = new JSpinner();
+        growBySpinner.setName("Grow amount");
+        growBySpinner.setValue(1);
+        growBySpinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                int val = (int) growBySpinner.getValue();
+                //if (val >= 1) {
+                grid.setGrowBy((int) growBySpinner.getValue());
+                //}
+            }
+        });
+        growBySpinner.setBounds(TOOLX, (int) (TOOLY + ((TOOLH + TOOLYSPACE) * 5.5)), TOOLW / 2, 20);
+        panel.add(growBySpinner);
+
+        growByLabel = new JLabel("Grow amt");
+        growByLabel.setFont(new Font("sansserif", 0, 13));
+        growByLabel.setForeground(Color.DARK_GRAY);
+        growByLabel.setVisible(true);
+        growByLabel.setBounds(growBySpinner.getX() + growBySpinner.getWidth() + 2, growBySpinner.getY() - 5, 75, 30);
+        panel.add(growByLabel);
+
+        initialSizeSpinner = new JSpinner();
+        initialSizeSpinner.setName("Initial size");
+        initialSizeSpinner.setValue(5);
+        initialSizeSpinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                int val = (int) initialSizeSpinner.getValue();
+                if (val >= 1) {
+                    grid.setInitialSize((int) initialSizeSpinner.getValue());
+                }
+            }
+        });
+        initialSizeSpinner.setBounds(TOOLX, (int) (TOOLY + ((TOOLH + TOOLYSPACE) * 6)), TOOLW / 2, 20);
+        panel.add(initialSizeSpinner);
+
+        initialSizeLabel = new JLabel("Initial size");
+        initialSizeLabel.setFont(new Font("sansserif", 0, 13));
+        initialSizeLabel.setForeground(Color.DARK_GRAY);
+        initialSizeLabel.setVisible(true);
+        initialSizeLabel.setBounds(initialSizeSpinner.getX() + initialSizeSpinner.getWidth() + 2, initialSizeSpinner.getY() - 5, 75, 30);
+        panel.add(initialSizeLabel);
+
+        edgeKillsBox = new Checkbox("Edge Kills");
+        edgeKillsBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                //statusLabel.setText("Mango Checkbox: " +   (e.getStateChange() == 1 ? "checked" : "unchecked"));
+                grid.setEdgeKills(e.getStateChange() == 1 ? true : false);
+            }
+        });
+        edgeKillsBox.setBounds(TOOLX, TOOLY + ((TOOLH + TOOLYSPACE) * 5), 20, 20);
+        edgeKillsBox.setSize(TOOLW, 20);
+        panel.add(edgeKillsBox);
+        edgeKillsBox.setVisible(true);
+
         currentTool = new JButton();
         currentTool.setText("");
         currentTool.setBounds(TOOLX + TOOLW + 10, TOOLY, 50, 50);
@@ -173,7 +260,7 @@ public class AWTToolbox extends JFrame implements ActionListener {
         savedMsg = new JLabel("Saved!");
         savedMsg.setFont(new Font("Sansserif", 0, 20));
         savedMsg.setForeground(Color.blue);
-        savedMsg.setVisible(true);
+        savedMsg.setVisible(false);
         panel.add(savedMsg);
         savedMsg.setBounds(BUTTONX + 8, BUTTONY - 30, 250, 30);
         pack();
@@ -190,16 +277,12 @@ public class AWTToolbox extends JFrame implements ActionListener {
         t.beep();
     }
 
-    /**
-     * Respond to a button click (on either the "Replace" button or the
-     * "Restart" button).
-     *
-     * @param e the button click action event
-     */
     public void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(saveButton)) {
+            this.savedMsg.setVisible(true);
             repaint();
         } else if (e.getSource().equals(loadButton)) {
+            this.savedMsg.setVisible(false);
             repaint();
         } else {
             for (int k = 0; k < tools.size(); k++) {
@@ -219,6 +302,7 @@ public class AWTToolbox extends JFrame implements ActionListener {
     }
 
     public int getCurrentTool() {
+        this.savedMsg.setVisible(false);
         return toolNum;
     }
 }

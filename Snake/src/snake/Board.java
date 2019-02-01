@@ -9,6 +9,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import javafx.scene.text.Font;
 import java.util.ArrayList;
 
@@ -219,12 +220,8 @@ public class Board {
                         temp.setColor(Color.web(this.rock)); // gray
                     } else if (this.grid.isPortal(x, y) && grid.find(grid.safeCheck(x, y)).size() == 2) {
                         temp.setColor(Color.web(portalColors[(grid.safeCheck(x, y) - 10) % this.portalColors.length]));
-                    } else if (this.grid.safeCheck(x, y) == 5) {
-                        System.out.println("Unmatched portal color");
+                    } else { // unmatched portal
                         temp.setColor(Color.BLACK);
-                    } else { // there's a problem
-                        //System.out.println(this.grid.getCell(x, y));
-                        temp.setColor(Color.BLUEVIOLET);
                     }
                     temp.setX(xPixel);
                     temp.setY(yPixel);
@@ -247,6 +244,7 @@ public class Board {
 
             // we've drawn all the blocks, now if we've lost we need to act on it
             if (this.lost == true) {
+                this.playing = false;
             }
         } else {
 
@@ -311,7 +309,7 @@ public class Board {
         if (mm.getCurrent() == 0) {
             if (e.getCode() == KeyCode.DIGIT1) {
                 // easy mode chosen
-                this.grid.setDiffLevel(1);
+                grid.setDiffLevel(1);
                 mm.setCurrent(4);
             } else if (e.getCode() == KeyCode.DIGIT2) {
                 // medium mode chosen
@@ -338,6 +336,8 @@ public class Board {
             keyPresses++;
         }
         if (!this.playing && mm.getCurrent() == 4 && isDirectional(e)) {
+            grid.setApplesEaten(0);
+            grid.resetSize();
             if (grid.containsUnmatchedPortal() > -1) {
                 // can't play with unmatched portals
                 Toolkit.getDefaultToolkit().beep();
@@ -437,6 +437,55 @@ public class Board {
         }
     }
 
+    public void mouseDragged(MouseEvent e) {
+        System.out.println("Mouse moved called");
+        double mouseX = e.getX();
+        double mouseY = e.getY();
+        // account for border outside of canvas
+        mouseY -= outsideMargin;
+        mouseX -= outsideMargin;
+        int mX = (int) mouseX;
+        int mY = (int) mouseY;
+        // top right:
+        // margin * x + xPos + (size * (x-1)) : += size
+        //solve:
+        //margin * (x+1)) + (size * (x-1)) = z, z = margin * x + xPos + margin + size * x - size, z = x(margin + size) + xPos + margin - size, (z + size - margin)/(margin + size) = x
+        int xVal = (mX + size - XMARGIN) / (margin + size) - 1;
+        int yVal = (mY + size - YMARGIN) / (margin + size) - 1;
+        //xVal %= this.gridSize;
+        //yVal %= this.gridSize;
+
+        boolean leftClick = e.isPrimaryButtonDown();
+        boolean rightClick = e.isSecondaryButtonDown();
+        if (rightClick) {
+            try {
+                grid.setCell(xVal, yVal, 0);
+            } catch (ArrayIndexOutOfBoundsException x) {
+                return;
+            }
+            return;
+        }
+
+        if (leftClick) {
+            // left click
+
+            // sandbox mode editing
+            if (mm.getCurrent() == 4 && grid.getDiffLevel() == 0 && xVal >= 0 && xVal < grid.getWidth() && yVal >= 0 && yVal < grid.getLength()) {
+
+                int tool = AWTToolToRealTool(AWTToolbox.getCurrentTool());
+
+                switch (tool) {
+                    case 4:
+                    case 0:
+                        grid.setCell(xVal, yVal, tool);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
     public void mouseClicked(MouseEvent e) {
         this.mouseClicks++;
 
@@ -468,9 +517,10 @@ public class Board {
                 int tool = AWTToolToRealTool(AWTToolbox.getCurrentTool());
                 switch (tool) {
                     case 1:
+                        // tell the grid where the head is
                         grid.setSandboxHeadPos(xVal, yVal);
                     case 3:
-                        // if the tool is a head or apple, clear the others
+                        // do the same for the apple as the head; clear the other ones
                         grid.removeAll(tool);
                         grid.setCell(xVal, yVal, tool);
                         break;
@@ -481,14 +531,19 @@ public class Board {
                             tool = findUnusedPortalNum();
                             grid.setCell(xVal, yVal, tool);
                         } else {
-                            int newPortalNum = findUnusedPortalNum();
-                            tool = grid.containsUnmatchedPortal();
-                            grid.setCell(grid.findUnmatchedPortal(), newPortalNum);
-                            System.out.println("open portal at " + grid.findUnmatchedPortal());
+                            // get an unused number for a new portal
+                            int newPortalNum = grid.safeCheck(grid.findUnmatchedPortal());
+                            // get the location of an unmatched portal
+                            Pair<Integer, Integer> tempPos = grid.findUnmatchedPortal();
+                            // set that old unmatched portal to... it's current value...hmmm
+                            //grid.setCell(tempPos, newPortalNum);
+                            //System.out.println("open portal at " + tempPos);
+                            // set the clicked square to the value of the unmatched portal
                             grid.setCell(xVal, yVal, newPortalNum);
                         }
                         break;
                     default:
+                        // possibly not the best programming technique.... lmao
                         grid.setCell(xVal, yVal, tool);
                         break;
                 }
@@ -544,13 +599,6 @@ public class Board {
         } else {
             // middle button
         }
-    }
-
-    public void mouseMoved(MouseEvent e) {
-        double mouseX = e.getX();
-        double mouseY = e.getY();
-        int mX = (int) mouseX;
-        int mY = (int) mouseY;
     }
 
     public Canvas getCanvas() {
