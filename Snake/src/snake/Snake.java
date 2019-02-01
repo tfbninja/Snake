@@ -368,6 +368,22 @@ public class Snake extends Application {
         }
     }
 
+    public static String compileToSandboxFile(boolean edgeKills, int frmSpd, int initialLength, int growBy, int[][] playArea) {
+        String s = "" + frmSpd + " - number of frames to wait before waiting (min 1)\n";
+        s += initialLength + " - initial snake length\n";
+        s += growBy + " - snake grow amt\n";
+        s += edgeKills ? 1 : 0;
+        s += " - edge kills (0 for false, 1 for true)\n";
+        s += " *\n * Square types:\n * 0 - blank\n * 1 - head (only one of these)\n * 2 - body\n * 3 - Apple\n * 4 - Rock\n * 5 - Invisible\n * 10 and higher - portals (no more than and no less than 2 of each type of portal)\n *\n\n";
+        for (int[] y : playArea) {
+            for (int x : y) {
+                s += x + " ";
+            }
+            s += "\n";
+        }
+        return s;
+    }
+
     private static void initSandboxFile() {
         try {
             sandbox = new File(SANDBOXLOCATION);

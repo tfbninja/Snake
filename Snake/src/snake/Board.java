@@ -14,7 +14,7 @@ import javafx.scene.text.Font;
 import java.util.ArrayList;
 
 public class Board {
-
+    
     private final int width;
     private final int height;
     private Grid grid;
@@ -27,7 +27,7 @@ public class Board {
     private final int borderSize = 2;
     private final int edgeSize = 2;
     private final int gridSize = 25;
-
+    
     private int mouseClicks = 0;
 
     // colors (day theme)
@@ -40,11 +40,11 @@ public class Board {
     private String applesEaten = "750BE0";
     private String unmatchedPortal = "a079aa";
     private String[] portalColors = {"90094E", "550C74", "c4df09", "7CEA9C", "BD6B73"};
-
+    
     private boolean lost = false;
-
+    
     private int keyPresses = 0;
-
+    
     private boolean playing = false;
 
     //menu variables
@@ -58,20 +58,20 @@ public class Board {
     private final int[] musicButton = {12, 18, 55, 37};
     private final int[] SFXButton = {83, 18, 28, 37};
     private final int[] helpButton = {13, 255, 47, 22};
-
+    
     private boolean nightTheme = false;
-
+    
     private final MenuManager mm;
-
+    
     private final MainMenu menu;
-
+    
     private boolean sandboxExists = false;
     private int[][] sandbox;
-
+    
     private ToolPicker toolbox;
     private AWTToolbox AWTToolbox;
     private Stage primaryStage;
-
+    
     public Board(int w, int h, MenuManager mm, MainMenu menu, Stage primary) {
         this.width = w;
         this.height = h;
@@ -82,7 +82,7 @@ public class Board {
         grid.clearApples();
         primaryStage = primary;
     }
-
+    
     public void setDarkMode() {
         blank = "444444";
         apple = "E51B39";
@@ -92,11 +92,11 @@ public class Board {
         rock = "1e1e1e";
         applesEaten = "EDDDD4";
     }
-
+    
     public void addAWTToolbox(AWTToolbox tb) {
         this.AWTToolbox = tb;
     }
-
+    
     public ArrayList<String> getColorScheme() {
         ArrayList<String> colors = new ArrayList<>();
         colors.add(blank);
@@ -108,7 +108,7 @@ public class Board {
         colors.add(applesEaten);
         return colors;
     }
-
+    
     public void setLightMode() {
         blank = "74bfb0";
         apple = "cc1212";
@@ -118,52 +118,52 @@ public class Board {
         rock = "53585e";
         applesEaten = "750BE0";
     }
-
+    
     public void addToolbox(ToolPicker tb) {
         this.toolbox = tb;
     }
-
+    
     public void setOutsideMargin(int amt) {
         this.outsideMargin = amt;
     }
-
+    
     public boolean getShowHelp() {
         return mm.getCurrent() == 2;
     }
-
+    
     public void createGrid() {
         grid = new Grid(gridSize, gridSize, 21, 20);
     }
-
+    
     public boolean getShowHighScores() {
         return mm.getCurrent() == 1;
     }
-
+    
     public boolean getPlaying() {
         return this.playing;
     }
-
+    
     public boolean getShowMenu() {
         return mm.getCurrent() == 0;
     }
-
+    
     public Grid getGrid() {
         return this.grid;
     }
-
+    
     public void setGrid(Grid newGrid) {
         this.grid = newGrid;
     }
-
+    
     private int[] getPixelDimensions() {
         int[] dimensions = {margin * (gridSize - 1) + size * gridSize, margin * (gridSize - 1) + size * gridSize};
         return dimensions;
     }
-
+    
     public boolean getNightTheme() {
         return this.nightTheme;
     }
-
+    
     public void setNightTheme(boolean val) {
         this.nightTheme = val;
         if (val) {
@@ -190,7 +190,7 @@ public class Board {
             gc.setStroke(Color.BLACK);
             gc.setLineWidth(borderSize);
             gc.fillRect(borderSize / 2, borderSize / 2, width - borderSize, height - borderSize);
-
+            
             if (this.grid.getEdgeKills()) {
                 // draw red border indicating that edge kills
                 gc.setStroke(Color.CRIMSON.darker());
@@ -237,7 +237,7 @@ public class Board {
             gc.setFill(Color.web(applesEaten));
             gc.setFont(Font.font("Impact", 22));
             gc.fillText("Apples eaten: " + this.getGrid().getApplesEaten(), XMARGIN + width / 2 - 100, YMARGIN + getPixelDimensions()[1] + 22);
-
+            
             if (!this.lost && this.grid.getGameOver()) {
                 this.lost = true;
             }
@@ -247,10 +247,10 @@ public class Board {
                 this.playing = false;
             }
         } else {
-
+            
         }
     }
-
+    
     public void reset() {
         keyPresses = 0;
         this.lost = false;
@@ -259,7 +259,7 @@ public class Board {
         createGrid();
         this.grid.setSoundOn(this.soundOn);
     }
-
+    
     public void resetKeepGrid() {
         grid.reset();
         keyPresses = 0;
@@ -268,16 +268,16 @@ public class Board {
         this.playing = false;
         this.grid.setSoundOn(this.soundOn);
     }
-
+    
     public boolean getSFXOn() {
         return this.soundOn;
     }
-
+    
     public void setSFX(boolean val) {
         this.soundOn = val;
         this.grid.setSoundOn(val);
     }
-
+    
     private boolean isDirectional(KeyEvent i) {
         //System.out.println(i.getCode());
         return i.getCode() == KeyCode.UP || i.getCode() == KeyCode.W
@@ -285,13 +285,13 @@ public class Board {
                 || i.getCode() == KeyCode.LEFT || i.getCode() == KeyCode.A
                 || i.getCode() == KeyCode.RIGHT || i.getCode() == KeyCode.D;
     }
-
+    
     public void setSandbox(int[][] playArea) {
         sandboxExists = true;
         sandbox = playArea;
         grid.setSandbox(playArea);
     }
-
+    
     public void keyPressed(KeyEvent e) {
         if (e.getCode() == KeyCode.R && mm.getCurrent() == 3) {
             reset();
@@ -303,9 +303,9 @@ public class Board {
         if (e.getCode() == KeyCode.ESCAPE) {
             reset();
             mm.setCurrent(0);
-            toolbox.hide();
+            AWTToolbox.setVisible(false);
         }
-
+        
         if (mm.getCurrent() == 0) {
             if (e.getCode() == KeyCode.DIGIT1) {
                 // easy mode chosen
@@ -391,7 +391,7 @@ public class Board {
             }
         }
     }
-
+    
     public void toggleMusic() {
         if (menu.getMusic()) {
             menu.turnOffMusic();
@@ -400,7 +400,7 @@ public class Board {
         }
         this.soundOn = menu.getMusic();
     }
-
+    
     public void toggleSFX() {
         if (menu.getSFX()) {
             menu.turnOffSFX();
@@ -409,7 +409,7 @@ public class Board {
         }
         this.grid.setSoundOn(menu.getSFX());
     }
-
+    
     public int findUnusedPortalNum() {
         int num = 10;
         while (grid.find(num).size() > 1) {
@@ -417,7 +417,7 @@ public class Board {
         }
         return num;
     }
-
+    
     public int AWTToolToRealTool(int AWTTool) {
         switch (AWTTool) {
             case 0:
@@ -436,7 +436,7 @@ public class Board {
                 return AWTTool;
         }
     }
-
+    
     public void mouseDragged(MouseEvent e) {
         System.out.println("Mouse moved called");
         double mouseX = e.getX();
@@ -465,15 +465,15 @@ public class Board {
             }
             return;
         }
-
+        
         if (leftClick) {
             // left click
 
             // sandbox mode editing
             if (mm.getCurrent() == 4 && grid.getDiffLevel() == 0 && xVal >= 0 && xVal < grid.getWidth() && yVal >= 0 && yVal < grid.getLength()) {
-
+                
                 int tool = AWTToolToRealTool(AWTToolbox.getCurrentTool());
-
+                
                 switch (tool) {
                     case 4:
                     case 0:
@@ -485,10 +485,10 @@ public class Board {
             }
         }
     }
-
+    
     public void mouseClicked(MouseEvent e) {
         this.mouseClicks++;
-
+        
         double mouseX = e.getX();
         double mouseY = e.getY();
         // account for border outside of canvas
@@ -513,7 +513,7 @@ public class Board {
 
             // sandbox mode editing
             if (mm.getCurrent() == 4 && grid.getDiffLevel() == 0 && xVal >= 0 && xVal < grid.getWidth() && yVal >= 0 && yVal < grid.getLength()) {
-
+                
                 int tool = AWTToolToRealTool(AWTToolbox.getCurrentTool());
                 switch (tool) {
                     case 1:
@@ -600,11 +600,11 @@ public class Board {
             // middle button
         }
     }
-
+    
     public Canvas getCanvas() {
         return canvas;
     }
-
+    
     @Override
     public String toString() {
         return "";

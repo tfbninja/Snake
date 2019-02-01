@@ -1,5 +1,6 @@
 package snake;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Graphics;
@@ -16,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import java.awt.Checkbox;
+import java.awt.Container;
 import javax.swing.JSpinner;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -24,6 +26,9 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.awt.Rectangle;
 import java.awt.GraphicsConfiguration;
+import java.awt.GridLayout;
+import javax.swing.JFileChooser;
+import javax.swing.JTextField;
 
 public class AWTToolbox extends JFrame implements ActionListener {
 
@@ -58,15 +63,19 @@ public class AWTToolbox extends JFrame implements ActionListener {
 
     private ArrayList<JButton> tools;
 
-    private final int BUTTONY = 325;
+    private final int BUTTONY = 375;
     private final int BUTTONX = 10;
-    private final int BUTTONXSPACE = 10;
+    private final int BUTTONXSPACE = 30;
     private final int BUTTONW = 75;
     private final int BUTTONH = 30;
+
+    private JTextField filename = new JTextField();
+    private JTextField dir = new JTextField();
 
     private JButton saveButton;
 
     private JButton currentTool;
+    private JLabel currentToolLabel;
 
     private JButton loadButton;
 
@@ -77,6 +86,9 @@ public class AWTToolbox extends JFrame implements ActionListener {
 
     private JSpinner initialSizeSpinner;
     private JLabel initialSizeLabel;
+
+    private JSpinner frameSpeedSpinner;
+    private JLabel frameSpeedLabel;
 
     private Checkbox edgeKillsBox;
 
@@ -201,6 +213,31 @@ public class AWTToolbox extends JFrame implements ActionListener {
         growByLabel.setBounds(growBySpinner.getX() + growBySpinner.getWidth() + 2, growBySpinner.getY() - 5, 75, 30);
         panel.add(growByLabel);
 
+        frameSpeedSpinner = new JSpinner();
+        frameSpeedSpinner.setName("Frame wait");
+        frameSpeedSpinner.setValue(1);
+        frameSpeedSpinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                int val = (int) frameSpeedSpinner.getValue();
+                if (val >= 1) {
+                    grid.setSandboxFrameSpeed(val);
+                } else {
+                    frameSpeedSpinner.setValue(1);
+                }
+
+            }
+        });
+        frameSpeedSpinner.setBounds(TOOLX, (int) (TOOLY + ((TOOLH + TOOLYSPACE) * 6.5)), TOOLW / 2, 20);
+        panel.add(frameSpeedSpinner);
+
+        frameSpeedLabel = new JLabel("Frame wait");
+        frameSpeedLabel.setFont(new Font("sansserif", 0, 13));
+        frameSpeedLabel.setForeground(Color.DARK_GRAY);
+        frameSpeedLabel.setVisible(true);
+        frameSpeedLabel.setBounds(growBySpinner.getX() + frameSpeedSpinner.getWidth() + 2, frameSpeedSpinner.getY() - 5, 100, 30);
+        panel.add(frameSpeedLabel);
+
         initialSizeSpinner = new JSpinner();
         initialSizeSpinner.setName("Initial size");
         initialSizeSpinner.setValue(5);
@@ -210,6 +247,8 @@ public class AWTToolbox extends JFrame implements ActionListener {
                 int val = (int) initialSizeSpinner.getValue();
                 if (val >= 1) {
                     grid.setInitialSize((int) initialSizeSpinner.getValue());
+                } else {
+                    initialSizeSpinner.setValue(1);
                 }
             }
         });
@@ -238,9 +277,17 @@ public class AWTToolbox extends JFrame implements ActionListener {
 
         currentTool = new JButton();
         currentTool.setText("");
-        currentTool.setBounds(TOOLX + TOOLW + 10, TOOLY, 50, 50);
+        currentTool.setBounds(TOOLX + TOOLW + 30, TOOLY, 50, 50);
+        currentTool.setEnabled(false);
         panel.add(currentTool);
         currentTool.setVisible(rootPaneCheckingEnabled);
+
+        currentToolLabel = new JLabel("Current tool");
+        currentToolLabel.setFont(new Font("sansserif", 0, 13));
+        currentToolLabel.setForeground(Color.DARK_GRAY);
+        currentToolLabel.setVisible(true);
+        currentToolLabel.setBounds(currentTool.getX() - 15, currentTool.getY() + currentTool.getHeight(), 100, 30);
+        panel.add(currentToolLabel);
 
         saveButton = new JButton();
         saveButton.setText("SAVE");
@@ -283,6 +330,17 @@ public class AWTToolbox extends JFrame implements ActionListener {
             repaint();
         } else if (e.getSource().equals(loadButton)) {
             this.savedMsg.setVisible(false);
+            JFileChooser fChooser = new JFileChooser();
+            // Demonstrate "Open" dialog:
+            int rVal = fChooser.showOpenDialog(new FilePicker());
+            if (rVal == JFileChooser.APPROVE_OPTION) {
+                filename.setText(fChooser.getSelectedFile().getName());
+                dir.setText(fChooser.getCurrentDirectory().toString());
+            }
+            if (rVal == JFileChooser.CANCEL_OPTION) {
+                filename.setText("You pressed cancel");
+                dir.setText("");
+            }
             repaint();
         } else {
             for (int k = 0; k < tools.size(); k++) {
@@ -304,5 +362,22 @@ public class AWTToolbox extends JFrame implements ActionListener {
     public int getCurrentTool() {
         this.savedMsg.setVisible(false);
         return toolNum;
+    }
+
+    class OpenListener implements ActionListener {
+
+        public void actionPerformed(ActionEvent e) {
+            JFileChooser fChooser = new JFileChooser();
+            // Demonstrate "Open" dialog:
+            int rVal = fChooser.showOpenDialog(new FilePicker());
+            if (rVal == JFileChooser.APPROVE_OPTION) {
+                filename.setText(fChooser.getSelectedFile().getName());
+                dir.setText(fChooser.getCurrentDirectory().toString());
+            }
+            if (rVal == JFileChooser.CANCEL_OPTION) {
+                filename.setText("You pressed cancel");
+                dir.setText("");
+            }
+        }
     }
 }
