@@ -113,6 +113,14 @@ public class Grid implements squares {
         }
     }
 
+    public int getInitialLength() {
+        return this.initialSize;
+    }
+
+    public int getGrowBy() {
+        return this.growBy;
+    }
+
     public void removeAll(int type) {
         for (int y = 0; y < length; y++) {
             for (int x = 0; x < width; x++) {

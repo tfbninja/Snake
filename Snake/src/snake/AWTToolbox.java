@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.awt.Rectangle;
 import java.awt.GraphicsConfiguration;
 import java.awt.GridLayout;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 
@@ -326,12 +329,38 @@ public class AWTToolbox extends JFrame implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(saveButton)) {
-            this.savedMsg.setVisible(true);
+            JFileChooser fChooser = new JFileChooser();
+            int rVal = fChooser.showSaveDialog(new FilePicker());
+            if (rVal == JFileChooser.APPROVE_OPTION) {
+                filename.setText(fChooser.getSelectedFile().getName());
+                dir.setText(fChooser.getCurrentDirectory().toString());
+            }
+            if (rVal == JFileChooser.CANCEL_OPTION) {
+                filename.setText("You pressed cancel");
+                dir.setText("");
+            } else {
+                String compiledSandboxFile = Snake.compileToSandboxFile(grid.getEdgeKills(), grid.getFrameSpeed(), grid.getInitialLength(), grid.getGrowBy(), grid.getPlayArea());
+                String fileLoc = "";
+                try {
+                    fileLoc = dir.getText() + filename.getText();
+                    fileLoc += "\\";
+                    //System.out.println("dir: " + dir);
+                    //System.out.println("filename: " + filename);
+                    System.out.println(fileLoc);
+                    PrintWriter printer = new PrintWriter(fileLoc, "UTF-8");
+                    FileWriter creator = new FileWriter(new File(fileLoc));
+                    printer.print(compiledSandboxFile);
+                    printer.close();
+                    creator.close();
+                } catch (Exception x) {
+                    System.out.println("File save incomplete to \"" + fileLoc + "\"");
+                }
+                this.savedMsg.setVisible(true);
+            }
             repaint();
         } else if (e.getSource().equals(loadButton)) {
             this.savedMsg.setVisible(false);
             JFileChooser fChooser = new JFileChooser();
-            // Demonstrate "Open" dialog:
             int rVal = fChooser.showOpenDialog(new FilePicker());
             if (rVal == JFileChooser.APPROVE_OPTION) {
                 filename.setText(fChooser.getSelectedFile().getName());
