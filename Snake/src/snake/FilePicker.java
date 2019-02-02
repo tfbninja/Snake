@@ -27,6 +27,9 @@ public class FilePicker extends JFrame {
     private JButton open = new JButton("Open");
     private JButton save = new JButton("Save");
 
+    /**
+     *
+     */
     public FilePicker() {
         JPanel panel = new JPanel();
         open.addActionListener(new OpenListener());
@@ -78,10 +81,20 @@ public class FilePicker extends JFrame {
         }
     }
 
+    /**
+     *
+     * @param args
+     */
     public static void main(String[] args) {
         run(new FilePicker(), 250, 110);
     }
 
+    /**
+     *
+     * @param frame
+     * @param width
+     * @param height
+     */
     public static void run(JFrame frame, int width, int height) {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(width, height);

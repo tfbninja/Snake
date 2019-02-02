@@ -1,37 +1,11 @@
 package snake;
 
-import java.applet.*;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InvalidObjectException;
-import java.io.PrintWriter;
-import java.net.*;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Scanner;
-import javafx.animation.AnimationTimer;
-import javafx.application.Application;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
-import javafx.scene.text.Font;
-import javafx.stage.Stage;
-import javax.imageio.ImageIO;
 import static snake.Snake.getImageView;
 
 /**
  *
- * @author Timothy
+ * @author Tim Barber
  */
 public class MainMenu {
 
@@ -43,6 +17,9 @@ public class MainMenu {
     private ImageView OffOn;
     private ImageView OffOff;
 
+    /**
+     * Initializes the ImageView objects for the 4 menu screens
+     */
     public MainMenu() {
         // set up files
         OnOn = getImageView("resources/art/updatedMenus/menuMOnSOn.png");
@@ -51,18 +28,34 @@ public class MainMenu {
         OffOff = getImageView("resources/art/updatedMenus/menuMOffSOff.png");
     }
 
+    /**
+     *
+     * @return Whether the music icon is on (true) or off (false)
+     */
     public boolean getMusic() {
         return music;
     }
 
+    /**
+     *
+     * @return Whether the SFX icon is on (true) or off (false)
+     */
     public boolean getSFX() {
         return sfx;
     }
 
+    /**
+     *
+     * @return The ImageView object currently in use
+     */
     public ImageView getMenu() {
         return current;
     }
 
+    /**
+     * Sets the music var to false and chooses the right menu image based on
+     * whether or not the SFX is on or off
+     */
     public void turnOffMusic() {
         music = false;
         if (sfx) {
@@ -72,6 +65,10 @@ public class MainMenu {
         }
     }
 
+    /**
+     * Sets the SFX var to false and chooses the right menu image based on
+     * whether or not the music is on or off
+     */
     public void turnOffSFX() {
         sfx = false;
         if (music) {
@@ -81,6 +78,10 @@ public class MainMenu {
         }
     }
 
+    /**
+     * Sets the music var to true and chooses the right menu image based on
+     * whether or not the SFX is on or off
+     */
     public void turnOnMusic() {
         music = true;
         if (sfx) {
@@ -90,6 +91,10 @@ public class MainMenu {
         }
     }
 
+    /**
+     * Sets the SFX var to true and chooses the right menu image based on
+     * whether or not the music is on or off
+     */
     public void turnOnSFX() {
         sfx = true;
         if (music) {

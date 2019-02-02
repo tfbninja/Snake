@@ -26,48 +26,103 @@ public class ToolPicker extends Window {
     private Block currentTool;
     private int toolNum = 0;
 
+    /**
+     *
+     * @param title
+     * @param width
+     * @param height
+     * @param xPos
+     * @param yPos
+     * @param scene
+     */
     public ToolPicker(String title, int width, int height, int xPos, int yPos, Scene scene) {
         super(title, width, height, xPos, yPos, scene);
         currentTool = new Block(width - (TOOLW + TOOLX), TOOLY, TOOLW, TOOLH, Color.web("2b2b2b"));
         canvas = new Canvas(width, height);
     }
 
+    /**
+     *
+     * @param color
+     * @param name
+     */
     public void addTool(Color color, String name) {
         tools.add(new Block(TOOLX, TOOLY + (tools.size() * (TOOLH + TOOLYSPACE)), TOOLW, TOOLH, color, name));
     }
 
+    /**
+     *
+     * @return
+     */
     public Canvas getCanvas() {
         return this.canvas;
     }
 
+    /**
+     *
+     * @param fontToUse
+     */
     public void setFont(Font fontToUse) {
         this.font = fontToUse;
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public String getName(int index) {
         return this.tools.get(index).getName();
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public Color getColor(int index) {
         return this.tools.get(index).getColor();
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public int getWidth(int index) {
         return this.tools.get(index).getWidth();
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public int getHeight(int index) {
         return this.tools.get(index).getHeight();
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public int getX(int index) {
         return this.tools.get(index).getX();
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public int getY(int index) {
         return this.tools.get(index).getY();
     }
 
+    /**
+     *
+     */
     public void drawTools() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
 

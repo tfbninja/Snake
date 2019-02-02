@@ -20,6 +20,13 @@ public class Enigma {
      * num * 2 + 3
      * Unicode(num + 67)
      */
+
+    /**
+     *
+     * @param num
+     * @return
+     */
+
     public static String encode(int num) {
         String first = String.valueOf((char) (num + 63));
         String mid = String.valueOf(num * 2 + 3);
@@ -27,6 +34,12 @@ public class Enigma {
         return first + "" + mid + "" + last;
     }
 
+    /**
+     *
+     * @param encoded
+     * @return
+     * @throws InvalidObjectException
+     */
     public static int decode(String encoded) throws InvalidObjectException {
         boolean longShotLengthCheck = encoded.length() <= 5;
         char first = encoded.charAt(0);
@@ -42,6 +55,11 @@ public class Enigma {
         return mid;
     }
 
+    /**
+     *
+     * @param num
+     * @return
+     */
     public static String encodeOld(int num) {
         /*
          * Old method:
@@ -74,6 +92,12 @@ public class Enigma {
         return encoded;
     }
 
+    /**
+     *
+     * @param encoded
+     * @return
+     * @throws InvalidObjectException
+     */
     public static int decodeOld(String encoded) throws InvalidObjectException {
         /*
          * Old method:

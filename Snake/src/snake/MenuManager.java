@@ -12,6 +12,10 @@ public class MenuManager {
     private ArrayList<String> menuNames;
     private ArrayList<Boolean> currentlyDisplaying;
 
+    /**
+     *
+     * @param menuNames
+     */
     public MenuManager(ArrayList<String> menuNames) {
         this.menuNames = menuNames;
         this.currentlyDisplaying = new ArrayList<>(menuNames.size());
@@ -26,28 +30,54 @@ public class MenuManager {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public int getCurrent() {
         return this.currentlyDisplaying.indexOf(true);
     }
 
+    /**
+     *
+     * @param index
+     */
     public void setCurrent(int index) {
         clearDisplaying(menuNames.size());
         this.currentlyDisplaying.set(index, true);
     }
 
+    /**
+     *
+     */
     public void setMain() {
         clearDisplaying(menuNames.size());
         this.currentlyDisplaying.set(0, true);
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public String getName(int index) {
         return this.menuNames.get(index);
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public boolean isOn(int index) {
         return this.currentlyDisplaying.get(index);
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public boolean isOff(int index) {
         return !this.currentlyDisplaying.get(index);
     }

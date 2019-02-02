@@ -16,6 +16,15 @@ public abstract class Window {
     private final Scene SCENE;
     private Stage stage;
 
+    /**
+     *
+     * @param title
+     * @param width
+     * @param height
+     * @param xPos
+     * @param yPos
+     * @param scene
+     */
     public Window(String title, int width, int height, int xPos, int yPos, Scene scene) {
         TITLE = title;
         WIDTH = width;
@@ -31,41 +40,77 @@ public abstract class Window {
         //stage.setResizable(false);
     }
 
+    /**
+     *
+     */
     public void show() {
         stage.show();
     }
 
+    /**
+     *
+     */
     public void hide() {
         stage.hide();
     }
 
+    /**
+     *
+     * @return
+     */
     public int getWidth() {
         return WIDTH;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getHeight() {
         return HEIGHT;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean getVisible() {
         return stage.isShowing();
     }
 
+    /**
+     *
+     */
     public void close() {
         stage.close();
     }
 
+    /**
+     *
+     * @return
+     */
     public Stage getStage() {
         return this.stage;
     }
 
+    /**
+     *
+     * @return
+     */
     public Scene getScene() {
         return SCENE;
     }
 
+    /**
+     *
+     * @param event
+     */
     public void handleMouseClicked(MouseEvent event) {
     }
 
+    /**
+     *
+     */
     public void setMousePressedHandler() {
         SCENE.setOnMousePressed((MouseEvent event) -> {
             handleMouseClicked(event);

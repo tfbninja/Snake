@@ -28,6 +28,11 @@ public class Sound { // Holds one audio file
     FloatControl gainControl;
 
     //
+
+    /**
+     *
+     * @param filename
+     */
     public Sound(String filename) {
         this.filename = filename;
         // this block of code can deal with at least .mp3 and .wav, possibly more
@@ -61,6 +66,10 @@ public class Sound { // Holds one audio file
         }
     }
 
+    /**
+     *
+     * @param amt
+     */
     public void setVolume(double amt) {
         if (filename.contains(".mp3")) {
             // number between 0 and 1
@@ -73,29 +82,44 @@ public class Sound { // Holds one audio file
         }
     }
 
+    /**
+     *
+     */
     public void toggleMute() {
         muteControl.setValue(!muteControl.getValue());
         this.mediaPlayer.setMute(!this.mediaPlayer.muteProperty().getValue());
     }
 
+    /**
+     *
+     */
     public void mute() {
         this.mediaPlayer.setMute(true);
         //gainControl.setValue(0);
         muteControl.setValue(true);
     }
 
+    /**
+     *
+     */
     public void unmute() {
         this.mediaPlayer.setMute(false);
         //gainControl.setValue((float) volumeLevel);
         muteControl.setValue(false);
     }
 
+    /**
+     *
+     */
     public void loop() {
         // taken from https://stackoverflow.com/questions/30587437
         //clip.start();
         clip.loop(999);
     }
 
+    /**
+     *
+     */
     public void play() {
         // hey... it works alright? Don't question it
         mediaPlayer.pause();
@@ -107,11 +131,17 @@ public class Sound { // Holds one audio file
         }
     }
 
+    /**
+     *
+     */
     public void stop() {
         mediaPlayer.stop();
         clip.stop();
     }
 
+    /**
+     *
+     */
     public void pause() {
         mediaPlayer.pause();
         clip.stop();
