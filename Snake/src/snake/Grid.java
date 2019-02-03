@@ -633,11 +633,13 @@ public class Grid implements squares {
      *
      */
     public void clearApples() {
-        if (countVal(3) != 0) {
-            for (int x = 0; x < this.width; x++) {
-                for (int y = 0; y < this.length - 1; y++) {
-                    if (this.getCell(x, y) == 3) {
-                        this.setCell(x, y, 0);
+        if (diffLevel > 0) {
+            if (countVal(3) != 0) {
+                for (int x = 0; x < this.width; x++) {
+                    for (int y = 0; y < this.length - 1; y++) {
+                        if (this.getCell(x, y) == 3) {
+                            this.setCell(x, y, 0);
+                        }
                     }
                 }
             }
@@ -653,15 +655,29 @@ public class Grid implements squares {
     }
 
     private int[] newApple() {
-        int[] newPos = {-1, -1};
-        while (newPos[0] < 0 || newPos[1] < 0 || this.isOccupied(newPos[0], newPos[1])) {
-            newPos[0] = random.nextInt(this.width);
-            newPos[1] = random.nextInt(this.length);
+        ArrayList<Pair<Integer, Integer>> openSpots = find(0);
+        try {
+            Pair<Integer, Integer> spot = this.pickPair(openSpots);
+
+            int[] newPos = {spot.getKey(), spot.getValue()};
+
+            int tries = 0;
+            while (newPos[0] < 0 || newPos[1] < 0 || this.isOccupied(newPos[0], newPos[1])) {
+                tries++;
+                if (tries > 2000) {
+                    return null;
+                }
+                newPos[0] = random.nextInt(this.width);
+                newPos[1] = random.nextInt(this.length);
+            }
+
+            this.setCell(newPos[0], newPos[1], 3);
+            applePos[0] = newPos[0];
+            applePos[1] = newPos[1];
+            return newPos;
+        } catch (Exception x) {
+            return null;
         }
-        this.setCell(newPos[0], newPos[1], 3);
-        applePos[0] = newPos[0];
-        applePos[1] = newPos[1];
-        return newPos;
     }
 
     /**
@@ -936,6 +952,11 @@ public class Grid implements squares {
         return list.get(index);
     }
 
+    public Pair<Integer, Integer> pickPair(ArrayList<Pair<Integer, Integer>> list) {
+        int index = (int) (Math.random() * list.size());
+        return list.get(index);
+    }
+
     /**
      *
      * @param type
@@ -964,7 +985,7 @@ public class Grid implements squares {
         ArrayList<Pair<Integer, Integer>> portalLocations = find(safeCheck(originalPortalX, originalPortalY));
         int[] otherPos = {-1, -1};
         //if (safeCheck(originalPortalX, originalPortalY) > 10) {
-        portalLocations.remove(new Pair<Integer, Integer>(originalPortalX, originalPortalY));
+        portalLocations.remove(new Pair<>(originalPortalX, originalPortalY));
         otherPos[0] = portalLocations.get(0).getKey();
         otherPos[1] = portalLocations.get(0).getValue();
         //}
@@ -1122,8 +1143,6 @@ public class Grid implements squares {
                 } else {
                     this.setCell(headX, headY, 0);
                 }
-
-                //nextGen(); // don't pause
             } else if (GS.isGame() && this.isPortal(nextX, nextY)) {
                 // if next square is a portal
 
@@ -1135,6 +1154,11 @@ public class Grid implements squares {
                     nextY = this.otherPortalPos(oldX, oldY)[1] + YADD[direction - 1];
                 }
                 // set the last open square where the head used to be as a body segment
+                // unless it teleported into itself, in which case die
+                if (this.isBody(headX, headY)) {
+                    GS.setToPostGame();
+                    return;
+                }
                 this.safeSetCell(headX, headY, 2);
 
                 headX = nextX;

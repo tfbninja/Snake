@@ -42,14 +42,11 @@ public class Board {
     private String bg = "ceceb5";
     private String rock = "53585e";
     private String applesEaten = "750BE0";
-    private String unmatchedPortal = "a079aa";
-    private String[] portalColors = {"90094E", "550C74", "c4df09", "7CEA9C", "BD6B73"};
+    private final String[] portalColors = {"90094E", "550C74", "d4df09", "7CEA9C", "BD6B73"};
 
     private boolean lost = false;
 
     private int keyPresses = 0;
-
-    private boolean playing = false;
 
     //menu variables
     private boolean soundOn = true;
@@ -72,9 +69,8 @@ public class Board {
     private boolean sandboxExists = false;
     private int[][] sandbox;
 
-    private ToolPicker toolbox;
     private AWTToolbox AWTToolbox;
-    private Stage primaryStage;
+    private final Stage primaryStage;
 
     /**
      *
@@ -145,14 +141,6 @@ public class Board {
         bg = "ceceb5";
         rock = "53585e";
         applesEaten = "750BE0";
-    }
-
-    /**
-     *
-     * @param tb
-     */
-    public void addToolbox(ToolPicker tb) {
-        this.toolbox = tb;
     }
 
     /**
@@ -327,6 +315,10 @@ public class Board {
         this.grid.setSoundOn(this.soundOn);
     }
 
+    public void setToSandboxPlayArea() {
+        grid.setPlayArea(this.sandbox);
+    }
+
     /**
      *
      */
@@ -420,7 +412,7 @@ public class Board {
                 this.grid.setDiffLevel(0);
                 this.grid.setPlayArea(sandbox);
                 MM.setCurrent(4);
-                GS.isPreGame();
+                GS.setToPreGame();
             }
         }
         if (isDirectional(e) && MM.getCurrent() == 4) {
@@ -433,6 +425,9 @@ public class Board {
                 // can't play with unmatched portals
                 Toolkit.getDefaultToolkit().beep();
             } else {
+                if (grid.getDiffLevel() == 0) {
+                    sandbox = grid.getPlayArea();
+                }
                 GS.setToGame();
             }
         }
@@ -585,6 +580,7 @@ public class Board {
 
                 switch (tool) {
                     case 4:
+                    case 3:
                     case 0:
                         grid.setCell(xVal, yVal, tool);
                         break;
@@ -619,23 +615,26 @@ public class Board {
         //yVal %= this.gridSize;
 
         boolean leftClick = e.isPrimaryButtonDown();
-        if (grid.getDiffLevel() == 0) {
-        }
         if (leftClick) {
             // left click
 
             // sandbox mode editing
             if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0 && xVal >= 0 && xVal < grid.getWidth() && yVal >= 0 && yVal < grid.getLength()) {
-
+                System.out.println("tool used");
+                System.out.println(AWTToolbox.getCurrentTool());
                 int tool = AWTToolToRealTool(AWTToolbox.getCurrentTool());
+                System.out.println(tool);
                 switch (tool) {
                     case 1:
+                        System.out.println("head used");
                         // tell the grid where the head is
                         grid.setSandboxHeadPos(xVal, yVal);
                         grid.setPos(xVal, yVal);
+                        grid.removeAll(1);
                     case 3:
-                        // do the same for the apple as the head; clear the other ones
-                        grid.removeAll(tool);
+                        if (tool == 3) {
+                            System.out.println("apple used");
+                        }
                         grid.setCell(xVal, yVal, tool);
                         break;
                     case 5:
