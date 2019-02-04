@@ -1163,6 +1163,23 @@ public class Grid implements squares {
                 if (this.isBody(headX, headY)) {
                     GS.setToPostGame();
                     return;
+                } else if (this.isApple(nextX, nextY)) {
+                    // ate an apple
+                    this.applesEaten++;
+                    if (soundOn) {
+                        bite.play();
+                    }
+                    grow();
+                    clearApples();
+                    newApple();
+                    if (this.snakeSize < 1) {
+                        GS.setToPostGame();
+                        pick(loseSounds).play();
+                        return;
+                    }
+                    this.pos.add(0, new Pair<Integer, Integer>(nextX, nextY)); // add segment in front
+                    this.setCell(nextX, nextY, 1); // update grid
+                    this.removeExtra();
                 }
                 this.safeSetCell(headX, headY, 2);
 
