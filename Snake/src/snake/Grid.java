@@ -986,8 +986,13 @@ public class Grid implements squares {
         int[] otherPos = {-1, -1};
         //if (safeCheck(originalPortalX, originalPortalY) > 10) {
         portalLocations.remove(new Pair<>(originalPortalX, originalPortalY));
-        otherPos[0] = portalLocations.get(0).getKey();
-        otherPos[1] = portalLocations.get(0).getValue();
+        try {
+            otherPos[0] = portalLocations.get(0).getKey();
+            otherPos[1] = portalLocations.get(0).getValue();
+        } catch (IndexOutOfBoundsException e) {
+            otherPos[0] = originalPortalX;
+            otherPos[1] = originalPortalY;
+        }
         //}
         return otherPos;
     }
