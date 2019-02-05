@@ -899,7 +899,7 @@ public class Grid implements squares {
      * @return
      */
     public boolean isApple(int xPos, int yPos) {
-        return this.playArea[yPos][xPos] == 3;
+        return safeCheck(yPos, xPos) == 3;
     }
 
     /**
