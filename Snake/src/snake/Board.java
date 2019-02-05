@@ -153,34 +153,10 @@ public class Board {
 
     /**
      *
-     * @return
-     */
-    public boolean getShowHelp() {
-        return MM.getCurrent() == 2;
-    }
-
-    /**
-     *
      */
     public void createGrid() {
         grid = new Grid(gridSize, gridSize, 21, 20);
         grid.addGameState(GS);
-    }
-
-    /**
-     *
-     * @return
-     */
-    public boolean getShowHighScores() {
-        return MM.getCurrent() == 1;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public boolean getShowMenu() {
-        return MM.getCurrent() == 0;
     }
 
     /**
