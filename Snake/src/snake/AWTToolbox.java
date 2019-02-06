@@ -11,6 +11,8 @@ import java.awt.event.ActionEvent;
 import java.awt.Image;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JButton;
@@ -27,6 +29,7 @@ import java.awt.GraphicsConfiguration;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
+import javafx.scene.input.KeyCode;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 
@@ -44,19 +47,19 @@ public class AWTToolbox extends JFrame implements ActionListener {
      * Width of the game frame.
      */
     private final int WIDTH;
-    
+
     private static final int TOOLX = 10;
-    
+
     private static final int TOOLY = 10;
-    
+
     private static final int TOOLW = 100;
-    
+
     private static final int TOOLH = 30;
-    
+
     private static final int TOOLYSPACE = 15;
-    
+
     private static int toolNum = 0;
-    
+
     private final int XPOS;
     private final int YPOS;
 
@@ -64,40 +67,40 @@ public class AWTToolbox extends JFrame implements ActionListener {
      * The main panel
      */
     private JPanel panel;
-    
+
     private ArrayList<JButton> tools;
-    
+
     private final int BUTTONY = 375;
     private final int BUTTONX = 10;
     private final int BUTTONXSPACE = 30;
     private final int BUTTONW = 75;
     private final int BUTTONH = 30;
-    
+
     private JTextField filename = new JTextField();
     private JTextField dir = new JTextField();
-    
+
     private JButton saveButton;
-    
+
     private JButton currentTool;
     private JLabel currentToolLabel;
-    
+
     private JButton clearButton;
-    
+
     private JButton loadButton;
-    
+
     private JLabel savedMsg;
-    
+
     private JSpinner growBySpinner;
     private JLabel growByLabel;
-    
+
     private JSpinner initialSizeSpinner;
     private JLabel initialSizeLabel;
-    
+
     private JSpinner frameSpeedSpinner;
     private JLabel frameSpeedLabel;
-    
+
     private Checkbox edgeKillsBox;
-    
+
     private Grid grid;
 
     /**
@@ -125,7 +128,7 @@ public class AWTToolbox extends JFrame implements ActionListener {
         Dimension size = this.getPreferredSize();
         this.setLocation(xPos, yPos);
         this.setTitle(title);
-        
+
         XPOS = xPos;
         YPOS = yPos;
         WIDTH = width;
@@ -136,7 +139,7 @@ public class AWTToolbox extends JFrame implements ActionListener {
             tools.add(new JButton(toolNames.get(i)));
             tools.get(tools.size() - 1).setBackground(hexToColor(toolColors.get(i)));
         }
-        
+
         initDisplay();
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         repaint();
@@ -192,7 +195,7 @@ public class AWTToolbox extends JFrame implements ActionListener {
                 super.paintComponent(g);
             }
         };
-        
+
         panel.setLayout(null);
         panel.setBounds(XPOS, YPOS, WIDTH, HEIGHT);
         this.setResizable(false);
@@ -201,19 +204,24 @@ public class AWTToolbox extends JFrame implements ActionListener {
         panel.addKeyListener(new KeyListener() {
             public void keyTyped(KeyEvent ke) {
             }
-            
+
             public void keyPressed(KeyEvent ke) {
                 int keyCode = ke.getKeyCode();
-                if (keyCode == KeyEvent.VK_H) {
-                    
+                if (keyCode >= 48 && keyCode <= 54) {
+                    try {
+                        setCurrentTool(Integer.valueOf(KeyEvent.getKeyText(keyCode)));
+                    } catch (Exception e) {
+                        System.out.println(e.getLocalizedMessage());
+                    }
                 }
             }
-            
+
             public void keyReleased(KeyEvent ke) {
             }
         });
+
         panel.requestFocus();
-        
+
         for (int i = 0; i < tools.size(); i++) {
             // add JButtons
             tools.get(i).setBounds(TOOLX, TOOLY + (i * (TOOLH + TOOLYSPACE)), TOOLW, TOOLH);
@@ -221,7 +229,7 @@ public class AWTToolbox extends JFrame implements ActionListener {
             panel.add(tools.get(i));
             tools.get(i).setVisible(true);
         }
-        
+
         growBySpinner = new JSpinner();
         growBySpinner.setName("Grow amount");
         growBySpinner.setValue(1);
@@ -236,14 +244,14 @@ public class AWTToolbox extends JFrame implements ActionListener {
         });
         growBySpinner.setBounds(TOOLX, (int) (TOOLY + ((TOOLH + TOOLYSPACE) * 5.5)), TOOLW / 2, 20);
         panel.add(growBySpinner);
-        
+
         growByLabel = new JLabel("Grow amt");
         growByLabel.setFont(new Font("sansserif", 0, 13));
         growByLabel.setForeground(Color.DARK_GRAY);
         growByLabel.setVisible(true);
         growByLabel.setBounds(growBySpinner.getX() + growBySpinner.getWidth() + 2, growBySpinner.getY() - 5, 75, 30);
         panel.add(growByLabel);
-        
+
         frameSpeedSpinner = new JSpinner();
         frameSpeedSpinner.setName("Frame wait");
         frameSpeedSpinner.setValue(1);
@@ -256,19 +264,19 @@ public class AWTToolbox extends JFrame implements ActionListener {
                 } else {
                     frameSpeedSpinner.setValue(1);
                 }
-                
+
             }
         });
         frameSpeedSpinner.setBounds(TOOLX, (int) (TOOLY + ((TOOLH + TOOLYSPACE) * 6.5)), TOOLW / 2, 20);
         panel.add(frameSpeedSpinner);
-        
+
         frameSpeedLabel = new JLabel("Frame wait");
         frameSpeedLabel.setFont(new Font("sansserif", 0, 13));
         frameSpeedLabel.setForeground(Color.DARK_GRAY);
         frameSpeedLabel.setVisible(true);
         frameSpeedLabel.setBounds(growBySpinner.getX() + frameSpeedSpinner.getWidth() + 2, frameSpeedSpinner.getY() - 5, 100, 30);
         panel.add(frameSpeedLabel);
-        
+
         initialSizeSpinner = new JSpinner();
         initialSizeSpinner.setName("Initial size");
         initialSizeSpinner.setValue(5);
@@ -285,14 +293,14 @@ public class AWTToolbox extends JFrame implements ActionListener {
         });
         initialSizeSpinner.setBounds(TOOLX, (int) (TOOLY + ((TOOLH + TOOLYSPACE) * 6)), TOOLW / 2, 20);
         panel.add(initialSizeSpinner);
-        
+
         initialSizeLabel = new JLabel("Initial size");
         initialSizeLabel.setFont(new Font("sansserif", 0, 13));
         initialSizeLabel.setForeground(Color.DARK_GRAY);
         initialSizeLabel.setVisible(true);
         initialSizeLabel.setBounds(initialSizeSpinner.getX() + initialSizeSpinner.getWidth() + 2, initialSizeSpinner.getY() - 5, 75, 30);
         panel.add(initialSizeLabel);
-        
+
         edgeKillsBox = new Checkbox("Edge Kills");
         edgeKillsBox.addItemListener(new ItemListener() {
             @Override
@@ -305,21 +313,21 @@ public class AWTToolbox extends JFrame implements ActionListener {
         edgeKillsBox.setSize(TOOLW, 20);
         panel.add(edgeKillsBox);
         edgeKillsBox.setVisible(true);
-        
+
         currentTool = new JButton();
         currentTool.setText("");
         currentTool.setBounds(TOOLX + TOOLW + 30, TOOLY, 50, 50);
         currentTool.setEnabled(false);
         panel.add(currentTool);
         currentTool.setVisible(rootPaneCheckingEnabled);
-        
+
         currentToolLabel = new JLabel("Current tool");
         currentToolLabel.setFont(new Font("sansserif", 0, 13));
         currentToolLabel.setForeground(Color.DARK_GRAY);
         currentToolLabel.setVisible(true);
         currentToolLabel.setBounds(currentTool.getX() - 15, currentTool.getY() + currentTool.getHeight(), 100, 30);
         panel.add(currentToolLabel);
-        
+
         saveButton = new JButton();
         saveButton.setText("SAVE");
         panel.add(saveButton);
@@ -327,21 +335,21 @@ public class AWTToolbox extends JFrame implements ActionListener {
         saveButton.setDefaultCapable(true);
         saveButton.addActionListener(this);
         saveButton.setVisible(true);
-        
+
         clearButton = new JButton();
         clearButton.setText("CLEAR");
         panel.add(clearButton);
         clearButton.setBounds(TOOLX, (int) (BUTTONY + BUTTONH * 1.2), TOOLW * 2, TOOLH);
         clearButton.addActionListener(this);
         clearButton.setVisible(true);
-        
+
         loadButton = new JButton();
         loadButton.setText("LOAD");
         panel.add(loadButton);
         loadButton.setBounds(BUTTONX + BUTTONW + BUTTONXSPACE, BUTTONY, BUTTONW, BUTTONH);
         loadButton.addActionListener(this);
         loadButton.setVisible(true);
-        
+
         savedMsg = new JLabel("Saved!");
         savedMsg.setFont(new Font("Sansserif", 0, 20));
         savedMsg.setForeground(Color.blue);
@@ -350,7 +358,7 @@ public class AWTToolbox extends JFrame implements ActionListener {
         savedMsg.setBounds(BUTTONX + 8, BUTTONY - 30, 250, 30);
         pack();
         getContentPane().add(panel);
-        
+
         getRootPane().setDefaultButton(saveButton);
         updateControls();
         panel.setVisible(true);
@@ -363,7 +371,7 @@ public class AWTToolbox extends JFrame implements ActionListener {
         Toolkit t = panel.getToolkit();
         t.beep();
     }
-    
+
     public void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(saveButton)) {
             JFileChooser fChooser = new JFileChooser();
@@ -416,6 +424,7 @@ public class AWTToolbox extends JFrame implements ActionListener {
             repaint();
         } else if (e.getSource().equals(this.clearButton)) {
             grid.clear();
+            repaint();
         } else {
             for (int k = 0; k < tools.size(); k++) {
                 if (e.getSource().equals(tools.get(k))) {
@@ -455,9 +464,9 @@ public class AWTToolbox extends JFrame implements ActionListener {
         this.savedMsg.setVisible(false);
         return toolNum;
     }
-    
+
     class OpenListener implements ActionListener {
-        
+
         public void actionPerformed(ActionEvent e) {
             JFileChooser fChooser = new JFileChooser();
             // Demonstrate "Open" dialog:

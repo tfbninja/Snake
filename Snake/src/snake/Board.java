@@ -250,6 +250,7 @@ public class Board {
                         temp.setColor(Color.web(portalColors[(grid.safeCheck(x, y) - 10) % this.portalColors.length]));
                     } else { // unmatched portal
                         temp.setColor(Color.BLACK);
+                        System.out.println(grid.safeCheck(x, y));
                     }
                     temp.setX(xPixel);
                     temp.setY(yPixel);

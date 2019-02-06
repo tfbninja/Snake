@@ -635,9 +635,9 @@ public class Grid implements squares {
     public void clearApples() {
         if (diffLevel > 0) {
             if (countVal(3) != 0) {
-                for (int x = 0; x < this.width; x++) {
-                    for (int y = 0; y < this.length - 1; y++) {
-                        if (this.getCell(x, y) == 3) {
+                for (int y = 0; y < this.length; y++) {
+                    for (int x = 0; x < this.width - 1; x++) {
+                        if (this.getCell(x, y) == 3 || this.getCell(x, y) >= 10) {
                             this.setCell(x, y, 0);
                         }
                     }
@@ -899,7 +899,7 @@ public class Grid implements squares {
      * @return
      */
     public boolean isApple(int xPos, int yPos) {
-        return safeCheck(yPos, xPos) == 3;
+        return safeCheck(xPos, yPos) == 3;
     }
 
     /**
@@ -1233,7 +1233,7 @@ public class Grid implements squares {
     }
 
     /**
-     *
+     * sets all squares to 0
      */
     public void clear() {
         this.playArea = new int[this.length][this.width];
