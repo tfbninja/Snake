@@ -423,6 +423,7 @@ public class AWTToolbox extends JFrame implements ActionListener {
             }
             repaint();
         } else if (e.getSource().equals(this.clearButton)) {
+            System.out.println("Cleared");
             grid.clear();
             repaint();
         } else {
