@@ -444,7 +444,7 @@ public class Grid implements squares {
                 } else {
                     startx = 0;
                     starty = 0;
-                    this.pos.add(new Pair<Integer, Integer>(0, 0));
+                    this.pos.add(new Pair<>(0, 0));
                 }
                 //System.out.println("setting head cell at " + pos.get(0).getKey() + ", " + pos.get(0).getValue());
                 setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
