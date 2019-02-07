@@ -86,6 +86,8 @@ public class Snake extends Application {
     private final MainMenu MENU = new MainMenu();
     private static final GameState GS = new GameState(1);
 
+    private static boolean pause = false;
+
     @Override
     public void start(Stage primaryStage) {
         // Create Board of block objects
@@ -165,6 +167,12 @@ public class Snake extends Application {
             AWTToolbox.dispose();
             System.exit(0);
         });
+        primaryStage.setOnHidden(event -> {
+            pause = true;
+        });
+        primaryStage.setOnShowing(event -> {
+            pause = false;
+        });
 
         primaryStage.show();
 
@@ -193,151 +201,153 @@ public class Snake extends Application {
         new AnimationTimer() {
             @Override
             public void handle(long now) {
-                frame++;
-                if (frame % 30 == 0) {
-                    if (GS.isGame()) {
-                        sandboxReset = false;
+                if (!pause) {
+                    frame++;
+                    if (frame % 30 == 0) {
+                        if (GS.isGame()) {
+                            sandboxReset = false;
+                        }
+                        try {
+                            PrintWriter printer = new PrintWriter(settingsLocation, "UTF-8");
+                            FileWriter creator = new FileWriter(new File(settingsLocation));
+                            int tempSFX = MENU.getSFX() ? 1 : 0, tempNightMode = nightMode ? 1 : 0, tempMusic = MENU.getMusic() ? 1 : 0;
+                            printer.print("" + tempSFX + " - SFX toggle (0 for off, 1 for on)");
+                            printer.println();
+                            printer.print("" + tempNightMode + " - appearance (0 for normal, 1 for night mode)");
+                            printer.println();
+                            printer.print("" + tempMusic + " - background music toggle (0 for normal, 1 for night mode)");
+                            printer.println();
+                            printer.close();
+                            creator.close();
+                        } catch (IOException x) {
+                            System.out.println(x.getLocalizedMessage() + " oof.");
+                        }
                     }
-                    try {
-                        PrintWriter printer = new PrintWriter(settingsLocation, "UTF-8");
-                        FileWriter creator = new FileWriter(new File(settingsLocation));
-                        int tempSFX = MENU.getSFX() ? 1 : 0, tempNightMode = nightMode ? 1 : 0, tempMusic = MENU.getMusic() ? 1 : 0;
-                        printer.print("" + tempSFX + " - SFX toggle (0 for off, 1 for on)");
-                        printer.println();
-                        printer.print("" + tempNightMode + " - appearance (0 for normal, 1 for night mode)");
-                        printer.println();
-                        printer.print("" + tempMusic + " - background music toggle (0 for normal, 1 for night mode)");
-                        printer.println();
-                        printer.close();
-                        creator.close();
-                    } catch (IOException x) {
-                        System.out.println(x.getLocalizedMessage() + " oof.");
+                    board.setSFX(MENU.getSFX());
+                    if (MENU.getMusic()) {
+                        menuMusic.unmute();
+                    } else {
+                        menuMusic.mute();
                     }
-                }
-                board.setSFX(MENU.getSFX());
-                if (MENU.getMusic()) {
-                    menuMusic.unmute();
-                } else {
-                    menuMusic.mute();
-                }
 
-                nightMode = board.getNightTheme();
-                switch (MM.getCurrent()) {
-                    case 0:
-                        // show main menu
-                        root.setTop(MENU.getMenu());
-                        won = false;
-                        break;
-                    case 1:
-                        // show high scores
-                        root.setTop(HS_IV);
-                        break;
-                    case 2:
-                        // show help
-                        root.setTop(HELP_IV);
-                        break;
-                    case 3:
-                        // game over - show lose screen and add high scores
-                        board.drawBlocks();
-                        won = false;
-                        if (board.getGrid().getDiffLevel() == 0 && !sandboxReset) {
-                            sandboxReset = true;
-                            board.resetKeepGrid();
-                            //ArrayList<Pair<Integer, Integer>> headPos = board.getGrid().find(1);
-                            int[] headPos2 = board.getGrid().getStartPos();
-                            board.getGrid().removeAll(1);
-                            board.getGrid().removeAll(2);
-                            //initSandboxFile();
-
-                            //board.getGrid().setDiffLevel(0);
-                            //board.getGrid().setPos(headPos.get(0).getKey(), headPos.get(0).getValue());
-                            board.getGrid().setPos(headPos2[0], headPos2[1]);
-                            board.getGrid().setGrowBy(AWTToolbox.getGrowBy());
-                            board.getGrid().setEdgeKills(AWTToolbox.getEdgeKills());
-                            board.setToSandboxPlayArea();
+                    nightMode = board.getNightTheme();
+                    switch (MM.getCurrent()) {
+                        case 0:
+                            // show main menu
+                            root.setTop(MENU.getMenu());
+                            won = false;
+                            break;
+                        case 1:
+                            // show high scores
+                            root.setTop(HS_IV);
+                            break;
+                        case 2:
+                            // show help
+                            root.setTop(HELP_IV);
+                            break;
+                        case 3:
+                            // game over - show lose screen and add high scores
                             board.drawBlocks();
-                            MM.setCurrent(4);
-                        } else if (!scoresOverwritten && board.getGrid().getDiffLevel() != 0) {
+                            won = false;
+                            if (board.getGrid().getDiffLevel() == 0 && !sandboxReset) {
+                                sandboxReset = true;
+                                board.resetKeepGrid();
+                                //ArrayList<Pair<Integer, Integer>> headPos = board.getGrid().find(1);
+                                int[] headPos2 = board.getGrid().getStartPos();
+                                board.getGrid().removeAll(1);
+                                board.getGrid().removeAll(2);
+                                //initSandboxFile();
 
-                            int thisDifficulty = board.getGrid().getDiffLevel();
-                            int thisScore = board.getGrid().getApplesEaten();
-                            boolean highScore = thisScore > scores.get((thisDifficulty - 1) * 2) || thisScore > scores.get((thisDifficulty - 1) * 2 + 1);
-                            int[] oldScores = toList(scores);
+                                //board.getGrid().setDiffLevel(0);
+                                //board.getGrid().setPos(headPos.get(0).getKey(), headPos.get(0).getValue());
+                                board.getGrid().setPos(headPos2[0], headPos2[1]);
+                                board.getGrid().setGrowBy(AWTToolbox.getGrowBy());
+                                board.getGrid().setEdgeKills(AWTToolbox.getEdgeKills());
+                                board.setToSandboxPlayArea();
+                                board.drawBlocks();
+                                MM.setCurrent(4);
+                            } else if (!scoresOverwritten && board.getGrid().getDiffLevel() != 0) {
 
-                            if (highScore) {
-                                //  (if score is higher than local or world)
+                                int thisDifficulty = board.getGrid().getDiffLevel();
+                                int thisScore = board.getGrid().getApplesEaten();
+                                boolean highScore = thisScore > scores.get((thisDifficulty - 1) * 2) || thisScore > scores.get((thisDifficulty - 1) * 2 + 1);
+                                int[] oldScores = toList(scores);
 
-                                // write scores to files
-                                writeEncodedScore("resources\\scores\\local\\localHighScore" + thisDifficulty + ".local", thisScore);
+                                if (highScore) {
+                                    //  (if score is higher than local or world)
 
-                                if (thisScore > scores.get((thisDifficulty - 1) * 2 + 1)) {
-                                    if (checkFileExists("resources\\scores\\world\\worldHighScore" + thisDifficulty + ".world")) {
-                                        writeEncodedScore("resources\\scores\\world\\worldHighScore" + thisDifficulty + ".world", thisScore);
+                                    // write scores to files
+                                    writeEncodedScore("resources\\scores\\local\\localHighScore" + thisDifficulty + ".local", thisScore);
+
+                                    if (thisScore > scores.get((thisDifficulty - 1) * 2 + 1)) {
+                                        if (checkFileExists("resources\\scores\\world\\worldHighScore" + thisDifficulty + ".world")) {
+                                            writeEncodedScore("resources\\scores\\world\\worldHighScore" + thisDifficulty + ".world", thisScore);
+                                        } else {
+                                            // if there's no world file, it ain't legit
+                                            //System.out.println("maybe keep the world high score file around buddy...");
+                                        }
+                                    }
+                                }
+                                // re-grab scores
+                                getScores();
+                                // copy the master image
+                                overlayImage("resources\\art\\loseScreenMaster.png", "resources\\art\\loseScreen.png", String.valueOf(thisScore), 248, 194, new Font("Impact", 26), 177, 96, 15);
+                                int y = 320;
+                                int x;
+                                for (int i = 0; i < scores.size(); i++) {
+                                    if (i % 2 == 0) {
+                                        if (i > 1) {
+                                            y += 27;
+                                        }
+                                        x = 264;
                                     } else {
-                                        // if there's no world file, it ain't legit
-                                        //System.out.println("maybe keep the world high score file around buddy...");
+                                        x = 153;
+                                    }
+                                    if (i / 2 + 1 == thisDifficulty && highScore && thisScore > oldScores[i]) {
+                                        overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 22), 255, 0, 0);
+                                    } else {
+                                        overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 22), 177, 96, 15);
                                     }
                                 }
+
+                                if (highScore) {
+                                    overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", "NEW HIGHSCORE", 105, 34, new Font("Impact", 34), 255, 0, 0);
+                                }
+                                scoresOverwritten = true;
+                                ImageView LOSE_IV = getImageView("resources\\art\\loseScreen.png");
+                                root.setTop(LOSE_IV);
+                                HS_IV = createHighScoreScreen(); // re-cache high score screen
                             }
-                            // re-grab scores
-                            getScores();
-                            // copy the master image
-                            overlayImage("resources\\art\\loseScreenMaster.png", "resources\\art\\loseScreen.png", String.valueOf(thisScore), 248, 194, new Font("Impact", 26), 177, 96, 15);
-                            int y = 320;
-                            int x;
-                            for (int i = 0; i < scores.size(); i++) {
-                                if (i % 2 == 0) {
-                                    if (i > 1) {
-                                        y += 27;
+                            break;
+
+                        case 4:
+                            // show the game
+                            sandboxReset = false;
+                            if (root.getTop() != board.getCanvas() && !GS.isPostGame()) {
+                                root.setTop(board.getCanvas());
+                            }
+                            if (!GS.isPostGame()) {
+                                if (AI) {
+                                    AI();
+                                }
+                                board.drawBlocks();
+                                scoresOverwritten = false;
+                                if (frame % board.getGrid().getFrameSpeed() == 0) {
+                                    for (int i = 0; i < board.getGrid().getGensPerFrame(); i++) {
+                                        board.getGrid().nextGen();
                                     }
-                                    x = 264;
-                                } else {
-                                    x = 153;
                                 }
-                                if (i / 2 + 1 == thisDifficulty && highScore && thisScore > oldScores[i]) {
-                                    overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 22), 255, 0, 0);
-                                } else {
-                                    overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 22), 177, 96, 15);
+                                if (board.getGrid().countVal(0) == 0 && !won && GS.isGame()) {
+                                    won = true;
+                                    DAWON.play();
                                 }
-                            }
-
-                            if (highScore) {
-                                overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", "NEW HIGHSCORE", 105, 34, new Font("Impact", 34), 255, 0, 0);
-                            }
-                            scoresOverwritten = true;
-                            ImageView LOSE_IV = getImageView("resources\\art\\loseScreen.png");
-                            root.setTop(LOSE_IV);
-                            HS_IV = createHighScoreScreen(); // re-cache high score screen
-                        }
-                        break;
-
-                    case 4:
-                        // show the game
-                        sandboxReset = false;
-                        if (root.getTop() != board.getCanvas() && !GS.isPostGame()) {
-                            root.setTop(board.getCanvas());
-                        }
-                        if (!GS.isPostGame()) {
-                            if (AI) {
-                                AI();
-                            }
-                            board.drawBlocks();
-                            scoresOverwritten = false;
-                            if (frame % board.getGrid().getFrameSpeed() == 0) {
-                                for (int i = 0; i < board.getGrid().getGensPerFrame(); i++) {
-                                    board.getGrid().nextGen();
+                            } else {
+                                MM.setCurrent(3);
+                                if (board.getGrid().getDiffLevel() == 0) {
+                                    GS.setToPreGame();
                                 }
                             }
-                            if (board.getGrid().countVal(0) == 0 && !won && GS.isGame()) {
-                                won = true;
-                                DAWON.play();
-                            }
-                        } else {
-                            MM.setCurrent(3);
-                            if (board.getGrid().getDiffLevel() == 0) {
-                                GS.setToPreGame();
-                            }
-                        }
+                    }
                 }
             }
         }.start();

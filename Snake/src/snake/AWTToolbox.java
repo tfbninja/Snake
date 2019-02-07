@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionListener;
+import javax.swing.InputVerifier;
 import java.awt.event.ActionEvent;
 import java.awt.Image;
 import java.awt.event.KeyListener;
@@ -27,6 +28,7 @@ import java.awt.GraphicsConfiguration;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
+import javax.swing.JComponent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
@@ -374,7 +376,9 @@ public class AWTToolbox extends JFrame implements ActionListener {
         if (e.getSource().equals(saveButton)) {
             JFileChooser fChooser = new JFileChooser();
             fChooser.setAcceptAllFileFilterUsed(false);
+            fChooser.setDialogTitle("Pick a .sandbox file to open");
             fChooser.setCurrentDirectory(new File("resources/"));
+            fChooser.setMultiSelectionEnabled(false);
             int rVal = fChooser.showSaveDialog(new FilePicker("sandbox", "sandbox"));
             if (rVal == JFileChooser.APPROVE_OPTION) {
                 String text = fChooser.getSelectedFile().getName();
@@ -393,8 +397,7 @@ public class AWTToolbox extends JFrame implements ActionListener {
                 String fileLoc = "";
                 try {
                     fileLoc = dir.getText() + "\\" + filename.getText();
-                    //System.out.println("dir: " + dir);
-                    //System.out.println("filename: " + filename);
+
                     System.out.println(fileLoc);
                     BufferedWriter buffer = new BufferedWriter(new FileWriter(fileLoc));
                     for (String s : compiledSandboxFile.split("\n")) {
