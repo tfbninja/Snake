@@ -39,6 +39,25 @@ public class FilePicker extends JFrame {
         Container cp = getContentPane();
         cp.add(panel, BorderLayout.SOUTH);
         dir.setEditable(false);
+        filename.setText("sandbox");
+        filename.setEditable(false);
+        panel = new JPanel();
+        panel.setLayout(new GridLayout(2, 1));
+        panel.add(filename);
+        panel.add(dir);
+        cp.add(panel, BorderLayout.NORTH);
+    }
+
+    public FilePicker(String initialName, String type) {
+        JPanel panel = new JPanel();
+        open.addActionListener(new OpenListener());
+        panel.add(open);
+        save.addActionListener(new SaveListener());
+        panel.add(save);
+        Container cp = getContentPane();
+        cp.add(panel, BorderLayout.SOUTH);
+        dir.setEditable(false);
+        filename.setText(initialName + "." + type);
         filename.setEditable(false);
         panel = new JPanel();
         panel.setLayout(new GridLayout(2, 1));
@@ -49,6 +68,7 @@ public class FilePicker extends JFrame {
 
     class OpenListener implements ActionListener {
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             JFileChooser fChooser = new JFileChooser();
             // Demonstrate "Open" dialog:

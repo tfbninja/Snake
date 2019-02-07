@@ -364,6 +364,30 @@ public class Board {
             AWTToolbox.setVisible(false);
         }
 
+        if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0) {
+            if (null != e.getCode()) {
+                switch (e.getCode()) {
+                    case DIGIT0:
+                        AWTToolbox.setCurrentTool(0);
+                        break;
+                    case DIGIT1:
+                        AWTToolbox.setCurrentTool(1);
+                        break;
+                    case DIGIT2:
+                        AWTToolbox.setCurrentTool(2);
+                        break;
+                    case DIGIT3:
+                        AWTToolbox.setCurrentTool(3);
+                        break;
+                    case DIGIT4:
+                        AWTToolbox.setCurrentTool(4);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
         if (MM.getCurrent() == 0) {
             if (e.getCode() == KeyCode.DIGIT1) {
                 // easy mode chosen
@@ -428,32 +452,58 @@ public class Board {
             reset();
         }
         if (GS.isGame() && keyPresses > 1) {
-            if (e.getCode() == KeyCode.UP || e.getCode() == KeyCode.W) {
-                // user pressed up key
-                this.grid.attemptSetDirection(1);
-            } else if (e.getCode() == KeyCode.DOWN || e.getCode() == KeyCode.S) {
-                // user pressed down key
-                this.grid.attemptSetDirection(3);
-            } else if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.A) {
-                // user pressed left key
-                this.grid.attemptSetDirection(4);
-            } else if (e.getCode() == KeyCode.RIGHT || e.getCode() == KeyCode.D) {
-                // user pressed right key
-                this.grid.attemptSetDirection(2);
+            if (null != e.getCode()) {
+                switch (e.getCode()) {
+                    case UP:
+                    case W:
+                        // user pressed up key
+                        this.grid.attemptSetDirection(1);
+                        break;
+                    case DOWN:
+                    case S:
+                        // user pressed down key
+                        this.grid.attemptSetDirection(3);
+                        break;
+                    case LEFT:
+                    case A:
+                        // user pressed left key
+                        this.grid.attemptSetDirection(4);
+                        break;
+                    case RIGHT:
+                    case D:
+                        // user pressed right key
+                        this.grid.attemptSetDirection(2);
+                        break;
+                    default:
+                        break;
+                }
             }
         } else if (GS.isGame()) {
-            if (e.getCode() == KeyCode.UP || e.getCode() == KeyCode.W) {
-                // user pressed up key
-                this.grid.setDirection(1);
-            } else if (e.getCode() == KeyCode.DOWN || e.getCode() == KeyCode.S) {
-                // user pressed down key
-                this.grid.setDirection(3);
-            } else if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.A) {
-                // user pressed left key
-                this.grid.setDirection(4);
-            } else if (e.getCode() == KeyCode.RIGHT || e.getCode() == KeyCode.D) {
-                // user pressed right key
-                this.grid.setDirection(2);
+            if (null != e.getCode()) {
+                switch (e.getCode()) {
+                    case UP:
+                    case W:
+                        // user pressed up key
+                        this.grid.setDirection(1);
+                        break;
+                    case DOWN:
+                    case S:
+                        // user pressed down key
+                        this.grid.setDirection(3);
+                        break;
+                    case LEFT:
+                    case A:
+                        // user pressed left key
+                        this.grid.setDirection(4);
+                        break;
+                    case RIGHT:
+                    case D:
+                        // user pressed right key
+                        this.grid.setDirection(2);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
@@ -600,27 +650,20 @@ public class Board {
 
             // sandbox mode editing
             if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0 && xVal >= 0 && xVal < grid.getWidth() && yVal >= 0 && yVal < grid.getLength()) {
-                System.out.println("tool used");
                 System.out.println(AWTToolbox.getCurrentTool());
                 int tool = AWTToolToRealTool(AWTToolbox.getCurrentTool());
-                System.out.println(tool);
                 switch (tool) {
                     case 1:
-                        System.out.println("head used");
                         // tell the grid where the head is
                         grid.setSandboxHeadPos(xVal, yVal);
                         grid.setPos(xVal, yVal);
                         grid.removeAll(1);
                     case 3:
-                        if (tool == 3) {
-                            System.out.println("apple used");
-                        }
                         grid.setCell(xVal, yVal, tool);
                         break;
                     case 5:
-                        System.out.println("Portal attempt");
                         if (grid.containsUnmatchedPortal() == -1) {
-                            System.out.println("no open portals");
+                            //System.out.println("no open portals");
                             tool = findUnusedPortalNum();
                             grid.setCell(xVal, yVal, tool);
                         } else {

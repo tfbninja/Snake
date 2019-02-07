@@ -239,6 +239,7 @@ public class Snake extends Application {
                     case 3:
                         // game over - show lose screen and add high scores
                         board.drawBlocks();
+                        won = false;
                         if (board.getGrid().getDiffLevel() == 0 && !sandboxReset) {
                             sandboxReset = true;
                             board.resetKeepGrid();
@@ -327,7 +328,7 @@ public class Snake extends Application {
                                     board.getGrid().nextGen();
                                 }
                             }
-                            if (board.getGrid().countVal(0) == 0 && !won) {
+                            if (board.getGrid().countVal(0) == 0 && !won && GS.isGame()) {
                                 won = true;
                                 DAWON.play();
                             }

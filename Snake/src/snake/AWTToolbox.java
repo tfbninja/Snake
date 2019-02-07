@@ -27,7 +27,7 @@ import java.awt.GraphicsConfiguration;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
-import javafx.scene.input.KeyCode;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 
@@ -205,9 +205,9 @@ public class AWTToolbox extends JFrame implements ActionListener {
 
             public void keyPressed(KeyEvent ke) {
                 int keyCode = ke.getKeyCode();
-                if (keyCode >= 48 && keyCode <= 54) {
+                if (keyCode >= 48 && keyCode <= 52) {
                     try {
-                        setCurrentTool(Integer.valueOf(KeyEvent.getKeyText(keyCode)));
+                        setCurrentTool(keyCode - 48);
                     } catch (Exception e) {
                         System.out.println(e.getLocalizedMessage());
                     }
@@ -375,9 +375,14 @@ public class AWTToolbox extends JFrame implements ActionListener {
             JFileChooser fChooser = new JFileChooser();
             fChooser.setAcceptAllFileFilterUsed(false);
             fChooser.setCurrentDirectory(new File("resources/"));
-            int rVal = fChooser.showSaveDialog(new FilePicker());
+            int rVal = fChooser.showSaveDialog(new FilePicker("sandbox", "sandbox"));
             if (rVal == JFileChooser.APPROVE_OPTION) {
-                filename.setText(fChooser.getSelectedFile().getName());
+                String text = fChooser.getSelectedFile().getName();
+                int dot = text.lastIndexOf(".");
+                if (dot == -1) {
+                    dot = text.length() - 1;
+                }
+                filename.setText(text.substring(0, dot) + ".sandbox");
                 dir.setText(fChooser.getCurrentDirectory().toString());
             }
             if (rVal == JFileChooser.CANCEL_OPTION) {
@@ -406,6 +411,8 @@ public class AWTToolbox extends JFrame implements ActionListener {
         } else if (e.getSource().equals(loadButton)) {
             this.savedMsg.setVisible(false);
             JFileChooser fChooser = new JFileChooser();
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("Sandbox files", "sandbox");
+            fChooser.setFileFilter(filter);
             int rVal = fChooser.showOpenDialog(new FilePicker());
             if (rVal == JFileChooser.APPROVE_OPTION) {
                 filename.setText(fChooser.getSelectedFile().getName());
@@ -428,7 +435,6 @@ public class AWTToolbox extends JFrame implements ActionListener {
             for (int k = 0; k < tools.size(); k++) {
                 if (e.getSource().equals(tools.get(k))) {
                     setCurrentTool(k);
-                    System.out.println("Current tool: " + tools.get(k).getText());
                     repaint();
                 }
             }
