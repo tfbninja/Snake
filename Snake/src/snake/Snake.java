@@ -54,6 +54,8 @@ public class Snake extends Application {
     private static Board board;
 
     private final Sound menuMusic = new Sound("resources/sounds/menuMusic.wav");
+    private final Sound DAWON = new Sound("resources/sounds/DAWON.mp3");
+    private boolean won = false;
     private static ArrayList<Integer> scores = new ArrayList<>();
     private ImageView HS_IV; // High Score screen stored in an 'ImageView' class
 
@@ -224,6 +226,7 @@ public class Snake extends Application {
                     case 0:
                         // show main menu
                         root.setTop(MENU.getMenu());
+                        won = false;
                         break;
                     case 1:
                         // show high scores
@@ -323,6 +326,10 @@ public class Snake extends Application {
                                 for (int i = 0; i < board.getGrid().getGensPerFrame(); i++) {
                                     board.getGrid().nextGen();
                                 }
+                            }
+                            if (board.getGrid().countVal(0) == 0 && !won) {
+                                won = true;
+                                DAWON.play();
                             }
                         } else {
                             MM.setCurrent(3);

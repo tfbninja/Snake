@@ -287,8 +287,12 @@ public class Board {
         this.lost = false;
         MM.setCurrent(0);
         GS.setToPreGame();
-        createGrid();
         this.grid.setSoundOn(this.soundOn);
+        //createGrid();
+        grid.reset();
+        grid.clear();
+        grid.safeSetCell(21, 20, 1);
+        grid.setPos(21, 20);
     }
 
     public void setToSandboxPlayArea() {

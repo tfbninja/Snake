@@ -11,8 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.Image;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JButton;
@@ -339,7 +337,7 @@ public class AWTToolbox extends JFrame implements ActionListener {
         clearButton = new JButton();
         clearButton.setText("CLEAR");
         panel.add(clearButton);
-        clearButton.setBounds(TOOLX, (int) (BUTTONY + BUTTONH * 1.2), TOOLW * 2, TOOLH);
+        clearButton.setBounds(TOOLX, (int) (BUTTONY + BUTTONH * 1.2), TOOLW * 2 - 20, TOOLH);
         clearButton.addActionListener(this);
         clearButton.setVisible(true);
 
