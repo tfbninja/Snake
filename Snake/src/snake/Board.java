@@ -24,13 +24,13 @@ public class Board {
     private Grid grid;
     private final Canvas canvas;
     private int outsideMargin = 10;
-    private final int margin = 1; // margin between individual squares
-    private final int XMARGIN = 15; // margin inside the stackpane
+    private final int margin = 1;
+    private final int XMARGIN = 15;
     private final int YMARGIN = 5;
     private final int size = 15;
     private final int borderSize = 2;
     private final int edgeSize = 2;
-    private final int gridSize = 25;
+    private final int GRIDSIZE = 25;
 
     private int mouseClicks = 0;
 
@@ -155,7 +155,7 @@ public class Board {
      *
      */
     public void createGrid() {
-        grid = new Grid(gridSize, gridSize, 21, 20);
+        grid = new Grid(GRIDSIZE, GRIDSIZE, 21, 20);
         grid.addGameState(GS);
     }
 
@@ -176,7 +176,7 @@ public class Board {
     }
 
     private int[] getPixelDimensions() {
-        int[] dimensions = {margin * (gridSize - 1) + size * gridSize, margin * (gridSize - 1) + size * gridSize};
+        int[] dimensions = {margin * (GRIDSIZE - 1) + size * GRIDSIZE, margin * (GRIDSIZE - 1) + size * GRIDSIZE};
         return dimensions;
     }
 
@@ -227,7 +227,7 @@ public class Board {
                 gc.setStroke(Color.CHARTREUSE);
             }
             gc.setLineWidth(edgeSize);
-            int pixelSize = gridSize * size + gridSize * margin;
+            int pixelSize = GRIDSIZE * size + GRIDSIZE * margin;
             gc.strokeRect(XMARGIN - edgeSize / 2, YMARGIN - edgeSize / 2, pixelSize + edgeSize - 1, pixelSize + edgeSize - 1);
 
             //draw squares

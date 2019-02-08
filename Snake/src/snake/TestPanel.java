@@ -38,15 +38,17 @@ public class TestPanel extends javax.swing.JPanel {
         clearButton = new javax.swing.JButton();
         edgeKillsBox = new javax.swing.JCheckBox();
         jSpinner1 = new javax.swing.JSpinner();
-        jSpinner2 = new javax.swing.JSpinner();
         sizeLabel = new javax.swing.JLabel();
         initLengthLabel = new javax.swing.JLabel();
         warpModeBox = new javax.swing.JCheckBox();
+        jSpinner2 = new javax.swing.JSpinner();
         frameDelayLabel = new javax.swing.JLabel();
         saveLabel = new javax.swing.JLabel();
         currentBox = new javax.swing.JTextField();
         currentLabel = new javax.swing.JLabel();
         jSpinner3 = new javax.swing.JSpinner();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 5), new java.awt.Dimension(0, 5), new java.awt.Dimension(32767, 5));
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Toolbox");
@@ -61,12 +63,14 @@ public class TestPanel extends javax.swing.JPanel {
         jScrollPane2.setViewportView(jTextPane1);
 
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel2.setFont(new java.awt.Font("Impact", 0, 24)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(0, 153, 204));
+        jLabel2.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("TOOLBOX");
         jLabel2.setToolTipText("");
+        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 290, 40));
 
         blankButton.setText("Blank");
         blankButton.setActionCommand("");
@@ -74,6 +78,7 @@ public class TestPanel extends javax.swing.JPanel {
         blankButton.setMaximumSize(new java.awt.Dimension(100, 50));
         blankButton.setMinimumSize(new java.awt.Dimension(100, 50));
         blankButton.setPreferredSize(new java.awt.Dimension(100, 50));
+        add(blankButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, -1, 55));
 
         headButton.setText("Head");
         headButton.setActionCommand("");
@@ -86,6 +91,7 @@ public class TestPanel extends javax.swing.JPanel {
                 headButtonActionPerformed(evt);
             }
         });
+        add(headButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, -1, -1));
 
         appleButton.setText("Apple");
         appleButton.setActionCommand("");
@@ -93,6 +99,7 @@ public class TestPanel extends javax.swing.JPanel {
         appleButton.setMaximumSize(new java.awt.Dimension(100, 50));
         appleButton.setMinimumSize(new java.awt.Dimension(100, 50));
         appleButton.setPreferredSize(new java.awt.Dimension(100, 50));
+        add(appleButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, -1, -1));
 
         rockButton.setText("Rock");
         rockButton.setActionCommand("");
@@ -100,6 +107,7 @@ public class TestPanel extends javax.swing.JPanel {
         rockButton.setMaximumSize(new java.awt.Dimension(100, 50));
         rockButton.setMinimumSize(new java.awt.Dimension(100, 50));
         rockButton.setPreferredSize(new java.awt.Dimension(100, 50));
+        add(rockButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 230, -1, -1));
 
         portalButton.setText("Portal");
         portalButton.setActionCommand("");
@@ -112,6 +120,7 @@ public class TestPanel extends javax.swing.JPanel {
                 portalButtonActionPerformed(evt);
             }
         });
+        add(portalButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, -1, -1));
 
         saveButton.setText("SAVE");
         saveButton.addActionListener(new java.awt.event.ActionListener() {
@@ -119,6 +128,7 @@ public class TestPanel extends javax.swing.JPanel {
                 saveButtonActionPerformed(evt);
             }
         });
+        add(saveButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 431, -1, -1));
 
         loadButton.setText("LOAD");
         loadButton.addActionListener(new java.awt.event.ActionListener() {
@@ -126,23 +136,27 @@ public class TestPanel extends javax.swing.JPanel {
                 loadButtonActionPerformed(evt);
             }
         });
+        add(loadButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(212, 431, -1, -1));
 
         clearButton.setText("CLEAR");
+        add(clearButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(107, 431, -1, -1));
 
         edgeKillsBox.setText("Edge kills");
+        add(edgeKillsBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 290, -1, -1));
 
-        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(1, 1, 30, 1));
+        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(1, null, null, 1));
         jSpinner1.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 jSpinner1StateChanged(evt);
             }
         });
-
-        jSpinner2.setModel(new javax.swing.SpinnerNumberModel(1, 1, 30, 1));
+        add(jSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 200, 69, -1));
 
         sizeLabel.setText("Size increment");
+        add(sizeLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 200, -1, -1));
 
         initLengthLabel.setText("Initial length");
+        add(initLengthLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 230, -1, -1));
 
         warpModeBox.setText("Extreme warp");
         warpModeBox.addActionListener(new java.awt.event.ActionListener() {
@@ -150,14 +164,20 @@ public class TestPanel extends javax.swing.JPanel {
                 warpModeBoxActionPerformed(evt);
             }
         });
+        add(warpModeBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 320, -1, -1));
+
+        jSpinner2.setModel(new javax.swing.SpinnerNumberModel(1, 1, null, 1));
+        add(jSpinner2, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 230, 69, -1));
 
         frameDelayLabel.setText("Frame delay");
+        add(frameDelayLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 170, -1, -1));
 
         saveLabel.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         saveLabel.setForeground(new java.awt.Color(72, 191, 58));
         saveLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         saveLabel.setText("SAVED");
         saveLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        add(saveLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 409, 63, -1));
 
         currentBox.setEnabled(false);
         currentBox.setMinimumSize(new java.awt.Dimension(55, 55));
@@ -166,115 +186,15 @@ public class TestPanel extends javax.swing.JPanel {
                 currentBoxActionPerformed(evt);
             }
         });
+        add(currentBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(219, 37, 55, 55));
 
         currentLabel.setText("Current");
+        add(currentLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(228, 98, -1, -1));
 
         jSpinner3.setModel(new javax.swing.SpinnerNumberModel(1, 1, 30, 1));
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(86, 86, 86)
-                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(86, 86, 86))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(10, 10, 10)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(blankButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(headButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                            .addComponent(currentBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(currentLabel)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(appleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jSpinner3, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(frameDelayLabel)
-                        .addGap(14, 14, 14)))
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(saveLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(saveButton))
-                .addGap(32, 32, 32)
-                .addComponent(clearButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(loadButton)
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(12, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(rockButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(portalButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(16, 16, 16)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(edgeKillsBox)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(4, 4, 4)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(sizeLabel)
-                            .addComponent(initLengthLabel)))
-                    .addComponent(warpModeBox))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(currentBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(blankButton, javax.swing.GroupLayout.DEFAULT_SIZE, 55, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(headButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(currentLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(appleButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(frameDelayLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jSpinner3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(3, 3, 3)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(sizeLabel))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(initLengthLabel))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
-                        .addComponent(edgeKillsBox)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(warpModeBox))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(rockButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(portalButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(71, 71, 71)
-                .addComponent(saveLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(saveButton)
-                    .addComponent(clearButton)
-                    .addComponent(loadButton))
-                .addContainerGap())
-        );
+        add(jSpinner3, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 170, 69, -1));
+        add(filler1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 260, -1, -1));
+        add(filler2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 260, -1, -1));
 
         getAccessibleContext().setAccessibleDescription("");
     }// </editor-fold>//GEN-END:initComponents
@@ -315,6 +235,8 @@ public class TestPanel extends javax.swing.JPanel {
     private javax.swing.JTextField currentBox;
     private javax.swing.JLabel currentLabel;
     private javax.swing.JCheckBox edgeKillsBox;
+    private javax.swing.Box.Filler filler1;
+    private javax.swing.Box.Filler filler2;
     private javax.swing.JLabel frameDelayLabel;
     private javax.swing.JButton headButton;
     private javax.swing.JLabel initLengthLabel;
