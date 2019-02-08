@@ -239,6 +239,10 @@ public class TestPanel extends javax.swing.JPanel {
         currentBox.setBackground(Color.decode(colorScheme[index]));
     }
 
+    public int getCurrentTool() {
+        return toolNum;
+    }
+
     public void setColorScheme(String[] colors) {
         this.colorScheme = colors;
     }
@@ -337,6 +341,7 @@ public class TestPanel extends javax.swing.JPanel {
 
     private void sizeIncrementSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sizeIncrementSpinnerStateChanged
         // TODO add your handling code here:
+        grid.setGrowBy((int) sizeIncrementSpinner.getValue());
     }//GEN-LAST:event_sizeIncrementSpinnerStateChanged
 
     private void edgeKillsBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_edgeKillsBoxActionPerformed
@@ -346,6 +351,7 @@ public class TestPanel extends javax.swing.JPanel {
 
     private void initLengthSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_initLengthSpinnerStateChanged
         // TODO add your handling code here:
+        grid.setInitialSize((int) this.initLengthSpinner.getValue());
     }//GEN-LAST:event_initLengthSpinnerStateChanged
 
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed

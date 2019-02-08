@@ -1,5 +1,6 @@
 package snake;
 
+import javax.swing.SwingUtilities;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -46,6 +47,7 @@ public class Snake extends Application {
     private final int TOOLWIDTH = 200;
     private final int TOOLHEIGHT = 450;
     private AWTToolbox AWTToolbox;
+    private TestPanel testPanel;
 
     private int frame = 0;
 
@@ -159,19 +161,21 @@ public class Snake extends Application {
         root.setTop(MENU.getMenu()); // display titlescreen        
 
         Scene scene = new Scene(root, WIDTH, HEIGHT);
+        testPanel = new TestPanel(board.getColorScheme(), board.getGrid());
 
         board.drawBlocks();
         primaryStage.setTitle("JSnake");
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(event -> {
-            AWTToolbox.dispose();
             System.exit(0);
         });
         primaryStage.setOnHidden(event -> {
             pause = true;
+            testPanel.setVisible(false);
         });
         primaryStage.setOnShowing(event -> {
             pause = false;
+            testPanel.setVisible(true);
         });
 
         primaryStage.show();
@@ -182,8 +186,7 @@ public class Snake extends Application {
         toolPane.setStyle("-fx-background-color: black");
 
         //AWTToolbox = new AWTToolbox("Toolbox", TOOLWIDTH, TOOLHEIGHT, (int) (primaryStage.getX() - this.TOOLWIDTH) - 10, (int) primaryStage.getY() + 5, toolColors, toolNames, board.getGrid());
-        AWTToolbox.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        board.addAWTToolbox(AWTToolbox);
+        board.addTestPanel(testPanel);
 
         // Main loop
         new AnimationTimer() {
