@@ -1,15 +1,31 @@
 package snake;
 
+import javax.swing.JTextField;
+import java.awt.Color;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 /**
  *
  * @author Tim Barber
  */
 public class TestPanel extends javax.swing.JPanel {
 
+    private JTextField filename = new JTextField();
+    private JTextField dir = new JTextField();
+    private int toolNum = 0;
+    private String[] colorScheme;
+    private Grid grid;
+
     /**
      * Creates new form TestPanel
      */
-    public TestPanel() {
+    public TestPanel(String[] colorScheme, Grid grid) {
+        this.colorScheme = colorScheme;
+        this.grid = grid;
         initComponents();
     }
 
@@ -37,16 +53,16 @@ public class TestPanel extends javax.swing.JPanel {
         loadButton = new javax.swing.JButton();
         clearButton = new javax.swing.JButton();
         edgeKillsBox = new javax.swing.JCheckBox();
-        jSpinner1 = new javax.swing.JSpinner();
+        sizeIncrementSpinner = new javax.swing.JSpinner();
         sizeLabel = new javax.swing.JLabel();
         initLengthLabel = new javax.swing.JLabel();
         warpModeBox = new javax.swing.JCheckBox();
-        jSpinner2 = new javax.swing.JSpinner();
+        initLengthSpinner = new javax.swing.JSpinner();
         frameDelayLabel = new javax.swing.JLabel();
         saveLabel = new javax.swing.JLabel();
         currentBox = new javax.swing.JTextField();
         currentLabel = new javax.swing.JLabel();
-        jSpinner3 = new javax.swing.JSpinner();
+        frameSpeedSpinner = new javax.swing.JSpinner();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 5), new java.awt.Dimension(0, 5), new java.awt.Dimension(32767, 5));
         filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
 
@@ -139,18 +155,28 @@ public class TestPanel extends javax.swing.JPanel {
         add(loadButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(212, 431, -1, -1));
 
         clearButton.setText("CLEAR");
+        clearButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearButtonActionPerformed(evt);
+            }
+        });
         add(clearButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(107, 431, -1, -1));
 
         edgeKillsBox.setText("Edge kills");
-        add(edgeKillsBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 290, -1, -1));
-
-        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(1, null, null, 1));
-        jSpinner1.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                jSpinner1StateChanged(evt);
+        edgeKillsBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                edgeKillsBoxActionPerformed(evt);
             }
         });
-        add(jSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 200, 69, -1));
+        add(edgeKillsBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 290, -1, -1));
+
+        sizeIncrementSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), null, null, Integer.valueOf(1)));
+        sizeIncrementSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                sizeIncrementSpinnerStateChanged(evt);
+            }
+        });
+        add(sizeIncrementSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 200, 69, -1));
 
         sizeLabel.setText("Size increment");
         add(sizeLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 200, -1, -1));
@@ -166,8 +192,13 @@ public class TestPanel extends javax.swing.JPanel {
         });
         add(warpModeBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 320, -1, -1));
 
-        jSpinner2.setModel(new javax.swing.SpinnerNumberModel(1, 1, null, 1));
-        add(jSpinner2, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 230, 69, -1));
+        initLengthSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
+        initLengthSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                initLengthSpinnerStateChanged(evt);
+            }
+        });
+        add(initLengthSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 230, 69, -1));
 
         frameDelayLabel.setText("Frame delay");
         add(frameDelayLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 170, -1, -1));
@@ -191,41 +222,137 @@ public class TestPanel extends javax.swing.JPanel {
         currentLabel.setText("Current");
         add(currentLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(228, 98, -1, -1));
 
-        jSpinner3.setModel(new javax.swing.SpinnerNumberModel(1, 1, 30, 1));
-        add(jSpinner3, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 170, 69, -1));
+        frameSpeedSpinner.setModel(new javax.swing.SpinnerNumberModel(1, 1, 30, 1));
+        add(frameSpeedSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 170, 69, -1));
         add(filler1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 260, -1, -1));
         add(filler2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 260, -1, -1));
 
         getAccessibleContext().setAccessibleDescription("");
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     *
+     * @param index
+     */
+    public void setCurrentTool(int index) {
+        toolNum = index;
+        currentBox.setBackground(Color.decode(colorScheme[index]));
+    }
+
+    public void setColorScheme(String[] colors) {
+        this.colorScheme = colors;
+    }
+
     private void headButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_headButtonActionPerformed
         // TODO add your handling code here:
+        setCurrentTool(1);
     }//GEN-LAST:event_headButtonActionPerformed
 
     private void portalButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_portalButtonActionPerformed
         // TODO add your handling code here:
+        setCurrentTool(5);
     }//GEN-LAST:event_portalButtonActionPerformed
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
         // TODO add your handling code here:
+        JFileChooser fChooser = new JFileChooser();
+        fChooser.setAcceptAllFileFilterUsed(false);
+        fChooser.setDialogTitle("Pick a .sandbox file to open");
+        fChooser.setCurrentDirectory(new File("resources/"));
+        fChooser.setMultiSelectionEnabled(false);
+        int rVal = fChooser.showSaveDialog(new FilePicker("sandbox", "sandbox"));
+        if (rVal == JFileChooser.APPROVE_OPTION) {
+            String text = fChooser.getSelectedFile().getName();
+            int dot = text.lastIndexOf(".");
+            if (dot == -1) {
+                dot = text.length() - 1;
+            }
+            filename.setText(text.substring(0, dot) + ".sandbox");
+            dir.setText(fChooser.getCurrentDirectory().toString());
+        }
+        if (rVal == JFileChooser.CANCEL_OPTION) {
+            filename.setText("You pressed cancel");
+            dir.setText("");
+        } else {
+            String compiledSandboxFile = Snake.compileToSandboxFile(grid.getEdgeKills(), grid.getFrameSpeed(), grid.getInitialLength(), grid.getGrowBy(), grid.getPlayArea());
+            String fileLoc = "";
+            try {
+                fileLoc = dir.getText() + "\\" + filename.getText();
+
+                System.out.println(fileLoc);
+                BufferedWriter buffer = new BufferedWriter(new FileWriter(fileLoc));
+                for (String s : compiledSandboxFile.split("\n")) {
+                    buffer.write(s);
+                    buffer.newLine();
+                }
+                buffer.close();
+            } catch (Exception x) {
+                System.out.println("File save incomplete to \"" + fileLoc + "\"");
+            }
+            this.saveLabel.setVisible(true);
+        }
+        repaint();
     }//GEN-LAST:event_saveButtonActionPerformed
 
     private void loadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadButtonActionPerformed
         // TODO add your handling code here:
+        this.saveLabel.setVisible(false);
+        JFileChooser fChooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Sandbox files", "sandbox");
+        fChooser.setFileFilter(filter);
+        int rVal = fChooser.showOpenDialog(new FilePicker());
+        if (rVal == JFileChooser.APPROVE_OPTION) {
+            filename.setText(fChooser.getSelectedFile().getName());
+            dir.setText(fChooser.getCurrentDirectory().toString());
+        }
+        if (rVal == JFileChooser.CANCEL_OPTION) {
+            filename.setText("You pressed cancel");
+            dir.setText("");
+        } else {
+            String fileLoc = dir.getText() + "\\" + filename.getText();
+            grid.overwrite(Snake.loadSandboxFile(new File(fileLoc)));
+            updateControls();
+        }
+        repaint();
     }//GEN-LAST:event_loadButtonActionPerformed
+
+    /**
+     *
+     */
+    public void updateControls() {
+        edgeKillsBox.setSelected(grid.getEdgeKills());
+        this.initLengthSpinner.setValue(grid.getInitialLength());
+        this.sizeIncrementSpinner.setValue(grid.getGrowBy());
+        frameSpeedSpinner.setValue(grid.getFrameSpeed());
+    }
 
     private void warpModeBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_warpModeBoxActionPerformed
         // TODO add your handling code here:
+        grid.setExtremeStyleWarp(warpModeBox.isSelected());
     }//GEN-LAST:event_warpModeBoxActionPerformed
 
     private void currentBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_currentBoxActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_currentBoxActionPerformed
 
-    private void jSpinner1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSpinner1StateChanged
+    private void sizeIncrementSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sizeIncrementSpinnerStateChanged
         // TODO add your handling code here:
-    }//GEN-LAST:event_jSpinner1StateChanged
+    }//GEN-LAST:event_sizeIncrementSpinnerStateChanged
+
+    private void edgeKillsBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_edgeKillsBoxActionPerformed
+        // TODO add your handling code here:
+        grid.setEdgeKills(edgeKillsBox.isSelected());
+    }//GEN-LAST:event_edgeKillsBoxActionPerformed
+
+    private void initLengthSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_initLengthSpinnerStateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_initLengthSpinnerStateChanged
+
+    private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
+        // TODO add your handling code here:
+        grid.clear();
+        repaint();
+    }//GEN-LAST:event_clearButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -238,22 +365,22 @@ public class TestPanel extends javax.swing.JPanel {
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler2;
     private javax.swing.JLabel frameDelayLabel;
+    private javax.swing.JSpinner frameSpeedSpinner;
     private javax.swing.JButton headButton;
     private javax.swing.JLabel initLengthLabel;
+    private javax.swing.JSpinner initLengthSpinner;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JList jList1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JSpinner jSpinner1;
-    private javax.swing.JSpinner jSpinner2;
-    private javax.swing.JSpinner jSpinner3;
     private javax.swing.JTextPane jTextPane1;
     private javax.swing.JButton loadButton;
     private javax.swing.JButton portalButton;
     private javax.swing.JButton rockButton;
     private javax.swing.JButton saveButton;
     private javax.swing.JLabel saveLabel;
+    private javax.swing.JSpinner sizeIncrementSpinner;
     private javax.swing.JLabel sizeLabel;
     private javax.swing.JCheckBox warpModeBox;
     // End of variables declaration//GEN-END:variables

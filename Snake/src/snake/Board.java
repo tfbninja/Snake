@@ -106,28 +106,17 @@ public class Board {
         applesEaten = "EDDDD4";
     }
 
+    public String[] getColorScheme() {
+        String[] colorScheme = {blank, head, body, apple, rock, portalColors[0]};
+        return colorScheme;
+    }
+
     /**
      *
      * @param tb
      */
     public void addAWTToolbox(AWTToolbox tb) {
         this.AWTToolbox = tb;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public ArrayList<String> getColorScheme() {
-        ArrayList<String> colors = new ArrayList<>();
-        colors.add(blank);
-        colors.add(apple);
-        colors.add(body);
-        colors.add(head);
-        colors.add(bg);
-        colors.add(rock);
-        colors.add(applesEaten);
-        return colors;
     }
 
     /**

@@ -180,20 +180,8 @@ public class Snake extends Application {
         BorderPane toolPane = new BorderPane();
         toolPane.setPadding(new Insets(0, 0, 0, 0));
         toolPane.setStyle("-fx-background-color: black");
-        ArrayList<String> toolNames = new ArrayList<>();
-        ArrayList<String> toolColors = new ArrayList<>();
-        toolNames.add("Blank");
-        toolNames.add("Apple");
-        toolNames.add("Head");
-        toolNames.add("Rock");
-        toolNames.add("Portal");
-        toolColors.add(board.getColorScheme().get(0));
-        toolColors.add(board.getColorScheme().get(1));
-        toolColors.add(board.getColorScheme().get(3));
-        toolColors.add(board.getColorScheme().get(5));
-        toolColors.add("f142f4");
-        AWTToolbox = new AWTToolbox("Toolbox", TOOLWIDTH, TOOLHEIGHT, (int) (primaryStage.getX() - this.TOOLWIDTH) - 10, (int) primaryStage.getY() + 5, toolColors, toolNames, board.getGrid());
 
+        //AWTToolbox = new AWTToolbox("Toolbox", TOOLWIDTH, TOOLHEIGHT, (int) (primaryStage.getX() - this.TOOLWIDTH) - 10, (int) primaryStage.getY() + 5, toolColors, toolNames, board.getGrid());
         AWTToolbox.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         board.addAWTToolbox(AWTToolbox);
 

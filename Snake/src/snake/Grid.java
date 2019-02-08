@@ -66,6 +66,8 @@ public class Grid implements squares {
     private int[][] sandboxPlayArea = new int[25][25];
     private GameState GS;
 
+    private boolean extremeWarp = false;
+
     /*
      * Directions:
      * 1 = up
@@ -96,6 +98,10 @@ public class Grid implements squares {
         warp.setVolume(0.5);
         addDeathSounds();
         this.bite = new Sound("resources/sounds/bite2.wav");
+    }
+
+    public void setExtremeStyleWarp(boolean b) {
+        extremeWarp = b;
     }
 
     public void addGameState(GameState gs) {
@@ -1029,7 +1035,7 @@ public class Grid implements squares {
 
             if (!this.edgeKills) {
                 boolean playWarpSound = false;
-                if (this.diffLevel < 4) {
+                if (this.diffLevel < 4 && this.extremeWarp == false) {
                     if (nextX < 0) {
                         nextX = this.width - 1;
                         playWarpSound = true;
