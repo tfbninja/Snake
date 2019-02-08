@@ -15,7 +15,6 @@ public class Block implements Locatable {
     private int width;
     private int height;
     private Color color;
-    private 
     private String name;
 
     /**
