@@ -18,7 +18,7 @@ import java.util.ArrayList;
  * @author Timothy
  */
 public class Board {
-    
+
     private final int width;
     private final int height;
     private Grid grid;
@@ -31,7 +31,7 @@ public class Board {
     private final int borderSize = 2;
     private final int edgeSize = 2;
     private final int GRIDSIZE = 25;
-    
+
     private int mouseClicks = 0;
 
     // colors (day theme)
@@ -43,9 +43,9 @@ public class Board {
     private String rock = "53585e";
     private String applesEaten = "750BE0";
     private final String[] portalColors = {"90094E", "550C74", "d4df09", "7CEA9C", "BD6B73"};
-    
+
     private boolean lost = false;
-    
+
     private int keyPresses = 0;
 
     //menu variables
@@ -59,16 +59,16 @@ public class Board {
     private final int[] musicButton = {12, 18, 55, 37};
     private final int[] SFXButton = {83, 18, 28, 37};
     private final int[] helpButton = {13, 255, 47, 22};
-    
+
     private boolean nightTheme = false;
-    
+
     private final MenuManager MM;
     private final MainMenu MENU;
     private final GameState GS;
-    
+
     private boolean sandboxExists = false;
     private int[][] sandbox;
-    
+
     private TestPanel testPanel;
     private final Stage primaryStage;
 
@@ -105,7 +105,7 @@ public class Board {
         rock = "1e1e1e";
         applesEaten = "EDDDD4";
     }
-    
+
     public String[] getColorScheme() {
         String[] colorScheme = {blank, head, body, apple, rock, portalColors[0]};
         return colorScheme;
@@ -155,7 +155,7 @@ public class Board {
     public void setGrid(Grid newGrid) {
         this.grid = newGrid;
     }
-    
+
     private int[] getPixelDimensions() {
         int[] dimensions = {margin * (GRIDSIZE - 1) + size * GRIDSIZE, margin * (GRIDSIZE - 1) + size * GRIDSIZE};
         return dimensions;
@@ -199,7 +199,7 @@ public class Board {
             gc.setStroke(Color.BLACK);
             gc.setLineWidth(borderSize);
             gc.fillRect(borderSize / 2, borderSize / 2, width - borderSize, height - borderSize);
-            
+
             if (this.grid.getEdgeKills()) {
                 // draw red border indicating that edge kills
                 gc.setStroke(Color.CRIMSON.darker());
@@ -246,7 +246,7 @@ public class Board {
             gc.setFill(Color.web(applesEaten));
             gc.setFont(Font.font("Impact", 22));
             gc.fillText("Apples eaten: " + this.getGrid().getApplesEaten(), XMARGIN + width / 2 - 100, YMARGIN + getPixelDimensions()[1] + 22);
-            
+
             if (!this.lost && this.grid.getGameOver()) {
                 this.lost = true;
             }
@@ -256,7 +256,7 @@ public class Board {
                 GS.setToPostGame();
             }
         } else {
-            
+
         }
     }
 
@@ -275,7 +275,7 @@ public class Board {
         grid.safeSetCell(21, 20, 1);
         grid.setPos(21, 20);
     }
-    
+
     public void setToSandboxPlayArea() {
         grid.setPlayArea(this.sandbox);
     }
@@ -308,7 +308,7 @@ public class Board {
         this.soundOn = val;
         this.grid.setSoundOn(val);
     }
-    
+
     private boolean isDirectional(KeyEvent i) {
         //System.out.println(i.getCode());
         return i.getCode() == KeyCode.UP || i.getCode() == KeyCode.W
@@ -344,7 +344,7 @@ public class Board {
             MM.setCurrent(0);
             testPanel.setVisible(false);
         }
-        
+
         if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0) {
             if (null != e.getCode()) {
                 switch (e.getCode()) {
@@ -368,7 +368,7 @@ public class Board {
                 }
             }
         }
-        
+
         if (MM.getCurrent() == 0) {
             if (e.getCode() == KeyCode.DIGIT1) {
                 // easy mode chosen
@@ -393,6 +393,9 @@ public class Board {
                 MM.setCurrent(4);
             } else if (e.getCode() == KeyCode.DIGIT0 && e.isShiftDown() && sandboxExists) {
                 //toolbox.show();
+                testPanel.setLocation((int) (primaryStage.getX() - 290), (int) (primaryStage.getY()));
+                System.out.println("showing test Panel");
+                System.out.println(testPanel);
                 testPanel.setVisible(true);
                 primaryStage.requestFocus();
                 this.grid.setDiffLevel(0);
@@ -549,7 +552,7 @@ public class Board {
                 return AWTTool;
         }
     }
-    
+
     public void addTestPanel(TestPanel panel) {
         testPanel = panel;
     }
@@ -585,15 +588,15 @@ public class Board {
             }
             return;
         }
-        
+
         if (leftClick) {
             // left click
 
             // sandbox mode editing
             if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0 && xVal >= 0 && xVal < grid.getWidth() && yVal >= 0 && yVal < grid.getLength()) {
-                
+
                 int tool = testPanel.getCurrentTool();
-                
+
                 switch (tool) {
                     case 4:
                     case 3:
@@ -613,7 +616,7 @@ public class Board {
      */
     public void mouseClicked(MouseEvent e) {
         this.mouseClicks++;
-        
+
         double mouseX = e.getX();
         double mouseY = e.getY();
         // account for border outside of canvas
@@ -733,7 +736,7 @@ public class Board {
     public Canvas getCanvas() {
         return canvas;
     }
-    
+
     @Override
     public String toString() {
         return "";

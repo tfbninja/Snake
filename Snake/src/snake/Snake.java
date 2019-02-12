@@ -1,6 +1,5 @@
 package snake;
 
-import javax.swing.SwingUtilities;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -28,7 +27,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javax.imageio.ImageIO;
-import javax.swing.JFrame;
 
 /**
  *
@@ -179,13 +177,6 @@ public class Snake extends Application {
         });
 
         primaryStage.show();
-
-        // set up toolbox for sandbox mode
-        BorderPane toolPane = new BorderPane();
-        toolPane.setPadding(new Insets(0, 0, 0, 0));
-        toolPane.setStyle("-fx-background-color: black");
-
-        //AWTToolbox = new AWTToolbox("Toolbox", TOOLWIDTH, TOOLHEIGHT, (int) (primaryStage.getX() - this.TOOLWIDTH) - 10, (int) primaryStage.getY() + 5, toolColors, toolNames, board.getGrid());
         board.addTestPanel(testPanel);
 
         // Main loop

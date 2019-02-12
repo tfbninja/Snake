@@ -79,6 +79,8 @@ public class TestPanel extends javax.swing.JPanel {
         jScrollPane2.setViewportView(jTextPane1);
 
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        setMinimumSize(new java.awt.Dimension(290, 480));
+        setPreferredSize(new java.awt.Dimension(290, 480));
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
@@ -139,6 +141,8 @@ public class TestPanel extends javax.swing.JPanel {
         add(portalButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, -1, -1));
 
         saveButton.setText("SAVE");
+        saveButton.setToolTipText("Save the current sandbox file");
+        saveButton.setContentAreaFilled(false);
         saveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveButtonActionPerformed(evt);
@@ -147,6 +151,7 @@ public class TestPanel extends javax.swing.JPanel {
         add(saveButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 431, -1, -1));
 
         loadButton.setText("LOAD");
+        loadButton.setToolTipText("Load a new sandbox file");
         loadButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loadButtonActionPerformed(evt);
@@ -155,6 +160,7 @@ public class TestPanel extends javax.swing.JPanel {
         add(loadButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(212, 431, -1, -1));
 
         clearButton.setText("CLEAR");
+        clearButton.setToolTipText("Clear the grid");
         clearButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 clearButtonActionPerformed(evt);
@@ -170,7 +176,7 @@ public class TestPanel extends javax.swing.JPanel {
         });
         add(edgeKillsBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 290, -1, -1));
 
-        sizeIncrementSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), null, null, Integer.valueOf(1)));
+        sizeIncrementSpinner.setModel(new javax.swing.SpinnerNumberModel(1, null, null, 1));
         sizeIncrementSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 sizeIncrementSpinnerStateChanged(evt);
@@ -192,7 +198,7 @@ public class TestPanel extends javax.swing.JPanel {
         });
         add(warpModeBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 320, -1, -1));
 
-        initLengthSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
+        initLengthSpinner.setModel(new javax.swing.SpinnerNumberModel(1, 1, null, 1));
         initLengthSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 initLengthSpinnerStateChanged(evt);
