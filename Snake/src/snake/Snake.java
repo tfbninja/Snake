@@ -12,6 +12,7 @@ import javafx.util.Pair;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import javax.swing.JFrame;
 import java.util.ArrayList;
 import java.util.Scanner;
 import javafx.animation.AnimationTimer;
@@ -44,8 +45,8 @@ public class Snake extends Application {
     // secondary sandbox tool window
     private final int TOOLWIDTH = 200;
     private final int TOOLHEIGHT = 450;
-    private AWTToolbox AWTToolbox;
     private TestPanel testPanel;
+    private JFrame toolboxFrame;
 
     private int frame = 0;
 
@@ -160,6 +161,11 @@ public class Snake extends Application {
 
         Scene scene = new Scene(root, WIDTH, HEIGHT);
         testPanel = new TestPanel(board.getColorScheme(), board.getGrid());
+        toolboxFrame = new JFrame("Toolbox");
+        toolboxFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        toolboxFrame.getContentPane().add(testPanel);
+        toolboxFrame.pack();
+        toolboxFrame.setVisible(true);
 
         board.drawBlocks();
         primaryStage.setTitle("JSnake");
@@ -243,8 +249,8 @@ public class Snake extends Application {
                                 //board.getGrid().setDiffLevel(0);
                                 //board.getGrid().setPos(headPos.get(0).getKey(), headPos.get(0).getValue());
                                 board.getGrid().setPos(headPos2[0], headPos2[1]);
-                                board.getGrid().setGrowBy(AWTToolbox.getGrowBy());
-                                board.getGrid().setEdgeKills(AWTToolbox.getEdgeKills());
+                                board.getGrid().setGrowBy(testPanel.getGrowBy());
+                                board.getGrid().setEdgeKills(testPanel.getEdgeKills());
                                 board.setToSandboxPlayArea();
                                 board.drawBlocks();
                                 MM.setCurrent(4);

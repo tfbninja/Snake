@@ -27,6 +27,7 @@ public class TestPanel extends javax.swing.JPanel {
         this.colorScheme = colorScheme;
         this.grid = grid;
         initComponents();
+
     }
 
     /**
@@ -252,6 +253,15 @@ public class TestPanel extends javax.swing.JPanel {
     public void setColorScheme(String[] colors) {
         this.colorScheme = colors;
     }
+
+    public int getGrowBy() {
+        return (int) this.sizeIncrementSpinner.getValue();
+    }
+
+    public boolean getEdgeKills() {
+        return this.edgeKillsBox.isSelected();
+    }
+
 
     private void headButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_headButtonActionPerformed
         // TODO add your handling code here:
