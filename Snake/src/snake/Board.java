@@ -107,7 +107,7 @@ public class Board {
     }
 
     public String[] getColorScheme() {
-        String[] colorScheme = {blank, head, body, apple, rock, portalColors[0]};
+        String[] colorScheme = {blank, head, apple, rock, portalColors[0]};
         return colorScheme;
     }
 

@@ -22,12 +22,19 @@ public class TestPanel extends javax.swing.JPanel {
 
     /**
      * Creates new form TestPanel
+     *
+     * @param colorScheme The button colors
+     * @param grid The grid to control
      */
     public TestPanel(String[] colorScheme, Grid grid) {
         this.colorScheme = colorScheme;
         this.grid = grid;
         initComponents();
-
+        buttons.add(blankButton);
+        buttons.add(headButton);
+        buttons.add(appleButton);
+        buttons.add(rockButton);
+        buttons.add(portalButton);
     }
 
     /**
@@ -243,7 +250,12 @@ public class TestPanel extends javax.swing.JPanel {
      */
     public void setCurrentTool(int index) {
         toolNum = index;
-        currentBox.setBackground(Color.decode(colorScheme[index]));
+        for (javax.swing.JButton jb : buttons) {
+            jb.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        }
+        buttons.get(index).setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        System.out.println("Color: " + colorScheme[index]);
+        currentBox.setBackground(Color.decode("0x" + colorScheme[index]));
     }
 
     public int getCurrentTool() {
@@ -376,7 +388,7 @@ public class TestPanel extends javax.swing.JPanel {
         repaint();
     }//GEN-LAST:event_clearButtonActionPerformed
 
-
+    private java.util.ArrayList<javax.swing.JButton> buttons = new java.util.ArrayList<>();
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton appleButton;
     private javax.swing.JButton blankButton;
