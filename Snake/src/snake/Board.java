@@ -9,6 +9,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javax.swing.JFrame;
 import javafx.util.Pair;
 import javafx.scene.text.Font;
 import java.util.ArrayList;
@@ -71,6 +72,7 @@ public class Board {
 
     private TestPanel testPanel;
     private final Stage primaryStage;
+    private JFrame toolFrame;
 
     /**
      *
@@ -352,16 +354,16 @@ public class Board {
                         testPanel.setCurrentTool(0);
                         break;
                     case DIGIT1:
-                        testPanel.setCurrentTool(0);
+                        testPanel.setCurrentTool(1);
                         break;
                     case DIGIT2:
-                        testPanel.setCurrentTool(0);
+                        testPanel.setCurrentTool(2);
                         break;
                     case DIGIT3:
-                        testPanel.setCurrentTool(0);
+                        testPanel.setCurrentTool(3);
                         break;
                     case DIGIT4:
-                        testPanel.setCurrentTool(0);
+                        testPanel.setCurrentTool(4);
                         break;
                     default:
                         break;
@@ -388,15 +390,12 @@ public class Board {
             } else if (e.getCode() == KeyCode.DIGIT4) {
                 // impossible mode chosen
                 this.grid.setDiffLevel(4);
-                testPanel.setVisible(true);
                 GS.setToPreGame();
                 MM.setCurrent(4);
             } else if (e.getCode() == KeyCode.DIGIT0 && e.isShiftDown() && sandboxExists) {
                 //toolbox.show();
-                testPanel.setLocation((int) (primaryStage.getX() - 290), (int) (primaryStage.getY()));
-                System.out.println("showing test Panel");
-                System.out.println(testPanel);
-                testPanel.setVisible(true);
+                toolFrame.setVisible(true);
+                testPanel.setCurrentTool(0);
                 primaryStage.requestFocus();
                 this.grid.setDiffLevel(0);
                 this.grid.setPlayArea(sandbox);
@@ -557,6 +556,10 @@ public class Board {
         testPanel = panel;
     }
 
+    public void addToolFrame(JFrame frame) {
+        toolFrame = frame;
+    }
+
     /**
      *
      * @param e
@@ -647,6 +650,8 @@ public class Board {
                         grid.setPos(xVal, yVal);
                         grid.removeAll(1);
                     case 3:
+                        // apple
+                        System.out.println("Apple clicked");
                         grid.setCell(xVal, yVal, tool);
                         break;
                     case 5:
