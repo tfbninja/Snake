@@ -92,7 +92,7 @@ public class TestPanel extends javax.swing.JPanel {
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setForeground(new java.awt.Color(20, 20, 20));
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("TOOLBOX");
         jLabel2.setToolTipText("");
@@ -199,7 +199,7 @@ public class TestPanel extends javax.swing.JPanel {
         });
         add(edgeKillsBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 290, -1, -1));
 
-        sizeIncrementSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), null, null, Integer.valueOf(1)));
+        sizeIncrementSpinner.setModel(new javax.swing.SpinnerNumberModel(1, null, null, 1));
         sizeIncrementSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 sizeIncrementSpinnerStateChanged(evt);
@@ -221,7 +221,7 @@ public class TestPanel extends javax.swing.JPanel {
         });
         add(warpModeBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 320, -1, -1));
 
-        initLengthSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
+        initLengthSpinner.setModel(new javax.swing.SpinnerNumberModel(1, 1, null, 1));
         initLengthSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 initLengthSpinnerStateChanged(evt);
@@ -277,9 +277,9 @@ public class TestPanel extends javax.swing.JPanel {
                 toolNum = 5;
         }
 
-        for (javax.swing.JButton jb : buttons) {
+        buttons.forEach((jb) -> {
             jb.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        }
+        });
         buttons.get(index).setBorder(javax.swing.BorderFactory.createEtchedBorder());
         System.out.println("Color: " + colorScheme[index]);
         currentBox.setBackground(Color.decode("0x" + colorScheme[index]));
