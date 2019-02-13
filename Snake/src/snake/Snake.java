@@ -91,6 +91,10 @@ public class Snake extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+
+        /*
+         * Assert that resources folder exists
+         */
         // Create Board of block objects
         board = new Board(canvasW, canvasH, MM, MENU, GS, primaryStage);
         board.setOutsideMargin(canvasMargin);
