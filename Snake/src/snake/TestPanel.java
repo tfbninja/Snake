@@ -19,6 +19,8 @@ public class TestPanel extends javax.swing.JPanel {
     private int toolNum = 0;
     private String[] colorScheme;
     private Grid grid;
+    private final MenuManager MM;
+    private Board board;
 
     /**
      * Creates new form TestPanel
@@ -26,7 +28,7 @@ public class TestPanel extends javax.swing.JPanel {
      * @param colorScheme The button colors
      * @param grid The grid to control
      */
-    public TestPanel(String[] colorScheme, Grid grid) {
+    public TestPanel(String[] colorScheme, Grid grid, MenuManager mm, Board b) {
         this.colorScheme = colorScheme;
         this.grid = grid;
         initComponents();
@@ -35,6 +37,8 @@ public class TestPanel extends javax.swing.JPanel {
         buttons.add(appleButton);
         buttons.add(rockButton);
         buttons.add(portalButton);
+        MM = mm;
+        board = b;
     }
 
     /**
@@ -416,8 +420,10 @@ public class TestPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_initLengthSpinnerStateChanged
 
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
-        // TODO add your handling code here:
+        grid.kill();
+        MM.setCurrent(3);
         grid.clear();
+        board.drawBlocks();
         repaint();
     }//GEN-LAST:event_clearButtonActionPerformed
 

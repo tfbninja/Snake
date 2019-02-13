@@ -31,9 +31,6 @@ public class Grid implements squares {
     private boolean edgeKills = false;
 
     private Random random = new Random();
-
-    private boolean gameOver = false;
-
     private int diffLevel = 1;
     private int minDiffLevel = 0;
     private int maxDiffLevel = 4;
@@ -413,7 +410,6 @@ public class Grid implements squares {
         //applesEaten = 0;
         direction = 0;
         tempDir = 0;
-        gameOver = false;
         snakeSize = initialSize;
     }
 
@@ -702,14 +698,6 @@ public class Grid implements squares {
         while (pos.size() > snakeSize) {
             this.setCell(this.pos.remove(this.pos.size() - 1), 0);
         }
-    }
-
-    /**
-     *
-     * @return
-     */
-    public boolean getGameOver() {
-        return this.gameOver;
     }
 
     /**
@@ -1009,6 +997,10 @@ public class Grid implements squares {
      */
     public void setInitialSize(int amt) {
         initialSize = amt;
+    }
+
+    public void kill() {
+        GS.setToPostGame();
     }
 
     /**

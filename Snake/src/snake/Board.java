@@ -249,7 +249,7 @@ public class Board {
             gc.setFont(Font.font("Impact", 22));
             gc.fillText("Apples eaten: " + this.getGrid().getApplesEaten(), XMARGIN + width / 2 - 100, YMARGIN + getPixelDimensions()[1] + 22);
 
-            if (!this.lost && this.grid.getGameOver()) {
+            if (!this.lost && GS.isPostGame()) {
                 this.lost = true;
             }
 
@@ -344,7 +344,7 @@ public class Board {
         if (e.getCode() == KeyCode.ESCAPE) {
             reset();
             MM.setCurrent(0);
-            testPanel.setVisible(false);
+            toolFrame.setVisible(false);
         }
 
         if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0) {
