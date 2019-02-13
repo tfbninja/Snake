@@ -267,14 +267,19 @@ public class TestPanel extends javax.swing.JPanel {
         switch (index) {
             case 0:
                 toolNum = 0;
+                break;
             case 1:
                 toolNum = 1;
+                break;
             case 2:
                 toolNum = 3;
+                break;
             case 3:
                 toolNum = 4;
+                break;
             case 4:
                 toolNum = 5;
+                break;
         }
 
         for (javax.swing.JButton jb : buttons) {
@@ -304,6 +309,7 @@ public class TestPanel extends javax.swing.JPanel {
 
     private void headButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_headButtonActionPerformed
         // TODO add your handling code here:
+        System.out.println("clicked");
         setCurrentTool(1);
     }//GEN-LAST:event_headButtonActionPerformed
 
