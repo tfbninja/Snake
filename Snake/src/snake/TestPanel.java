@@ -104,6 +104,11 @@ public class TestPanel extends javax.swing.JPanel {
         blankButton.setMaximumSize(new java.awt.Dimension(100, 50));
         blankButton.setMinimumSize(new java.awt.Dimension(100, 50));
         blankButton.setPreferredSize(new java.awt.Dimension(100, 50));
+        blankButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                blankButtonActionPerformed(evt);
+            }
+        });
         add(blankButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, -1, 55));
 
         headButton.setText("Head");
@@ -125,6 +130,11 @@ public class TestPanel extends javax.swing.JPanel {
         appleButton.setMaximumSize(new java.awt.Dimension(100, 50));
         appleButton.setMinimumSize(new java.awt.Dimension(100, 50));
         appleButton.setPreferredSize(new java.awt.Dimension(100, 50));
+        appleButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                appleButtonActionPerformed(evt);
+            }
+        });
         add(appleButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, -1, -1));
 
         rockButton.setText("Rock");
@@ -133,6 +143,11 @@ public class TestPanel extends javax.swing.JPanel {
         rockButton.setMaximumSize(new java.awt.Dimension(100, 50));
         rockButton.setMinimumSize(new java.awt.Dimension(100, 50));
         rockButton.setPreferredSize(new java.awt.Dimension(100, 50));
+        rockButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rockButtonActionPerformed(evt);
+            }
+        });
         add(rockButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 230, -1, -1));
 
         portalButton.setText("Portal");
@@ -184,7 +199,7 @@ public class TestPanel extends javax.swing.JPanel {
         });
         add(edgeKillsBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 290, -1, -1));
 
-        sizeIncrementSpinner.setModel(new javax.swing.SpinnerNumberModel(1, null, null, 1));
+        sizeIncrementSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), null, null, Integer.valueOf(1)));
         sizeIncrementSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 sizeIncrementSpinnerStateChanged(evt);
@@ -206,7 +221,7 @@ public class TestPanel extends javax.swing.JPanel {
         });
         add(warpModeBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 320, -1, -1));
 
-        initLengthSpinner.setModel(new javax.swing.SpinnerNumberModel(1, 1, null, 1));
+        initLengthSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
         initLengthSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 initLengthSpinnerStateChanged(evt);
@@ -249,7 +264,19 @@ public class TestPanel extends javax.swing.JPanel {
      * @param index
      */
     public void setCurrentTool(int index) {
-        toolNum = index;
+        switch (index) {
+            case 0:
+                toolNum = 0;
+            case 1:
+                toolNum = 1;
+            case 2:
+                toolNum = 3;
+            case 3:
+                toolNum = 4;
+            case 4:
+                toolNum = 5;
+        }
+
         for (javax.swing.JButton jb : buttons) {
             jb.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         }
@@ -282,7 +309,7 @@ public class TestPanel extends javax.swing.JPanel {
 
     private void portalButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_portalButtonActionPerformed
         // TODO add your handling code here:
-        setCurrentTool(5);
+        setCurrentTool(4);
     }//GEN-LAST:event_portalButtonActionPerformed
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
@@ -387,6 +414,21 @@ public class TestPanel extends javax.swing.JPanel {
         grid.clear();
         repaint();
     }//GEN-LAST:event_clearButtonActionPerformed
+
+    private void blankButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_blankButtonActionPerformed
+        // TODO add your handling code here:
+        setCurrentTool(0);
+    }//GEN-LAST:event_blankButtonActionPerformed
+
+    private void appleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_appleButtonActionPerformed
+        // TODO add your handling code here:
+        setCurrentTool(2);
+    }//GEN-LAST:event_appleButtonActionPerformed
+
+    private void rockButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rockButtonActionPerformed
+        // TODO add your handling code here:
+        setCurrentTool(3);
+    }//GEN-LAST:event_rockButtonActionPerformed
 
     private java.util.ArrayList<javax.swing.JButton> buttons = new java.util.ArrayList<>();
     // Variables declaration - do not modify//GEN-BEGIN:variables
