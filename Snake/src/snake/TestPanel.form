@@ -43,6 +43,9 @@
     </Container>
   </NonVisualComponents>
   <Properties>
+    <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+      <Color blue="ee" green="ee" red="ee" type="rgb"/>
+    </Property>
     <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
       <Color id="Default Cursor"/>
     </Property>
@@ -235,7 +238,6 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="SAVE"/>
         <Property name="toolTipText" type="java.lang.String" value="Save the current sandbox file"/>
-        <Property name="contentAreaFilled" type="boolean" value="false"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveButtonActionPerformed"/>
@@ -396,11 +398,12 @@
     </Component>
     <Component class="javax.swing.JLabel" name="currentLabel">
       <Properties>
+        <Property name="horizontalAlignment" type="int" value="0"/>
         <Property name="text" type="java.lang.String" value="Current"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="228" y="98" width="-1" height="-1"/>
+          <AbsoluteConstraints x="216" y="100" width="60" height="-1"/>
         </Constraint>
       </Constraints>
     </Component>

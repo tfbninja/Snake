@@ -121,7 +121,15 @@ public class Snake extends Application {
             MENU.turnOnMusic();
             MENU.turnOnSFX();
         }
-        //System.out.println("SFX: " + sfxOn + "\nNight mode: " + nightMode + "\nMusic: " + musicOn);
+        testPanel = new TestPanel(board.getColorScheme(), board.getGrid(), MM, board);
+        System.out.println(Arrays.deepToString(board.getColorScheme()));
+        toolboxFrame = new JFrame("Toolbox");
+        toolboxFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        toolboxFrame.getContentPane().add(testPanel);
+        toolboxFrame.pack();
+        toolboxFrame.setVisible(false);
+        board.addToolFrame(toolboxFrame);
+        board.addTestPanel(testPanel);
         if (nightMode) {
             board.setDarkMode();
         }
@@ -165,15 +173,6 @@ public class Snake extends Application {
         root.setTop(MENU.getMenu()); // display titlescreen        
 
         Scene scene = new Scene(root, WIDTH, HEIGHT);
-        testPanel = new TestPanel(board.getColorScheme(), board.getGrid(), MM, board);
-        System.out.println(Arrays.deepToString(board.getColorScheme()));
-        toolboxFrame = new JFrame("Toolbox");
-        toolboxFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        toolboxFrame.getContentPane().add(testPanel);
-        toolboxFrame.pack();
-        toolboxFrame.setVisible(false);
-        board.addToolFrame(toolboxFrame);
-        board.addTestPanel(testPanel);
         board.drawBlocks();
         primaryStage.setTitle("JSnake");
         primaryStage.setScene(scene);

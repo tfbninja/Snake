@@ -106,10 +106,11 @@ public class Board {
         bg = "212121";
         rock = "1e1e1e";
         applesEaten = "EDDDD4";
+        testPanel.updateButtonColors(getColorScheme());
     }
 
     public String[] getColorScheme() {
-        String[] colorScheme = {blank, head, apple, rock, portalColors[0]};
+        String[] colorScheme = {blank, head, apple, rock, portalColors[0], bg};
         return colorScheme;
     }
 
@@ -124,6 +125,7 @@ public class Board {
         bg = "ceceb5";
         rock = "53585e";
         applesEaten = "750BE0";
+        testPanel.updateButtonColors(getColorScheme());
     }
 
     /**

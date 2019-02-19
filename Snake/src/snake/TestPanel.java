@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileWriter;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.JButton;
 
 /**
  *
@@ -29,7 +30,6 @@ public class TestPanel extends javax.swing.JPanel {
      * @param grid The grid to control
      */
     public TestPanel(String[] colorScheme, Grid grid, MenuManager mm, Board b) {
-        this.colorScheme = colorScheme;
         this.grid = grid;
         initComponents();
         buttons.add(blankButton);
@@ -37,8 +37,20 @@ public class TestPanel extends javax.swing.JPanel {
         buttons.add(appleButton);
         buttons.add(rockButton);
         buttons.add(portalButton);
+        updateButtonColors(colorScheme);
         MM = mm;
         board = b;
+    }
+
+    public void updateButtonColors(String[] colorScheme) {
+        Color bg = Color.decode("0x" + colorScheme[colorScheme.length - 1]);
+        this.setBackground(bg);
+        this.edgeKillsBox.setBackground(bg);
+        this.warpModeBox.setBackground(bg);
+        this.colorScheme = colorScheme;
+        for (int i = 0; i < buttons.size(); i++) {
+            buttons.get(i).setBackground(Color.decode("0x" + colorScheme[i]));
+        }
     }
 
     /**
@@ -90,6 +102,7 @@ public class TestPanel extends javax.swing.JPanel {
 
         jScrollPane2.setViewportView(jTextPane1);
 
+        setBackground(new java.awt.Color(238, 238, 238));
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setMinimumSize(new java.awt.Dimension(290, 480));
         setPreferredSize(new java.awt.Dimension(290, 480));
@@ -169,7 +182,6 @@ public class TestPanel extends javax.swing.JPanel {
 
         saveButton.setText("SAVE");
         saveButton.setToolTipText("Save the current sandbox file");
-        saveButton.setContentAreaFilled(false);
         saveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveButtonActionPerformed(evt);
@@ -252,8 +264,9 @@ public class TestPanel extends javax.swing.JPanel {
         });
         add(currentBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(219, 37, 55, 55));
 
+        currentLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         currentLabel.setText("Current");
-        add(currentLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(228, 98, -1, -1));
+        add(currentLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(216, 100, 60, -1));
 
         frameSpeedSpinner.setModel(new javax.swing.SpinnerNumberModel(1, 1, 30, 1));
         add(frameSpeedSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 170, 69, -1));
@@ -323,7 +336,9 @@ public class TestPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_portalButtonActionPerformed
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
-        // TODO add your handling code here:
+        loadButton.setContentAreaFilled(true);
+        saveButton.setContentAreaFilled(false);
+        clearButton.setContentAreaFilled(true);
         JFileChooser fChooser = new JFileChooser();
         fChooser.setAcceptAllFileFilterUsed(false);
         fChooser.setDialogTitle("Pick a .sandbox file to open");
@@ -364,7 +379,9 @@ public class TestPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_saveButtonActionPerformed
 
     private void loadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadButtonActionPerformed
-        // TODO add your handling code here:
+        loadButton.setContentAreaFilled(false);
+        saveButton.setContentAreaFilled(true);
+        clearButton.setContentAreaFilled(true);
         this.saveLabel.setVisible(false);
         JFileChooser fChooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Sandbox files", "sandbox");
@@ -420,6 +437,9 @@ public class TestPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_initLengthSpinnerStateChanged
 
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
+        loadButton.setContentAreaFilled(true);
+        saveButton.setContentAreaFilled(true);
+        clearButton.setContentAreaFilled(false);
         grid.kill();
         MM.setCurrent(3);
         grid.clear();
