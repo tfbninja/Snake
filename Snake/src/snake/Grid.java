@@ -410,7 +410,8 @@ public class Grid implements squares {
         //applesEaten = 0;
         direction = 0;
         tempDir = 0;
-        snakeSize = initialSize;
+        resetSnake();
+        resetSize();
     }
 
     /**
@@ -494,6 +495,7 @@ public class Grid implements squares {
             case 4:
                 this.setGrowBy(5);
                 this.edgeKills = false;
+                this.extremeWarp = true;
                 // set alternating pattern of rocks around edge
                 clearObstacles();
                 if (this.width % 2 == 1) {
@@ -1003,6 +1005,13 @@ public class Grid implements squares {
         GS.setToPostGame();
     }
 
+    public void resetSnake() {
+        int[] headPos2 = getStartPos();
+        removeAll(1);
+        removeAll(2);
+        setPos(headPos2[0], headPos2[1]);
+    }
+
     /**
      *
      */
@@ -1027,26 +1036,8 @@ public class Grid implements squares {
 
             if (!this.edgeKills) {
                 boolean playWarpSound = false;
-                if (this.diffLevel < 4 && this.extremeWarp == false) {
-                    if (nextX < 0) {
-                        nextX = this.width - 1;
-                        playWarpSound = true;
-                    } else if (nextX >= this.width) {
-                        nextX = 0;
-                        playWarpSound = true;
-                    }
-                    if (nextY < 0) {
-                        nextY = this.length - 1;
-                        playWarpSound = true;
-                    } else if (nextY >= this.length) {
-                        nextY = 0;
-                        playWarpSound = true;
-                    }
-                    if (playWarpSound && soundOn) {
-                        warp.play();
-                    }
-                } else {
-                    // extreme mode, warp x with y
+                if (this.extremeWarp) {
+                    // extreme warp, warp x with y
                     boolean playWarpSound2 = false;
                     while (nextX < 0 || nextX >= this.width || nextY < 0 || nextY >= this.length) {
                         if (nextX < 0) {
@@ -1081,6 +1072,24 @@ public class Grid implements squares {
                         if (playWarpSound2 && soundOn) {
                             warp.play();
                         }
+                    }
+                } else {
+                    if (nextX < 0) {
+                        nextX = this.width - 1;
+                        playWarpSound = true;
+                    } else if (nextX >= this.width) {
+                        nextX = 0;
+                        playWarpSound = true;
+                    }
+                    if (nextY < 0) {
+                        nextY = this.length - 1;
+                        playWarpSound = true;
+                    } else if (nextY >= this.length) {
+                        nextY = 0;
+                        playWarpSound = true;
+                    }
+                    if (playWarpSound && soundOn) {
+                        warp.play();
                     }
                 }
             } else {

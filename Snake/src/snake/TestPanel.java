@@ -38,8 +38,27 @@ public class TestPanel extends javax.swing.JPanel {
         buttons.add(rockButton);
         buttons.add(portalButton);
         updateButtonColors(colorScheme);
+        components.add(currentLabel);
+        components.add(edgeKillsBox);
+        components.add(frameDelayLabel);
+        components.add(frameSpeedSpinner);
+        components.add(initLengthLabel);
+        components.add(initLengthSpinner);
+        components.add(sizeIncrementSpinner);
+        components.add(sizeLabel);
+        components.add(warpModeBox);
         MM = mm;
         board = b;
+    }
+
+    public Color invert(Color c) {
+        int r = c.getRed();
+        int g = c.getGreen();
+        int b = c.getBlue();
+        r = 255 - r;
+        g = 255 - g;
+        b = 255 - b;
+        return new Color(r, g, b);
     }
 
     public void updateButtonColors(String[] colorScheme) {
@@ -50,6 +69,14 @@ public class TestPanel extends javax.swing.JPanel {
         this.colorScheme = colorScheme;
         for (int i = 0; i < buttons.size(); i++) {
             buttons.get(i).setBackground(Color.decode("0x" + colorScheme[i]));
+            buttons.get(i).setForeground(invert(bg));
+        }
+        for (int i = 0; i < components.size(); i++) {
+            if (components.get(i).getClass().getName().toLowerCase().contains("label")) {
+                components.get(i).setForeground(invert(bg));
+            } else {
+                components.get(i).setForeground(invert(components.get(i).getBackground()));
+            }
         }
     }
 
@@ -117,7 +144,7 @@ public class TestPanel extends javax.swing.JPanel {
 
         blankButton.setText("Blank");
         blankButton.setActionCommand("");
-        blankButton.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        blankButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         blankButton.setMaximumSize(new java.awt.Dimension(100, 50));
         blankButton.setMinimumSize(new java.awt.Dimension(100, 50));
         blankButton.setPreferredSize(new java.awt.Dimension(100, 50));
@@ -130,7 +157,7 @@ public class TestPanel extends javax.swing.JPanel {
 
         headButton.setText("Head");
         headButton.setActionCommand("");
-        headButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        headButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         headButton.setMaximumSize(new java.awt.Dimension(100, 50));
         headButton.setMinimumSize(new java.awt.Dimension(100, 50));
         headButton.setPreferredSize(new java.awt.Dimension(100, 50));
@@ -143,7 +170,7 @@ public class TestPanel extends javax.swing.JPanel {
 
         appleButton.setText("Apple");
         appleButton.setActionCommand("");
-        appleButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        appleButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         appleButton.setMaximumSize(new java.awt.Dimension(100, 50));
         appleButton.setMinimumSize(new java.awt.Dimension(100, 50));
         appleButton.setPreferredSize(new java.awt.Dimension(100, 50));
@@ -156,7 +183,7 @@ public class TestPanel extends javax.swing.JPanel {
 
         rockButton.setText("Rock");
         rockButton.setActionCommand("");
-        rockButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        rockButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         rockButton.setMaximumSize(new java.awt.Dimension(100, 50));
         rockButton.setMinimumSize(new java.awt.Dimension(100, 50));
         rockButton.setPreferredSize(new java.awt.Dimension(100, 50));
@@ -169,7 +196,7 @@ public class TestPanel extends javax.swing.JPanel {
 
         portalButton.setText("Portal");
         portalButton.setActionCommand("");
-        portalButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        portalButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         portalButton.setMaximumSize(new java.awt.Dimension(100, 50));
         portalButton.setMinimumSize(new java.awt.Dimension(100, 50));
         portalButton.setPreferredSize(new java.awt.Dimension(100, 50));
@@ -300,9 +327,9 @@ public class TestPanel extends javax.swing.JPanel {
         }
 
         buttons.forEach((jb) -> {
-            jb.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+            jb.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         });
-        buttons.get(index).setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        buttons.get(index).setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         System.out.println("Color: " + colorScheme[index]);
         currentBox.setBackground(Color.decode("0x" + colorScheme[index]));
     }
@@ -375,6 +402,7 @@ public class TestPanel extends javax.swing.JPanel {
             }
             this.saveLabel.setVisible(true);
         }
+        saveButton.setContentAreaFilled(true);
         repaint();
     }//GEN-LAST:event_saveButtonActionPerformed
 
@@ -399,6 +427,7 @@ public class TestPanel extends javax.swing.JPanel {
             grid.overwrite(Snake.loadSandboxFile(new File(fileLoc)));
             updateControls();
         }
+        loadButton.setContentAreaFilled(true);
         repaint();
     }//GEN-LAST:event_loadButtonActionPerformed
 
@@ -440,10 +469,10 @@ public class TestPanel extends javax.swing.JPanel {
         loadButton.setContentAreaFilled(true);
         saveButton.setContentAreaFilled(true);
         clearButton.setContentAreaFilled(false);
-        grid.kill();
-        MM.setCurrent(3);
+        grid.reset();
         grid.clear();
         board.drawBlocks();
+        clearButton.setContentAreaFilled(true);
         repaint();
     }//GEN-LAST:event_clearButtonActionPerformed
 
@@ -462,7 +491,8 @@ public class TestPanel extends javax.swing.JPanel {
         setCurrentTool(3);
     }//GEN-LAST:event_rockButtonActionPerformed
 
-    private java.util.ArrayList<javax.swing.JButton> buttons = new java.util.ArrayList<>();
+    private final java.util.ArrayList<JButton> buttons = new java.util.ArrayList<>();
+    private final java.util.ArrayList<javax.swing.JComponent> components = new java.util.ArrayList<>();
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton appleButton;
     private javax.swing.JButton blankButton;

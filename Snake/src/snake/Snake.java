@@ -239,19 +239,17 @@ public class Snake extends Application {
                             root.setTop(HELP_IV);
                             break;
                         case 3:
-                            System.out.println("triggered");
                             // game over - show lose screen and add high scores
                             board.drawBlocks();
                             won = false;
                             if (board.getGrid().getDiffLevel() == 0 && !sandboxReset) {
-                                System.out.println("triggered 2");
                                 sandboxReset = true;
                                 board.resetKeepGrid();
                                 //ArrayList<Pair<Integer, Integer>> headPos = board.getGrid().find(1);
                                 int[] headPos2 = board.getGrid().getStartPos();
                                 board.getGrid().removeAll(1);
                                 board.getGrid().removeAll(2);
-                                System.out.println("Number of head and bodies: " + (board.getGrid().countVal(1) + board.getGrid().countVal(2)));
+                                //System.out.println("Number of head and bodies: " + (board.getGrid().countVal(1) + board.getGrid().countVal(2)));
                                 //initSandboxFile();
 
                                 //board.getGrid().setDiffLevel(0);
