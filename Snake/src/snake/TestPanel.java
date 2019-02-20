@@ -20,6 +20,7 @@ public class TestPanel extends javax.swing.JPanel {
     private int toolNum = 0;
     private String[] colorScheme;
     private Grid grid;
+    private GameState GS;
     private final MenuManager MM;
     private Board board;
 
@@ -29,9 +30,10 @@ public class TestPanel extends javax.swing.JPanel {
      * @param colorScheme The button colors
      * @param grid The grid to control
      */
-    public TestPanel(String[] colorScheme, Grid grid, MenuManager mm, Board b) {
+    public TestPanel(String[] colorScheme, Grid grid, MenuManager mm, Board b, GameState gs) {
         this.grid = grid;
         initComponents();
+        GS = gs;
         buttons.add(blankButton);
         buttons.add(headButton);
         buttons.add(appleButton);
@@ -330,7 +332,7 @@ public class TestPanel extends javax.swing.JPanel {
             jb.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         });
         buttons.get(index).setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
-        System.out.println("Color: " + colorScheme[index]);
+        //System.out.println("Color: " + colorScheme[index]);
         currentBox.setBackground(Color.decode("0x" + colorScheme[index]));
     }
 
@@ -469,10 +471,17 @@ public class TestPanel extends javax.swing.JPanel {
         loadButton.setContentAreaFilled(true);
         saveButton.setContentAreaFilled(true);
         clearButton.setContentAreaFilled(false);
+        String[] names = {"RESET", "CLEAR"};
+        if (GS.isGame()) {
+            clearButton.setText(names[0]);
+        } else {
+            clearButton.setText(names[1]);
+        }
         grid.reset();
         grid.clear();
         board.drawBlocks();
         clearButton.setContentAreaFilled(true);
+
         repaint();
     }//GEN-LAST:event_clearButtonActionPerformed
 

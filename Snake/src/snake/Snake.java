@@ -121,8 +121,8 @@ public class Snake extends Application {
             MENU.turnOnMusic();
             MENU.turnOnSFX();
         }
-        testPanel = new TestPanel(board.getColorScheme(), board.getGrid(), MM, board);
-        System.out.println(Arrays.deepToString(board.getColorScheme()));
+        testPanel = new TestPanel(board.getColorScheme(), board.getGrid(), MM, board, GS);
+        //System.out.println(Arrays.deepToString(board.getColorScheme()));
         toolboxFrame = new JFrame("Toolbox");
         toolboxFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         toolboxFrame.getContentPane().add(testPanel);
