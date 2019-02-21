@@ -398,10 +398,10 @@ public class Board {
                 GS.setToPreGame();
                 MM.setCurrent(4);
             } else if (e.getCode() == KeyCode.DIGIT0 && e.isShiftDown() && sandboxExists) {
-                //toolbox.show();
                 toolFrame.setVisible(true);
+                toolFrame.requestFocus(); // bring this to front
                 testPanel.setCurrentTool(0);
-                primaryStage.requestFocus();
+                primaryStage.requestFocus(); // but we want this one in focus still
                 this.grid.setDiffLevel(0);
                 this.grid.setPlayArea(sandbox);
                 MM.setCurrent(4);

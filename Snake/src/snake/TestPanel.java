@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -432,7 +433,7 @@ public class TestPanel extends javax.swing.JPanel {
                     buffer.newLine();
                 }
                 buffer.close();
-            } catch (Exception x) {
+            } catch (IOException x) {
                 System.out.println("File save incomplete to \"" + fileLoc + "\"");
             }
             this.saveLabel.setVisible(true);

@@ -3,6 +3,7 @@ package snake;
 //<editor-fold defaultstate="collapsed" desc="imports">
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -76,6 +77,7 @@ public class Snake extends Application {
     private boolean musicOn = true;
     private boolean nightMode = false;
     private boolean sandboxReset = false;
+    private String tempSandboxFile = "";
 
     private static final ArrayList<String> MENUNAMES = new ArrayList<String>() {
         {
@@ -183,15 +185,16 @@ public class Snake extends Application {
         });
         primaryStage.setOnHidden(event -> {
             pause = true;
-            testPanel.setVisible(false);
+            toolboxFrame.setVisible(false);
         });
         primaryStage.setOnShowing(event -> {
             pause = false;
-            testPanel.setVisible(true);
+            toolboxFrame.setVisible(true);
         });
 
         primaryStage.show();
         toolboxFrame.setLocation((int) primaryStage.getX() - testPanel.getWidth() - 20, (int) primaryStage.getY());
+        toolboxFrame.setVisible(false);
 //</editor-fold>
         // Main loop
         new AnimationTimer() {
@@ -206,6 +209,20 @@ public class Snake extends Application {
                     if (frame % 30 == 0) {
                         if (GS.isGame()) {
                             sandboxReset = false;
+                        }
+                        if (board.getGrid().getDiffLevel() == 0) {
+                            try {
+                                tempSandboxFile = compileToSandboxFile(board.getGrid().getEdgeKills(), board.getGrid().getFrameSpeed(), board.getGrid().getInitialLength(), board.getGrid().getGrowBy(), board.getGrid().getPlayArea());
+                                try ( // save as unsaved.sandbox
+                                        BufferedWriter buffer = new BufferedWriter(new FileWriter("resources/unsaved.sandbox"))) {
+                                    for (String s : tempSandboxFile.split("\n")) {
+                                        buffer.write(s);
+                                        buffer.newLine();
+                                    }
+                                }
+                            } catch (IOException x) {
+                                System.out.println("Could not save temp sandbox file.");
+                            }
                         }
                         try {
                             PrintWriter printer = new PrintWriter(settingsLocation, "UTF-8");
