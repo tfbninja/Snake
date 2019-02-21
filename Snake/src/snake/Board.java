@@ -1,5 +1,6 @@
 package snake;
 
+//<editor-fold defaultstate="collapsed" desc="imports">
 import java.awt.Toolkit;
 import java.awt.datatransfer.*;
 import javafx.scene.canvas.Canvas;
@@ -12,7 +13,7 @@ import javafx.stage.Stage;
 import javax.swing.JFrame;
 import javafx.util.Pair;
 import javafx.scene.text.Font;
-import java.util.ArrayList;
+//</editor-fold>
 
 /**
  *
@@ -20,6 +21,7 @@ import java.util.ArrayList;
  */
 public class Board {
 
+    //<editor-fold defaultstate="collapsed" desc="instance vars">
     private final int width;
     private final int height;
     private Grid grid;
@@ -43,7 +45,7 @@ public class Board {
     private String bg = "ceceb5";
     private String rock = "53585e";
     private String applesEaten = "750BE0";
-    private final String[] portalColors = {"90094E", "550C74", "d4df09", "7CEA9C", "BD6B73"};
+    private final String[] portalColors = {"90094E", "550C74", "dfb708", "ef5658", "bb3dff"};
 
     private boolean lost = false;
 
@@ -73,6 +75,7 @@ public class Board {
     private TestPanel testPanel;
     private final Stage primaryStage;
     private JFrame toolFrame;
+//</editor-fold>
 
     /**
      *
@@ -653,7 +656,6 @@ public class Board {
                         grid.removeAll(1);
                     case 3:
                         // apple
-                        System.out.println("Apple clicked");
                         grid.setCell(xVal, yVal, tool);
                         break;
                     case 5:

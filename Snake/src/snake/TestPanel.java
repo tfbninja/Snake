@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JButton;
@@ -30,7 +31,7 @@ public class TestPanel extends javax.swing.JPanel {
      * @param colorScheme The button colors
      * @param grid The grid to control
      */
-    public TestPanel(String[] colorScheme, Grid grid, MenuManager mm, Board b, GameState gs) {
+    public TestPanel(String[] colorScheme, Grid grid, MenuManager mm, Board b, GameState gs, int x, int y) {
         this.grid = grid;
         initComponents();
         GS = gs;
@@ -286,7 +287,7 @@ public class TestPanel extends javax.swing.JPanel {
         });
         add(warpModeBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 320, -1, -1));
 
-        initLengthSpinner.setModel(new javax.swing.SpinnerNumberModel(1, 1, null, 1));
+        initLengthSpinner.setModel(new javax.swing.SpinnerNumberModel(5, 1, null, 1));
         initLengthSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 initLengthSpinnerStateChanged(evt);
@@ -317,7 +318,7 @@ public class TestPanel extends javax.swing.JPanel {
         currentLabel.setText("Current");
         add(currentLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(216, 100, 60, -1));
 
-        frameSpeedSpinner.setModel(new javax.swing.SpinnerNumberModel(1, 1, 30, 1));
+        frameSpeedSpinner.setModel(new javax.swing.SpinnerNumberModel(3, 1, 30, 1));
         add(frameSpeedSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 170, 69, -1));
         add(filler1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 260, -1, -1));
         add(filler2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 260, -1, -1));
@@ -389,8 +390,20 @@ public class TestPanel extends javax.swing.JPanel {
         saveButton.setContentAreaFilled(false);
         clearButton.setContentAreaFilled(true);
         JFileChooser fChooser = new JFileChooser();
+        fChooser.setFileFilter(new FileFilter() {
+
+            @Override
+            public boolean accept(File f) {
+                return f.isDirectory() || f.getName().toLowerCase().endsWith(".sandbox");
+            }
+
+            @Override
+            public String getDescription() {
+                return "Sandbox file";
+            }
+        });
         fChooser.setAcceptAllFileFilterUsed(false);
-        fChooser.setDialogTitle("Pick a .sandbox file to open");
+        fChooser.setDialogTitle("Save as a .sandbox file");
         fChooser.setCurrentDirectory(new File("resources/"));
         fChooser.setMultiSelectionEnabled(false);
         int rVal = fChooser.showSaveDialog(new FilePicker("sandbox", "sandbox"));
@@ -412,7 +425,7 @@ public class TestPanel extends javax.swing.JPanel {
             try {
                 fileLoc = dir.getText() + "\\" + filename.getText();
 
-                System.out.println(fileLoc);
+                //System.out.println(fileLoc);
                 BufferedWriter buffer = new BufferedWriter(new FileWriter(fileLoc));
                 for (String s : compiledSandboxFile.split("\n")) {
                     buffer.write(s);
@@ -434,6 +447,8 @@ public class TestPanel extends javax.swing.JPanel {
         clearButton.setContentAreaFilled(true);
         this.saveLabel.setVisible(false);
         JFileChooser fChooser = new JFileChooser();
+        fChooser.setCurrentDirectory(new File("resources/"));
+        fChooser.setDialogTitle("Load a .sandbox file");
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Sandbox files", "sandbox");
         fChooser.setFileFilter(filter);
         int rVal = fChooser.showOpenDialog(new FilePicker());

@@ -1,5 +1,6 @@
 package snake;
 
+//<editor-fold defaultstate="collapsed" desc="imports">
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -14,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import javax.swing.JFrame;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -29,6 +29,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javax.imageio.ImageIO;
+//</editor-fold>
 
 /**
  *
@@ -36,7 +37,8 @@ import javax.imageio.ImageIO;
  */
 public class Snake extends Application {
 
-    // primary game window
+    //<editor-fold defaultstate="collapsed" desc="instance vars">
+// primary game window
     private final int canvasMargin = 10;
     private final int canvasW = 430;
     private final int canvasH = 430;
@@ -89,18 +91,18 @@ public class Snake extends Application {
     private static final GameState GS = new GameState(1);
 
     private static boolean pause = false;
+//</editor-fold>
 
     @Override
     public void start(Stage primaryStage) {
 
-        /*
-         * Assert that resources folder exists
-         */
-        // Create Board of block objects
+        //<editor-fold defaultstate="collapsed" desc="initialization">
+// TODO: Assert that resources folder exists
+// Create Board of block objects
         board = new Board(canvasW, canvasH, MM, MENU, GS, primaryStage);
         board.setOutsideMargin(canvasMargin);
 
-        // initialize settings to last used
+// initialize settings to last used
         try {
             settings = new File(settingsLocation);
             Scanner reader = new Scanner(settings);
@@ -121,8 +123,8 @@ public class Snake extends Application {
             MENU.turnOnMusic();
             MENU.turnOnSFX();
         }
-        testPanel = new TestPanel(board.getColorScheme(), board.getGrid(), MM, board, GS);
-        //System.out.println(Arrays.deepToString(board.getColorScheme()));
+        testPanel = new TestPanel(board.getColorScheme(), board.getGrid(), MM, board, GS, (int) primaryStage.getX() - 290, (int) primaryStage.getY());
+//System.out.println(Arrays.deepToString(board.getColorScheme()));
         toolboxFrame = new JFrame("Toolbox");
         toolboxFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         toolboxFrame.getContentPane().add(testPanel);
@@ -147,11 +149,11 @@ public class Snake extends Application {
         }
         menuMusic.loop();
 
-        // init sandbox file
+// init sandbox file
         initSandboxFile();
 
         getScores();
-        // if local files unreadable, set to 0
+// if local files unreadable, set to 0
         for (int i = 0; i < scores.size(); i += 2) { // loop through local scores
             if (scores.get(i) == -1) { // if bad encode
                 scores.set(i, 0); // set score to 0
@@ -160,17 +162,17 @@ public class Snake extends Application {
             }
         }
 
-        // set up high score screen
+// set up high score screen
         HS_IV = createHighScoreScreen();
 
-        // set up help screen
+// set up help screen
         ImageView HELP_IV = getImageView("resources\\art\\help.jpg");
 
-        // arrange objects in window
+// arrange objects in window
         BorderPane root = new BorderPane(); // better arrangement style
         root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
         root.setStyle("-fx-background-color: black");
-        root.setTop(MENU.getMenu()); // display titlescreen        
+        root.setTop(MENU.getMenu()); // display titlescreen
 
         Scene scene = new Scene(root, WIDTH, HEIGHT);
         board.drawBlocks();
@@ -189,7 +191,8 @@ public class Snake extends Application {
         });
 
         primaryStage.show();
-
+        toolboxFrame.setLocation((int) primaryStage.getX() - testPanel.getWidth() - 20, (int) primaryStage.getY());
+//</editor-fold>
         // Main loop
         new AnimationTimer() {
             @Override
@@ -197,6 +200,7 @@ public class Snake extends Application {
                 if (testPanel.isVisible()) {
                     testPanel.update();
                 }
+
                 if (!pause) {
                     frame++;
                     if (frame % 30 == 0) {
@@ -264,7 +268,7 @@ public class Snake extends Application {
                                 board.drawBlocks();
                                 MM.setCurrent(4);
                             } else if (!scoresOverwritten && board.getGrid().getDiffLevel() != 0) {
-
+                                //<editor-fold defaultstate="collapsed" desc="save high scores">
                                 int thisDifficulty = board.getGrid().getDiffLevel();
                                 int thisScore = board.getGrid().getApplesEaten();
                                 boolean highScore = thisScore > scores.get((thisDifficulty - 1) * 2) || thisScore > scores.get((thisDifficulty - 1) * 2 + 1);
@@ -315,8 +319,7 @@ public class Snake extends Application {
                                 root.setTop(LOSE_IV);
                                 HS_IV = createHighScoreScreen(); // re-cache high score screen
                             }
-                            break;
-
+                            break;//</editor-fold>
                         case 4:
                             // show the game
                             sandboxReset = false;
@@ -353,6 +356,9 @@ public class Snake extends Application {
         scene.setOnMousePressed(
                 (MouseEvent event) -> {
                     board.mouseClicked(event);
+                    if (board.getGrid().getDiffLevel() == 0) {
+                        testPanel.setVisible(true);
+                    }
                 }
         );
 

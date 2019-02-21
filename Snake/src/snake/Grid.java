@@ -21,6 +21,7 @@ public class Grid implements squares {
      * 5 - Unmatched portal
      * 10 and higher - portals
      */
+    //<editor-fold defaultstate="collapsed" desc="instance vars">
     private int width;
     private int length;
     private int[][] playArea;
@@ -64,6 +65,7 @@ public class Grid implements squares {
     private GameState GS;
 
     private boolean extremeWarp = false;
+//</editor-fold>
 
     /*
      * Directions:
