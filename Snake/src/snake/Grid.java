@@ -905,7 +905,7 @@ public class Grid implements squares {
      * @return
      */
     public boolean isHead(int xPos, int yPos) {
-        return this.playArea[yPos][xPos] == 1;
+        return safeCheck(xPos, yPos) == 1;
     }
 
     /**
@@ -915,7 +915,7 @@ public class Grid implements squares {
      * @return
      */
     public boolean isBody(int xPos, int yPos) {
-        return this.playArea[yPos][xPos] == 2;
+        return safeCheck(xPos, yPos) == 2;
     }
 
     /**
@@ -925,7 +925,7 @@ public class Grid implements squares {
      * @return
      */
     public boolean isOccupied(int xPos, int yPos) {
-        return this.playArea[yPos][xPos] != 0;
+        return safeCheck(xPos, yPos) != 0;
     }
 
     /**

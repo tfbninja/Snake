@@ -53,6 +53,25 @@ public class TestPanel extends javax.swing.JPanel {
         board = b;
     }
 
+    public void update() {
+        updateGridSettings();
+        String[] names = {"RESET", "CLEAR"};
+        if (GS.isGame()) {
+            clearButton.setText(names[0]);
+        } else {
+            clearButton.setText(names[1]);
+        }
+        repaint();
+    }
+
+    public void updateGridSettings() {
+        grid.setFrameSpeed((int) frameSpeedSpinner.getValue());
+        grid.setEdgeKills(edgeKillsBox.isSelected());
+        grid.setExtremeStyleWarp(warpModeBox.isSelected());
+        grid.setGrowBy((int) sizeIncrementSpinner.getValue());
+        grid.setInitialSize((int) initLengthSpinner.getValue());
+    }
+
     public Color invert(Color c) {
         int r = c.getRed();
         int g = c.getGreen();
@@ -77,7 +96,8 @@ public class TestPanel extends javax.swing.JPanel {
             if (components.get(i).getClass().getName().toLowerCase().contains("label")) {
                 components.get(i).setForeground(invert(bg));
             } else {
-                components.get(i).setForeground(invert(components.get(i).getBackground()));
+                components.get(i).setBackground(bg);
+                components.get(i).setForeground(invert(bg));
             }
         }
     }
@@ -471,17 +491,10 @@ public class TestPanel extends javax.swing.JPanel {
         loadButton.setContentAreaFilled(true);
         saveButton.setContentAreaFilled(true);
         clearButton.setContentAreaFilled(false);
-        String[] names = {"RESET", "CLEAR"};
-        if (GS.isGame()) {
-            clearButton.setText(names[0]);
-        } else {
-            clearButton.setText(names[1]);
-        }
         grid.reset();
         grid.clear();
         board.drawBlocks();
         clearButton.setContentAreaFilled(true);
-
         repaint();
     }//GEN-LAST:event_clearButtonActionPerformed
 

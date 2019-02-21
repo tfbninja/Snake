@@ -194,6 +194,9 @@ public class Snake extends Application {
         new AnimationTimer() {
             @Override
             public void handle(long now) {
+                if (testPanel.isVisible()) {
+                    testPanel.update();
+                }
                 if (!pause) {
                     frame++;
                     if (frame % 30 == 0) {
