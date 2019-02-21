@@ -436,7 +436,6 @@ public class Grid implements squares {
         this.clear();
         switch (this.diffLevel) {
             case 0:
-                //System.out.println("Position set");
                 this.edgeKills = sandboxEdge;
                 this.playArea = this.sandboxPlayArea;
                 this.setGrowBy(sandboxGrow);
@@ -451,7 +450,6 @@ public class Grid implements squares {
                     starty = 0;
                     this.pos.add(new Pair<>(0, 0));
                 }
-                //System.out.println("setting head cell at " + pos.get(0).getKey() + ", " + pos.get(0).getValue());
                 setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
                 clear();
                 break;
@@ -498,38 +496,6 @@ public class Grid implements squares {
                 this.setGrowBy(5);
                 this.edgeKills = false;
                 this.extremeWarp = true;
-                // set alternating pattern of rocks around edge
-                clearObstacles();
-                if (this.width % 2 == 1) {
-                    for (int x = 0; x < this.width; x += 7) {
-                        setCell(x, 0, 4);
-                        setCell(x, this.length - 1, 4);
-                    }
-                } else {
-                    for (int x = 0; x < this.width / 2; x += 7) {
-                        setCell(x, 0, 4);
-                        setCell(x, this.length - 1, 4);
-                    }
-                    for (int x = this.width - 1; x > this.width / 2 + 1; x -= 2) {
-                        setCell(x, 0, 4);
-                        setCell(x, this.length - 1, 4);
-                    }
-                }
-                if (this.length % 2 == 1) {
-                    for (int y = 0; y < this.length; y += 7) {
-                        setCell(0, y, 4);
-                        setCell(this.width - 1, y, 4);
-                    }
-                } else {
-                    for (int y = 0; y < this.length / 2; y += 7) {
-                        setCell(0, y, 4);
-                        setCell(this.width - 1, y, 4);
-                    }
-                    for (int y = this.length - 1; y > this.length / 2 + 1; y -= 2) {
-                        setCell(0, y, 4);
-                        setCell(this.width - 1, y, 4);
-                    }
-                }
                 clearObstacles();
                 clearApples();
                 newApple(); // add an apple
