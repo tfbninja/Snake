@@ -648,6 +648,7 @@ public class Board {
             // sandbox mode editing
             if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0 && xVal >= 0 && xVal < grid.getWidth() && yVal >= 0 && yVal < grid.getLength()) {
                 int tool = testPanel.getCurrentTool();
+                testPanel.hideSaved();
                 switch (tool) {
                     case 1:
                         // tell the grid where the head is

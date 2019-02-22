@@ -442,6 +442,9 @@ public class TestPanel extends javax.swing.JPanel {
         repaint();
     }//GEN-LAST:event_saveButtonActionPerformed
 
+    public void hideSaved() {
+        saveLabel.setVisible(false);
+    }
     private void loadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadButtonActionPerformed
         loadButton.setContentAreaFilled(false);
         saveButton.setContentAreaFilled(true);
@@ -482,6 +485,7 @@ public class TestPanel extends javax.swing.JPanel {
     private void warpModeBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_warpModeBoxActionPerformed
         // TODO add your handling code here:
         grid.setExtremeStyleWarp(warpModeBox.isSelected());
+        hideSaved();
     }//GEN-LAST:event_warpModeBoxActionPerformed
 
     private void currentBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_currentBoxActionPerformed
@@ -489,24 +493,25 @@ public class TestPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_currentBoxActionPerformed
 
     private void sizeIncrementSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sizeIncrementSpinnerStateChanged
-        // TODO add your handling code here:
         grid.setGrowBy((int) sizeIncrementSpinner.getValue());
+        hideSaved();
     }//GEN-LAST:event_sizeIncrementSpinnerStateChanged
 
     private void edgeKillsBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_edgeKillsBoxActionPerformed
-        // TODO add your handling code here:
         grid.setEdgeKills(edgeKillsBox.isSelected());
+        hideSaved();
     }//GEN-LAST:event_edgeKillsBoxActionPerformed
 
     private void initLengthSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_initLengthSpinnerStateChanged
-        // TODO add your handling code here:
         grid.setInitialSize((int) this.initLengthSpinner.getValue());
+        hideSaved();
     }//GEN-LAST:event_initLengthSpinnerStateChanged
 
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
         loadButton.setContentAreaFilled(true);
         saveButton.setContentAreaFilled(true);
         clearButton.setContentAreaFilled(false);
+        hideSaved();
         grid.reset();
         grid.clear();
         board.drawBlocks();
