@@ -67,11 +67,13 @@ public class TestPanel extends javax.swing.JPanel {
     }
 
     public void updateGridSettings() {
-        grid.setFrameSpeed((int) frameSpeedSpinner.getValue());
-        grid.setEdgeKills(edgeKillsBox.isSelected());
-        grid.setExtremeStyleWarp(warpModeBox.isSelected());
-        grid.setGrowBy((int) sizeIncrementSpinner.getValue());
-        grid.setInitialSize((int) initLengthSpinner.getValue());
+        if (grid.getDiffLevel() == 0) {
+            grid.setFrameSpeed((int) frameSpeedSpinner.getValue());
+            grid.setEdgeKills(edgeKillsBox.isSelected());
+            grid.setExtremeStyleWarp(warpModeBox.isSelected());
+            grid.setGrowBy((int) sizeIncrementSpinner.getValue());
+            grid.setInitialSize((int) initLengthSpinner.getValue());
+        }
     }
 
     public Color invert(Color c) {
