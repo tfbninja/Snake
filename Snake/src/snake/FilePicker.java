@@ -48,6 +48,11 @@ public class FilePicker extends JFrame {
         cp.add(panel, BorderLayout.NORTH);
     }
 
+    /**
+     *
+     * @param initialName
+     * @param type
+     */
     public FilePicker(String initialName, String type) {
         JPanel panel = new JPanel();
         open.addActionListener(new OpenListener());
