@@ -210,7 +210,8 @@ public class Snake extends Application {
                         if (GS.isGame()) {
                             sandboxReset = false;
                         }
-                        if (board.getGrid().getDiffLevel() == 0) {
+
+                        if (board.getGrid().getDiffLevel() == 0 && !board.getGrid().isClear()) {
                             try {
                                 tempSandboxFile = compileToSandboxFile(board.getGrid().getEdgeKills(), board.getGrid().getFrameSpeed(), board.getGrid().getInitialLength(), board.getGrid().getGrowBy(), board.getGrid().getPlayArea());
                                 try ( // save as unsaved.sandbox
@@ -246,7 +247,6 @@ public class Snake extends Application {
                     } else {
                         menuMusic.mute();
                     }
-
                     nightMode = board.getNightTheme();
                     switch (MM.getCurrent()) {
                         case 0:
@@ -264,6 +264,7 @@ public class Snake extends Application {
                             break;
                         case 3:
                             // game over - show lose screen and add high scores
+                            GS.setToPostGame();
                             board.drawBlocks();
                             won = false;
                             if (board.getGrid().getDiffLevel() == 0 && !sandboxReset) {
@@ -273,17 +274,16 @@ public class Snake extends Application {
                                 int[] headPos2 = board.getGrid().getStartPos();
                                 board.getGrid().removeAll(1);
                                 board.getGrid().removeAll(2);
-                                //System.out.println("Number of head and bodies: " + (board.getGrid().countVal(1) + board.getGrid().countVal(2)));
-                                //initSandboxFile();
-
-                                //board.getGrid().setDiffLevel(0);
-                                //board.getGrid().setPos(headPos.get(0).getKey(), headPos.get(0).getValue());
                                 board.getGrid().setPos(headPos2[0], headPos2[1]);
                                 board.getGrid().setGrowBy(testPanel.getGrowBy());
                                 board.getGrid().setEdgeKills(testPanel.getEdgeKills());
+                                System.out.println("Setting to sandbox play area from snake");
                                 board.setToSandboxPlayArea();
+                                System.out.println("Set to sandbox play area from snake");
+                                board.getGrid().revertToInitial();
                                 board.drawBlocks();
                                 MM.setCurrent(4);
+                                GS.setToPreGame();
                             } else if (!scoresOverwritten && board.getGrid().getDiffLevel() != 0) {
                                 //<editor-fold defaultstate="collapsed" desc="save high scores">
                                 int thisDifficulty = board.getGrid().getDiffLevel();
@@ -356,7 +356,9 @@ public class Snake extends Application {
                                 }
                                 if (board.getGrid().countVal(0) == 0 && !won && GS.isGame()) {
                                     won = true;
-                                    DAWON.play();
+                                    if (MENU.getSFX()) {
+                                        DAWON.play();
+                                    }
                                 }
                             } else {
                                 MM.setCurrent(3);
@@ -499,6 +501,7 @@ public class Snake extends Application {
                 num = s.nextInt();
                 if (num == 1) {
                     tempGrid.setPos(x, y);
+                    System.out.println("head at " + x + ", " + y);
                 }
                 sandboxPlayArea[y][x] = num;
             }
