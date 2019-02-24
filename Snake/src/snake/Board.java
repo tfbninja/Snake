@@ -83,6 +83,7 @@ public class Board {
      * @param h
      * @param mm
      * @param menu
+     * @param gs
      * @param primary
      */
     public Board(int w, int h, MenuManager mm, MainMenu menu, GameState gs, Stage primary) {
@@ -112,6 +113,10 @@ public class Board {
         testPanel.updateButtonColors(getColorScheme());
     }
 
+    /**
+     *
+     * @return
+     */
     public String[] getColorScheme() {
         String[] colorScheme = {blank, head, apple, rock, portalColors[0], bg};
         return colorScheme;
@@ -283,6 +288,9 @@ public class Board {
         grid.setPos(21, 20);
     }
 
+    /**
+     *
+     */
     public void setToSandboxPlayArea() {
         grid.setPlayArea(this.sandbox);
     }
@@ -421,6 +429,8 @@ public class Board {
                 if (grid.getDiffLevel() == 0) {
                     sandbox = grid.getPlayArea();
                 }
+                grid.setApples();
+                System.out.println("from starting the game in board");
                 GS.setToGame();
             }
         }
@@ -557,10 +567,18 @@ public class Board {
         }
     }
 
+    /**
+     *
+     * @param panel
+     */
     public void addTestPanel(TestPanel panel) {
         testPanel = panel;
     }
 
+    /**
+     *
+     * @param frame
+     */
     public void addToolFrame(JFrame frame) {
         toolFrame = frame;
     }

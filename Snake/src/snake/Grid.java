@@ -26,6 +26,7 @@ public class Grid implements squares {
     private int length;
     private int[][] playArea;
     private static int[][] savedPlayArea;
+    private int[][] appleMap;
     private int startx;
     private int starty;
 
@@ -82,6 +83,7 @@ public class Grid implements squares {
      * @param startY The y-coordinate of the snake's starting position
      */
     public Grid(int width, int length, int startX, int startY) {
+        appleMap = new int[width][length];
         startx = startX;
         starty = startY;
         this.width = width;
@@ -99,10 +101,18 @@ public class Grid implements squares {
         this.bite = new Sound("resources/sounds/bite2.wav");
     }
 
+    /**
+     *
+     * @param b
+     */
     public void setExtremeStyleWarp(boolean b) {
         extremeWarp = b;
     }
 
+    /**
+     *
+     * @param gs
+     */
     public void addGameState(GameState gs) {
         GS = gs;
     }
@@ -142,7 +152,7 @@ public class Grid implements squares {
         startx = x;
         starty = y;
         pos.clear();
-        pos.add(new Pair<Integer, Integer>(x, y));
+        pos.add(new Pair<>(x, y));
         safeSetCell(x, y, 1);
     }
 
@@ -158,8 +168,11 @@ public class Grid implements squares {
         this.direction = grid.direction;
         this.growBy = grid.growBy;
         this.pos = grid.pos;
+        this.startx = grid.startx;
+        this.starty = grid.starty;
         this.frameSpeeds = grid.frameSpeeds;
         this.tempDir = grid.tempDir;
+        setApples();
     }
 
     /**
@@ -408,12 +421,27 @@ public class Grid implements squares {
     /**
      *
      */
+    public void revertToInitial() {
+        for (int r = 0; r < playArea.length; r++) {
+            for (int c = 0; c < playArea[r].length; c++) {
+                if (appleMap[r][c] == 3) {
+                    playArea[r][c] = 3;
+                } else if (playArea[r][c] == 3) {
+                    setCell(c, r, 0);
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     */
     public void reset() {
-        //applesEaten = 0;
         direction = 0;
         tempDir = 0;
         resetSnake();
         resetSize();
+        revertToInitial();
     }
 
     /**
@@ -474,7 +502,6 @@ public class Grid implements squares {
             case 3:
                 this.growBy = 4;
                 this.edgeKills = false;
-
                 clearObstacles();
 
                 //add 5 random rocks
@@ -507,7 +534,25 @@ public class Grid implements squares {
                 setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
                 break;
         }
+        setApples();
+        System.out.println("from set obstacles");
+    }
 
+    /**
+     *
+     */
+    public void setApples() {
+        System.out.print("Set apples called ");
+        for (int r = 0; r < playArea.length; r++) {
+            for (int c = 0; c < playArea[r].length; c++) {
+                int val = playArea[r][c];
+                if (val == 3) {
+                    appleMap[r][c] = 3;
+                } else {
+                    appleMap[r][c] = 0;
+                }
+            }
+        }
     }
 
     public int getNeighbors(int x, int y, int type, int radius) {
@@ -916,6 +961,11 @@ public class Grid implements squares {
         return list.get(index);
     }
 
+    /**
+     *
+     * @param list
+     * @return
+     */
     public Pair<Integer, Integer> pickPair(ArrayList<Pair<Integer, Integer>> list) {
         int index = (int) (Math.random() * list.size());
         return list.get(index);
@@ -969,10 +1019,16 @@ public class Grid implements squares {
         initialSize = amt;
     }
 
+    /**
+     *
+     */
     public void kill() {
         GS.setToPostGame();
     }
 
+    /**
+     *
+     */
     public void resetSnake() {
         int[] headPos2 = getStartPos();
         removeAll(1);
@@ -1114,7 +1170,7 @@ public class Grid implements squares {
                     pick(loseSounds).play();
                     return;
                 }
-                this.pos.add(0, new Pair<Integer, Integer>(nextX, nextY)); // add segment in front
+                this.pos.add(0, new Pair<>(nextX, nextY)); // add segment in front
                 this.setCell(nextX, nextY, 1); // update grid
                 this.removeExtra();
                 if (countVal(2) < pos.size() - 1) {
@@ -1238,6 +1294,9 @@ public class Grid implements squares {
      * @param value
      */
     public void setCell(int x, int y, int value) {
+        if (value != 3 && playArea[y][x] != 3) {
+            this.appleMap[y][x] = value;
+        }
         this.playArea[y][x] = value;
     }
 
@@ -1260,7 +1319,7 @@ public class Grid implements squares {
         while (y > length - 1) {
             y -= (length - 1);
         }
-        this.playArea[y][x] = value;
+        setCell(x, y, value);
     }
 
     /**
@@ -1269,7 +1328,7 @@ public class Grid implements squares {
      * @param value
      */
     public void setCell(Pair<Integer, Integer> pos, int value) {
-        this.playArea[pos.getValue()][pos.getKey()] = value;
+        setCell(pos.getValue(), pos.getKey(), value);
     }
 
     /**
@@ -1344,6 +1403,18 @@ public class Grid implements squares {
      */
     public void setPlayArea(int[][] newPlayArea) {
         this.playArea = newPlayArea;
+        if (!GS.isPostGame()) {
+            setApples();
+            System.out.println("from set Play Area");
+        }
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean isClear() {
+        return countVal(0) == width * length;
     }
 
     @Override
