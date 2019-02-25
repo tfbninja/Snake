@@ -51,13 +51,13 @@ public class Snake extends Application {
     private final int TOOLHEIGHT = 450;
     private TestPanel testPanel;
     private JFrame toolboxFrame;
-    
+
     private int frame = 0;
-    
-    private final boolean AI = true;
-    
+
+    private final boolean AI = false;
+
     private static Board board;
-    
+
     private final Sound menuMusic = new Sound("resources/sounds/menuMusic.wav");
     private final Sound DAWON = new Sound("resources/sounds/DAWON.mp3");
     private boolean won = false;
@@ -65,20 +65,20 @@ public class Snake extends Application {
     private ImageView HS_IV; // High Score screen stored in an 'ImageView' class
 
     private boolean scoresOverwritten = false;
-    
+
     private File settings;
     private final String settingsLocation = "resources/settings.snk";
     private static File sandbox;
     private static final String SANDBOXLOCATION = "resources/sandbox.sandbox";
     private static int[][] sandboxPlayArea = new int[25][25];
     private static Pair<Integer, Integer> sandboxHeadPos;
-    
+
     private boolean sfxOn = true;
     private boolean musicOn = true;
     private boolean nightMode = false;
     private boolean sandboxReset = false;
     private String tempSandboxFile = "";
-    
+
     private static final ArrayList<String> MENUNAMES = new ArrayList<String>() {
         {
             add("Main");
@@ -91,7 +91,7 @@ public class Snake extends Application {
     private final MenuManager MM = new MenuManager(MENUNAMES);
     private final MainMenu MENU = new MainMenu();
     private static final GameState GS = new GameState(1);
-    
+
     private static boolean pause = false;
 //</editor-fold>
 
@@ -153,7 +153,7 @@ public class Snake extends Application {
 
 // init sandbox file
         initSandboxFile();
-        
+
         getScores();
 // if local files unreadable, set to 0
         for (int i = 0; i < scores.size(); i += 2) { // loop through local scores
@@ -191,7 +191,7 @@ public class Snake extends Application {
             pause = false;
             toolboxFrame.setVisible(true);
         });
-        
+
         primaryStage.show();
         toolboxFrame.setLocation((int) primaryStage.getX() - testPanel.getWidth() - 20, (int) primaryStage.getY());
         toolboxFrame.setVisible(false);
@@ -203,14 +203,15 @@ public class Snake extends Application {
                 if (testPanel.isVisible()) {
                     testPanel.update();
                 }
-                
+
                 if (!pause) {
                     frame++;
                     if (frame % 30 == 0) {
                         if (GS.isGame()) {
                             sandboxReset = false;
                         }
-                        if (board.getGrid().getDiffLevel() == 0) {
+
+                        if (board.getGrid().getDiffLevel() == 0 && !board.getGrid().isClear()) {
                             try {
                                 tempSandboxFile = compileToSandboxFile(board.getGrid().getEdgeKills(), board.getGrid().getFrameSpeed(), board.getGrid().getInitialLength(), board.getGrid().getGrowBy(), board.getGrid().getPlayArea());
                                 try ( // save as unsaved.sandbox
@@ -246,7 +247,6 @@ public class Snake extends Application {
                     } else {
                         menuMusic.mute();
                     }
-                    
                     nightMode = board.getNightTheme();
                     switch (MM.getCurrent()) {
                         case 0:
@@ -264,6 +264,7 @@ public class Snake extends Application {
                             break;
                         case 3:
                             // game over - show lose screen and add high scores
+                            GS.setToPostGame();
                             board.drawBlocks();
                             won = false;
                             if (board.getGrid().getDiffLevel() == 0 && !sandboxReset) {
@@ -273,30 +274,29 @@ public class Snake extends Application {
                                 int[] headPos2 = board.getGrid().getStartPos();
                                 board.getGrid().removeAll(1);
                                 board.getGrid().removeAll(2);
-                                //System.out.println("Number of head and bodies: " + (board.getGrid().countVal(1) + board.getGrid().countVal(2)));
-                                //initSandboxFile();
-
-                                //board.getGrid().setDiffLevel(0);
-                                //board.getGrid().setPos(headPos.get(0).getKey(), headPos.get(0).getValue());
                                 board.getGrid().setPos(headPos2[0], headPos2[1]);
                                 board.getGrid().setGrowBy(testPanel.getGrowBy());
                                 board.getGrid().setEdgeKills(testPanel.getEdgeKills());
+                                System.out.println("Setting to sandbox play area from snake");
                                 board.setToSandboxPlayArea();
+                                System.out.println("Set to sandbox play area from snake");
+                                board.getGrid().revertToInitial();
                                 board.drawBlocks();
                                 MM.setCurrent(4);
+                                GS.setToPreGame();
                             } else if (!scoresOverwritten && board.getGrid().getDiffLevel() != 0) {
                                 //<editor-fold defaultstate="collapsed" desc="save high scores">
                                 int thisDifficulty = board.getGrid().getDiffLevel();
                                 int thisScore = board.getGrid().getApplesEaten();
                                 boolean highScore = thisScore > scores.get((thisDifficulty - 1) * 2) || thisScore > scores.get((thisDifficulty - 1) * 2 + 1);
                                 int[] oldScores = toList(scores);
-                                
+
                                 if (highScore) {
                                     //  (if score is higher than local or world)
 
                                     // write scores to files
                                     writeEncodedScore("resources\\scores\\local\\localHighScore" + thisDifficulty + ".local", thisScore);
-                                    
+
                                     if (thisScore > scores.get((thisDifficulty - 1) * 2 + 1)) {
                                         if (checkFileExists("resources\\scores\\world\\worldHighScore" + thisDifficulty + ".world")) {
                                             writeEncodedScore("resources\\scores\\world\\worldHighScore" + thisDifficulty + ".world", thisScore);
@@ -327,7 +327,7 @@ public class Snake extends Application {
                                         overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 22), 177, 96, 15);
                                     }
                                 }
-                                
+
                                 if (highScore) {
                                     overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", "NEW HIGHSCORE", 105, 34, new Font("Impact", 34), 255, 0, 0);
                                 }
@@ -356,7 +356,9 @@ public class Snake extends Application {
                                 }
                                 if (board.getGrid().countVal(0) == 0 && !won && GS.isGame()) {
                                     won = true;
-                                    DAWON.play();
+                                    if (MENU.getSFX()) {
+                                        DAWON.play();
+                                    }
                                 }
                             } else {
                                 MM.setCurrent(3);
@@ -378,13 +380,13 @@ public class Snake extends Application {
                     }
                 }
         );
-        
+
         scene.setOnMouseDragged(
                 (MouseEvent event) -> {
                     board.mouseDragged(event);
                 }
         );
-        
+
         scene.setOnKeyPressed(
                 (KeyEvent eventa) -> {
                     if (eventa.getCode() == KeyCode.DIGIT0 && eventa.isShiftDown() && MM.getCurrent() == 0) {
@@ -472,7 +474,7 @@ public class Snake extends Application {
         Grid tempGrid = new Grid(25, 25, 0, 0);
         tempGrid.setDiffLevel(0);
         Scanner s = new Scanner(content);
-        
+
         s.useDelimiter(" ");
         int frmSpd = s.nextInt();
         tempGrid.setFrameSpeed(frmSpd);
@@ -499,6 +501,7 @@ public class Snake extends Application {
                 num = s.nextInt();
                 if (num == 1) {
                     tempGrid.setPos(x, y);
+                    System.out.println("head at " + x + ", " + y);
                 }
                 sandboxPlayArea[y][x] = num;
             }
@@ -525,7 +528,7 @@ public class Snake extends Application {
             return null;
         }
     }
-    
+
     private static void initSandboxFile() {
         try {
             sandbox = new File(SANDBOXLOCATION);
@@ -566,7 +569,7 @@ public class Snake extends Application {
             System.out.println("Cannot find sandbox file in " + SANDBOXLOCATION + ", try setting the working dir to src/snake.");
         }
     }
-    
+
     private static ImageView createHighScoreScreen() {
         // re-grab scores
         getScores();
@@ -613,7 +616,7 @@ public class Snake extends Application {
         }
         return true;
     }
-    
+
     private static void getScores() {
         scores = new ArrayList<>();
         scores.add(readDecodedFile("resources/scores/local/localHighScore1.local"));
@@ -792,14 +795,14 @@ public class Snake extends Application {
     public static boolean overlayImage(String filename, String newFilename, String text, int xPos, int yPos, Font font, int red, int green, int blue) {
         try {
             final BufferedImage image = ImageIO.read(new File(filename));
-            
+
             Graphics g = image.getGraphics();
             g.setFont(new java.awt.Font(font.getName(), 0, (int) font.getSize()));
             java.awt.Color c = new java.awt.Color(red, green, blue);
             g.setColor(c);
             g.drawString(text, xPos, yPos);
             g.dispose();
-            
+
             ImageIO.write(image, "png", new File(newFilename));
         } catch (IOException e) {
             System.out.println(e.getLocalizedMessage());
@@ -821,7 +824,7 @@ public class Snake extends Application {
         try {
             BufferedImage oldImage = ImageIO.read(new File(filename));
             BufferedImage addImage = ImageIO.read(new File(addFilename));
-            
+
             Graphics g = oldImage.getGraphics();
             g.drawImage(addImage, xPos, yPos, null);
             g.dispose();

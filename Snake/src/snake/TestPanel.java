@@ -31,6 +31,11 @@ public class TestPanel extends javax.swing.JPanel {
      *
      * @param colorScheme The button colors
      * @param grid The grid to control
+     * @param mm
+     * @param b
+     * @param gs
+     * @param x
+     * @param y
      */
     public TestPanel(String[] colorScheme, Grid grid, MenuManager mm, Board b, GameState gs, int x, int y) {
         this.grid = grid;
@@ -53,8 +58,12 @@ public class TestPanel extends javax.swing.JPanel {
         components.add(warpModeBox);
         MM = mm;
         board = b;
+        saveLabel.setVisible(false);
     }
 
+    /**
+     *
+     */
     public void update() {
         updateGridSettings();
         String[] names = {"RESET", "CLEAR"};
@@ -66,14 +75,24 @@ public class TestPanel extends javax.swing.JPanel {
         repaint();
     }
 
+    /**
+     *
+     */
     public void updateGridSettings() {
-        grid.setFrameSpeed((int) frameSpeedSpinner.getValue());
-        grid.setEdgeKills(edgeKillsBox.isSelected());
-        grid.setExtremeStyleWarp(warpModeBox.isSelected());
-        grid.setGrowBy((int) sizeIncrementSpinner.getValue());
-        grid.setInitialSize((int) initLengthSpinner.getValue());
+        if (grid.getDiffLevel() == 0) {
+            grid.setFrameSpeed((int) frameSpeedSpinner.getValue());
+            grid.setEdgeKills(edgeKillsBox.isSelected());
+            grid.setExtremeStyleWarp(warpModeBox.isSelected());
+            grid.setGrowBy((int) sizeIncrementSpinner.getValue());
+            grid.setInitialSize((int) initLengthSpinner.getValue());
+        }
     }
 
+    /**
+     *
+     * @param c
+     * @return
+     */
     public Color invert(Color c) {
         int r = c.getRed();
         int g = c.getGreen();
@@ -84,6 +103,10 @@ public class TestPanel extends javax.swing.JPanel {
         return new Color(r, g, b);
     }
 
+    /**
+     *
+     * @param colorScheme
+     */
     public void updateButtonColors(String[] colorScheme) {
         Color bg = Color.decode("0x" + colorScheme[colorScheme.length - 1]);
         this.setBackground(bg);
@@ -177,7 +200,7 @@ public class TestPanel extends javax.swing.JPanel {
                 blankButtonActionPerformed(evt);
             }
         });
-        add(blankButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, -1, 55));
+        add(blankButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, -1, -1));
 
         headButton.setText("Head");
         headButton.setActionCommand("");
@@ -303,6 +326,7 @@ public class TestPanel extends javax.swing.JPanel {
         saveLabel.setForeground(new java.awt.Color(72, 191, 58));
         saveLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         saveLabel.setText("SAVED");
+        saveLabel.setFocusable(false);
         saveLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         add(saveLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 409, 63, -1));
 
@@ -358,18 +382,34 @@ public class TestPanel extends javax.swing.JPanel {
         currentBox.setBackground(Color.decode("0x" + colorScheme[index]));
     }
 
+    /**
+     *
+     * @return
+     */
     public int getCurrentTool() {
         return toolNum;
     }
 
+    /**
+     *
+     * @param colors
+     */
     public void setColorScheme(String[] colors) {
         this.colorScheme = colors;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getGrowBy() {
         return (int) this.sizeIncrementSpinner.getValue();
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean getEdgeKills() {
         return this.edgeKillsBox.isSelected();
     }
@@ -442,6 +482,12 @@ public class TestPanel extends javax.swing.JPanel {
         repaint();
     }//GEN-LAST:event_saveButtonActionPerformed
 
+    /**
+     *
+     */
+    public void hideSaved() {
+        saveLabel.setVisible(false);
+    }
     private void loadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadButtonActionPerformed
         loadButton.setContentAreaFilled(false);
         saveButton.setContentAreaFilled(true);
@@ -482,6 +528,7 @@ public class TestPanel extends javax.swing.JPanel {
     private void warpModeBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_warpModeBoxActionPerformed
         // TODO add your handling code here:
         grid.setExtremeStyleWarp(warpModeBox.isSelected());
+        hideSaved();
     }//GEN-LAST:event_warpModeBoxActionPerformed
 
     private void currentBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_currentBoxActionPerformed
@@ -489,24 +536,25 @@ public class TestPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_currentBoxActionPerformed
 
     private void sizeIncrementSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sizeIncrementSpinnerStateChanged
-        // TODO add your handling code here:
         grid.setGrowBy((int) sizeIncrementSpinner.getValue());
+        hideSaved();
     }//GEN-LAST:event_sizeIncrementSpinnerStateChanged
 
     private void edgeKillsBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_edgeKillsBoxActionPerformed
-        // TODO add your handling code here:
         grid.setEdgeKills(edgeKillsBox.isSelected());
+        hideSaved();
     }//GEN-LAST:event_edgeKillsBoxActionPerformed
 
     private void initLengthSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_initLengthSpinnerStateChanged
-        // TODO add your handling code here:
         grid.setInitialSize((int) this.initLengthSpinner.getValue());
+        hideSaved();
     }//GEN-LAST:event_initLengthSpinnerStateChanged
 
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
         loadButton.setContentAreaFilled(true);
         saveButton.setContentAreaFilled(true);
         clearButton.setContentAreaFilled(false);
+        hideSaved();
         grid.reset();
         grid.clear();
         board.drawBlocks();
