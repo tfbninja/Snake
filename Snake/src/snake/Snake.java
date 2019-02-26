@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import javax.swing.JFrame;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -70,7 +71,7 @@ public class Snake extends Application {
     private final String settingsLocation = "resources/settings.snk";
     private static File sandbox;
     private static final String SANDBOXLOCATION = "resources/sandbox.sandbox";
-    private static int[][] sandboxPlayArea = new int[25][25];
+    private static final int[][] SANDBOXPLAYAREA = new int[25][25];
     private static Pair<Integer, Integer> sandboxHeadPos;
 
     private boolean sfxOn = true;
@@ -226,16 +227,17 @@ public class Snake extends Application {
                             }
                         }
                         try {
-                            PrintWriter printer = new PrintWriter(settingsLocation, "UTF-8");
-                            FileWriter creator = new FileWriter(new File(settingsLocation));
-                            int tempSFX = MENU.getSFX() ? 1 : 0, tempNightMode = nightMode ? 1 : 0, tempMusic = MENU.getMusic() ? 1 : 0;
-                            printer.print("" + tempSFX + " - SFX toggle (0 for off, 1 for on)");
-                            printer.println();
-                            printer.print("" + tempNightMode + " - appearance (0 for normal, 1 for night mode)");
-                            printer.println();
-                            printer.print("" + tempMusic + " - background music toggle (0 for normal, 1 for night mode)");
-                            printer.println();
-                            printer.close();
+                            FileWriter creator;
+                            try (PrintWriter printer = new PrintWriter(settingsLocation, "UTF-8")) {
+                                creator = new FileWriter(new File(settingsLocation));
+                                int tempSFX = MENU.getSFX() ? 1 : 0, tempNightMode = nightMode ? 1 : 0, tempMusic = MENU.getMusic() ? 1 : 0;
+                                printer.print("" + tempSFX + " - SFX toggle (0 for off, 1 for on)");
+                                printer.println();
+                                printer.print("" + tempNightMode + " - appearance (0 for normal, 1 for night mode)");
+                                printer.println();
+                                printer.print("" + tempMusic + " - background music toggle (0 for normal, 1 for night mode)");
+                                printer.println();
+                            }
                             creator.close();
                         } catch (IOException x) {
                             System.out.println(x.getLocalizedMessage() + " oof.");
@@ -267,10 +269,20 @@ public class Snake extends Application {
                             GS.setToPostGame();
                             board.drawBlocks();
                             won = false;
+                            // reset sandbox
                             if (board.getGrid().getDiffLevel() == 0 && !sandboxReset) {
                                 sandboxReset = true;
-                                board.resetKeepGrid();
-                                //ArrayList<Pair<Integer, Integer>> headPos = board.getGrid().find(1);
+                                int[][] appleMap = board.getGrid().getPlayArea();
+                                System.out.println("before");
+                                for (int[] l : appleMap) {
+                                    for (int i : l) {
+                                        System.out.print(i + " ");
+                                    }
+                                    System.out.println("");
+                                }
+                                System.out.println("got apples");
+                                //board.getGrid().freezeApples();
+                                board.resetKeepGrid(); // reverts apples to initial
                                 int[] headPos2 = board.getGrid().getStartPos();
                                 board.getGrid().removeAll(1);
                                 board.getGrid().removeAll(2);
@@ -280,7 +292,9 @@ public class Snake extends Application {
                                 System.out.println("Setting to sandbox play area from snake");
                                 board.setToSandboxPlayArea();
                                 System.out.println("Set to sandbox play area from snake");
-                                board.getGrid().revertToInitial();
+                                //board.getGrid().unFreezeApples();
+                                board.getGrid().setApples(appleMap);
+                                System.out.println("after");
                                 board.drawBlocks();
                                 MM.setCurrent(4);
                                 GS.setToPreGame();
@@ -503,11 +517,11 @@ public class Snake extends Application {
                     tempGrid.setPos(x, y);
                     System.out.println("head at " + x + ", " + y);
                 }
-                sandboxPlayArea[y][x] = num;
+                SANDBOXPLAYAREA[y][x] = num;
             }
             s.nextLine();
         }
-        tempGrid.setPlayArea(sandboxPlayArea.clone());
+        tempGrid.setPlayArea(SANDBOXPLAYAREA.clone());
         return tempGrid;
     }
 
@@ -560,11 +574,11 @@ public class Snake extends Application {
                     if (num == 1) {
                         board.getGrid().setSandboxHeadPos(x, y);
                     }
-                    sandboxPlayArea[y][x] = num;
+                    SANDBOXPLAYAREA[y][x] = num;
                 }
                 reader.nextLine();
             }
-            board.setSandbox(sandboxPlayArea.clone());
+            board.setSandbox(SANDBOXPLAYAREA.clone());
         } catch (FileNotFoundException x) {
             System.out.println("Cannot find sandbox file in " + SANDBOXLOCATION + ", try setting the working dir to src/snake.");
         }
@@ -576,7 +590,7 @@ public class Snake extends Application {
         // copy the master image
         overlayImage("resources\\art\\HighScoreScreen.png", "resources\\art\\HighScoreScreen.png", "resources\\art\\HighScoreScreenMaster.png", 0, 0);
         int y = 236;
-        int x = 0;
+        int x;
         for (int i = 0; i < scores.size(); i++) {
             if (i % 2 == 0) {
                 if (i > 1) {
@@ -645,11 +659,11 @@ public class Snake extends Application {
                 decodedScore = Enigma.decode(temp);
             } catch (InvalidObjectException ioe) {
                 //System.out.println("bad encode for file " + fileName);
-                return -1;
+                return decodedScore;
             }
         } catch (FileNotFoundException x) {
             //System.out.println("bad file: " + fileName);
-            return -1;
+            return decodedScore;
         }
         return decodedScore;
     }
@@ -769,12 +783,13 @@ public class Snake extends Application {
      */
     public static void writeEncodedScore(String filename, int score) {
         try {
-            PrintWriter printer = new PrintWriter(filename, "UTF-8");
-            FileWriter creator = new FileWriter(new File(filename));
-            printer.print(Enigma.encode(score));
-            printer.close();
+            FileWriter creator;
+            try (PrintWriter printer = new PrintWriter(filename, "UTF-8")) {
+                creator = new FileWriter(new File(filename));
+                printer.print(Enigma.encode(score));
+            }
             creator.close();
-        } catch (Exception x) {
+        } catch (IOException x) {
             System.out.println(x.getLocalizedMessage() + " oof.");
         }
     }

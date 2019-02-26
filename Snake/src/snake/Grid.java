@@ -10,7 +10,7 @@ import javafx.util.Pair;
  *
  * @author Tim Barber
  */
-public class Grid implements squares {
+public final class Grid implements squares {
 
     /*
      * 0 - Blank
@@ -27,6 +27,7 @@ public class Grid implements squares {
     private int[][] playArea;
     private static int[][] savedPlayArea;
     private int[][] appleMap;
+    private boolean applesFrozen = false;
     private int startx;
     private int starty;
 
@@ -89,9 +90,9 @@ public class Grid implements squares {
         this.width = width;
         this.length = length;
         this.playArea = new int[this.length][this.width];
-        this.savedPlayArea = new int[this.length][this.width];
+        Grid.savedPlayArea = new int[this.length][this.width];
         for (int i = 0; i < this.length; i++) {
-            Arrays.fill(this.savedPlayArea[i], 0);
+            Arrays.fill(Grid.savedPlayArea[i], 0);
         }
         this.pos.add(new Pair<>(startX, startY)); // add head to list
         setCell(startX, startY, 1); // init head
@@ -99,6 +100,20 @@ public class Grid implements squares {
         warp.setVolume(0.5);
         addDeathSounds();
         this.bite = new Sound("resources/sounds/bite2.wav");
+    }
+
+    /**
+     *
+     */
+    public void freezeApples() {
+        this.applesFrozen = true;
+    }
+
+    /**
+     *
+     */
+    public void unFreezeApples() {
+        this.applesFrozen = false;
     }
 
     /**
@@ -425,8 +440,10 @@ public class Grid implements squares {
         for (int r = 0; r < playArea.length; r++) {
             for (int c = 0; c < playArea[r].length; c++) {
                 if (appleMap[r][c] == 3) {
+                    // if the map of apples contains an apple at the current spot, add it
                     playArea[r][c] = 3;
                 } else if (playArea[r][c] == 3) {
+                    // if the map of apples does not contain an apple at the current spot, set the spot on the main grid to blank
                     setCell(c, r, 0);
                 }
             }
@@ -464,6 +481,7 @@ public class Grid implements squares {
         this.clear();
         switch (this.diffLevel) {
             case 0:
+                this.extremeWarp = false;
                 this.edgeKills = sandboxEdge;
                 this.playArea = this.sandboxPlayArea;
                 this.setGrowBy(sandboxGrow);
@@ -482,6 +500,7 @@ public class Grid implements squares {
                 clear();
                 break;
             case 1:
+                this.extremeWarp = false;
                 this.edgeKills = false;
                 this.growBy = 2;
                 clearObstacles();
@@ -490,6 +509,7 @@ public class Grid implements squares {
                 setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
                 break;
             case 2:
+                this.extremeWarp = false;
                 this.edgeKills = true;
                 this.growBy = 3;
                 // set middle square as rock
@@ -500,6 +520,7 @@ public class Grid implements squares {
                 setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
                 break;
             case 3:
+                this.extremeWarp = false;
                 this.growBy = 4;
                 this.edgeKills = false;
                 clearObstacles();
@@ -538,21 +559,54 @@ public class Grid implements squares {
         System.out.println("from set obstacles");
     }
 
+    public int[][] getAppleMap() {
+        return this.appleMap;
+    }
+
     /**
      *
      */
     public void setApples() {
         System.out.print("Set apples called ");
-        for (int r = 0; r < playArea.length; r++) {
-            for (int c = 0; c < playArea[r].length; c++) {
-                int val = playArea[r][c];
-                if (val == 3) {
-                    appleMap[r][c] = 3;
-                } else {
-                    appleMap[r][c] = 0;
+        if (this.applesFrozen) {
+            System.out.println("Warning, setapples did nothing, apples are frozen");
+        } else {
+            for (int r = 0; r < playArea.length; r++) {
+                for (int c = 0; c < playArea[r].length; c++) {
+                    int val = playArea[r][c];
+                    if (val == 3) {
+                        appleMap[r][c] = 3;
+                    } else {
+                        appleMap[r][c] = 0;
+                    }
                 }
             }
         }
+    }
+
+    /**
+     *
+     * @param customList
+     */
+    public void setApples(int[][] customList) {
+        System.out.print("Set apples called with a custom list ");
+        for (int r = 0; r < playArea.length; r++) {
+            for (int c = 0; c < playArea[r].length; c++) {
+                int val = customList[r][c];
+                System.out.print(val + " ");
+                if (val == 3) {
+                    appleMap[r][c] = 3;
+                    playArea[r][c] = 3;
+                } else {
+                    appleMap[r][c] = 0;
+                    if (playArea[r][c] == 3) {
+                        playArea[r][c] = 0;
+                    }
+                }
+            }
+            System.out.println("");
+        }
+
     }
 
     public int getNeighbors(int x, int y, int type, int radius) {
