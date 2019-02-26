@@ -272,7 +272,13 @@ public class Snake extends Application {
                             // reset sandbox
                             if (board.getGrid().getDiffLevel() == 0 && !sandboxReset) {
                                 sandboxReset = true;
-                                int[][] appleMap = board.getGrid().getPlayArea();
+                                int tempSize = board.getGrid().getPlayArea().length;
+                                int[][] appleMap = new int[tempSize][tempSize];
+                                for (int r = 0; r < tempSize; r++) {
+                                    for (int c = 0; c < tempSize; c++) {
+                                        appleMap[r][c] = board.getGrid().getPlayArea()[r][c];
+                                    }
+                                }
                                 System.out.println("before");
                                 for (int[] l : appleMap) {
                                     for (int i : l) {
