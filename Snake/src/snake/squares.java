@@ -6,16 +6,16 @@ package snake;
  */
 interface squares {
 
-    int width = 1;
-    int length = 1;
-    int[][] playArea = new int[width][length];
+    int WIDTH = 1;
+    int LENGTH = 1;
+    int[][] playArea = new int[WIDTH][LENGTH];
 
     /**
      *
      * @return the horizontal size of the grid
      */
     static int getWidth() {
-        return width;
+        return WIDTH;
     }
 
     /**
@@ -23,7 +23,7 @@ interface squares {
      * @return the vertical size of the grid
      */
     static int getLength() {
-        return length;
+        return LENGTH;
     }
 
     /**

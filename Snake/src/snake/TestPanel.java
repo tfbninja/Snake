@@ -191,7 +191,7 @@ public class TestPanel extends javax.swing.JPanel {
 
         blankButton.setText("Blank");
         blankButton.setActionCommand("");
-        blankButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        blankButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         blankButton.setMaximumSize(new java.awt.Dimension(100, 50));
         blankButton.setMinimumSize(new java.awt.Dimension(100, 50));
         blankButton.setPreferredSize(new java.awt.Dimension(100, 50));
