@@ -55,7 +55,7 @@ public class Snake extends Application {
 
     private int frame = 0;
 
-    private final boolean AI = false;
+    private final boolean AI = true;
 
     private static Board board;
 
@@ -605,36 +605,36 @@ public class Snake extends Application {
             reader.useDelimiter("2049jg0324u0j2m0352035");
             board.getGrid().overwrite(loadSandboxFile(reader.next()));
             /*int frmSpd = reader.nextInt();
-            board.getGrid().setSandboxFrameSpeed(frmSpd);
-            reader.nextLine();
-            int initLen = reader.nextInt();
-            board.getGrid().setSandboxLen(initLen);
-            reader.nextLine();
-            int growBy = reader.nextInt();
-            board.getGrid().setSandboxGrowBy(growBy);
-            reader.nextLine();
-            boolean edge = reader.nextInt() == 1;
-            board.getGrid().setSandboxEdgeKills(edge);
-            reader.nextLine();
-            String temp = reader.nextLine();
-            while (temp.contains("*")) {
-                reader.nextLine();
-                temp = reader.nextLine();
-            }
+             board.getGrid().setSandboxFrameSpeed(frmSpd);
+             reader.nextLine();
+             int initLen = reader.nextInt();
+             board.getGrid().setSandboxLen(initLen);
+             reader.nextLine();
+             int growBy = reader.nextInt();
+             board.getGrid().setSandboxGrowBy(growBy);
+             reader.nextLine();
+             boolean edge = reader.nextInt() == 1;
+             board.getGrid().setSandboxEdgeKills(edge);
+             reader.nextLine();
+             String temp = reader.nextLine();
+             while (temp.contains("*")) {
+             reader.nextLine();
+             temp = reader.nextLine();
+             }
 
-            // begin reading in grid
-            int num;
-            for (int y = 0; y < 25; y++) {
-                for (int x = 0; x < 25; x++) {
-                    num = reader.nextInt();
-                    if (num == 1) {
-                        board.getGrid().setSandboxHeadPos(x, y);
-                    }
-                    SANDBOXPLAYAREA[y][x] = num;
-                }
-                reader.nextLine();
-            }
-            board.setSandbox(SANDBOXPLAYAREA.clone());
+             // begin reading in grid
+             int num;
+             for (int y = 0; y < 25; y++) {
+             for (int x = 0; x < 25; x++) {
+             num = reader.nextInt();
+             if (num == 1) {
+             board.getGrid().setSandboxHeadPos(x, y);
+             }
+             SANDBOXPLAYAREA[y][x] = num;
+             }
+             reader.nextLine();
+             }
+             board.setSandbox(SANDBOXPLAYAREA.clone());
              */
         } catch (FileNotFoundException x) {
             System.out.println("Cannot find sandbox file in " + SANDBOXLOCATION + ", try setting the working dir to src/snake.");

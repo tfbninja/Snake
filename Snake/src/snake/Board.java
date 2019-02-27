@@ -45,7 +45,7 @@ public class Board {
     private String bg = "ceceb5";
     private String rock = "53585e";
     private String applesEaten = "750BE0";
-    private final String[] portalColors = {"#90094E", "550C74", "dfb708", "ef5658", "bb3dff"};
+    private final String[] portalColors = {"90094E", "550C74", "dfb708", "ef5658", "bb3dff"};
 
     private boolean lost = false;
 
