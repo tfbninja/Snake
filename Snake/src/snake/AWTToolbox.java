@@ -391,7 +391,7 @@ public class AWTToolbox extends JFrame implements ActionListener {
                 filename.setText("You pressed cancel");
                 dir.setText("");
             } else {
-                String compiledSandboxFile = Snake.compileToSandboxFile(grid.getEdgeKills(), grid.getFrameSpeed(), grid.getInitialLength(), grid.getGrowBy(), grid.getPlayArea());
+                String compiledSandboxFile = Snake.compileToSandboxFile(grid.getEdgeKills(), grid.getFrameSpeed(), grid.getInitialLength(), grid.getGrowBy(), grid.getPlayArea(), grid.getExtremeWarp(), grid.getUseSameSeed(), grid.getSeed());
                 String fileLoc = "";
                 try {
                     fileLoc = dir.getText() + "\\" + filename.getText();

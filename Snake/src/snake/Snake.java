@@ -70,7 +70,7 @@ public class Snake extends Application {
     private File settings;
     private final String settingsLocation = "resources/settings.snk";
     private static File sandbox;
-    private static final String SANDBOXLOCATION = "resources/sandbox.sandbox";
+    private static final String SANDBOXLOCATION = "resources/unsaved.sandbox";
     private static final int[][] SANDBOXPLAYAREA = new int[25][25];
     private static Pair<Integer, Integer> sandboxHeadPos;
 
@@ -79,6 +79,7 @@ public class Snake extends Application {
     private boolean nightMode = false;
     private boolean sandboxReset = false;
     private String tempSandboxFile = "";
+    int[][] appleMap;
 
     private static final ArrayList<String> MENUNAMES = new ArrayList<String>() {
         {
@@ -153,8 +154,7 @@ public class Snake extends Application {
         menuMusic.loop();
 
 // init sandbox file
-        initSandboxFile();
-
+        // initSandboxFile();
         getScores();
 // if local files unreadable, set to 0
         for (int i = 0; i < scores.size(); i += 2) { // loop through local scores
@@ -212,9 +212,9 @@ public class Snake extends Application {
                             sandboxReset = false;
                         }
 
-                        if (board.getGrid().getDiffLevel() == 0 && !board.getGrid().isClear()) {
+                        if (board.getGrid().getDiffLevel() == 0 && !board.getGrid().isClear() && MM.getCurrent() == 4) {
                             try {
-                                tempSandboxFile = compileToSandboxFile(board.getGrid().getEdgeKills(), board.getGrid().getFrameSpeed(), board.getGrid().getInitialLength(), board.getGrid().getGrowBy(), board.getGrid().getPlayArea());
+                                tempSandboxFile = compileToSandboxFile(board.getGrid().getEdgeKills(), board.getGrid().getFrameSpeed(), board.getGrid().getInitialLength(), board.getGrid().getGrowBy(), board.getGrid().getPlayArea(), board.getGrid().getExtremeWarp(), board.getGrid().getUseSameSeed(), board.getGrid().getSeed());
                                 try ( // save as unsaved.sandbox
                                         BufferedWriter buffer = new BufferedWriter(new FileWriter("resources/unsaved.sandbox"))) {
                                     for (String s : tempSandboxFile.split("\n")) {
@@ -272,22 +272,7 @@ public class Snake extends Application {
                             // reset sandbox
                             if (board.getGrid().getDiffLevel() == 0 && !sandboxReset) {
                                 sandboxReset = true;
-                                int tempSize = board.getGrid().getPlayArea().length;
-                                int[][] appleMap = new int[tempSize][tempSize];
-                                for (int r = 0; r < tempSize; r++) {
-                                    for (int c = 0; c < tempSize; c++) {
-                                        appleMap[r][c] = board.getGrid().getPlayArea()[r][c];
-                                    }
-                                }
-                                System.out.println("before");
-                                for (int[] l : appleMap) {
-                                    for (int i : l) {
-                                        System.out.print(i + " ");
-                                    }
-                                    System.out.println("");
-                                }
-                                System.out.println("got apples");
-                                //board.getGrid().freezeApples();
+
                                 board.resetKeepGrid(); // reverts apples to initial
                                 int[] headPos2 = board.getGrid().getStartPos();
                                 board.getGrid().removeAll(1);
@@ -295,12 +280,11 @@ public class Snake extends Application {
                                 board.getGrid().setPos(headPos2[0], headPos2[1]);
                                 board.getGrid().setGrowBy(testPanel.getGrowBy());
                                 board.getGrid().setEdgeKills(testPanel.getEdgeKills());
-                                System.out.println("Setting to sandbox play area from snake");
+                                //System.out.println("Setting to sandbox play area from snake");
                                 board.setToSandboxPlayArea();
-                                System.out.println("Set to sandbox play area from snake");
+                                //System.out.println("Set to sandbox play area from snake");
                                 //board.getGrid().unFreezeApples();
                                 board.getGrid().setApples(appleMap);
-                                System.out.println("after");
                                 board.drawBlocks();
                                 MM.setCurrent(4);
                                 GS.setToPreGame();
@@ -363,6 +347,15 @@ public class Snake extends Application {
                             if (root.getTop() != board.getCanvas() && !GS.isPostGame()) {
                                 root.setTop(board.getCanvas());
                             }
+                            if (GS.isPreGame()) {
+                                int tempSize = board.getGrid().getPlayArea().length;
+                                appleMap = new int[tempSize][tempSize];
+                                for (int r = 0; r < tempSize; r++) {
+                                    for (int c = 0; c < tempSize; c++) {
+                                        appleMap[r][c] = board.getGrid().getPlayArea()[r][c];
+                                    }
+                                }
+                            }
                             if (!GS.isPostGame()) {
                                 if (AI) {
                                     AI();
@@ -410,7 +403,7 @@ public class Snake extends Application {
         scene.setOnKeyPressed(
                 (KeyEvent eventa) -> {
                     if (eventa.getCode() == KeyCode.DIGIT0 && eventa.isShiftDown() && MM.getCurrent() == 0) {
-                        initSandboxFile();
+                        //initSandboxFile();
                     }
                     board.keyPressed(eventa);
                 }
@@ -467,14 +460,22 @@ public class Snake extends Application {
      * @param initialLength
      * @param growBy
      * @param playArea
+     * @param extremeWarp
+     * @param useSameSeed
+     * @param seed
      * @return
      */
-    public static String compileToSandboxFile(boolean edgeKills, int frmSpd, int initialLength, int growBy, int[][] playArea) {
+    public static String compileToSandboxFile(boolean edgeKills, int frmSpd, int initialLength, int growBy, int[][] playArea, boolean extremeWarp, boolean useSameSeed, long seed) {
         String s = "" + frmSpd + " - number of frames to wait before waiting (min 1)\n";
         s += initialLength + " - initial snake length\n";
         s += growBy + " - snake grow amt\n";
         s += edgeKills ? 1 : 0;
         s += " - edge kills (0 for false, 1 for true)\n";
+        s += extremeWarp ? 1 : 0;
+        s += " - extreme warp (0 for false, 1 for true)\n";
+        s += useSameSeed ? 1 : 0;
+        s += " - use the same random seed for generating apples every time (0 for false, 1 for true)\n";
+        s += seed + " - seed to use\n\n";
         s += " *\n * Square types:\n * 0 - blank\n * 1 - head (only one of these)\n * 2 - body\n * 3 - Apple\n * 4 - Rock\n * 5 - Invisible\n * 10 and higher - portals (no more than and no less than 2 of each type of portal)\n *\n\n";
         for (int[] y : playArea) {
             for (int x : y) {
@@ -491,44 +492,91 @@ public class Snake extends Application {
      * @return
      */
     public static Grid loadSandboxFile(String content) {
-        Grid tempGrid = new Grid(25, 25, 0, 0);
-        tempGrid.setDiffLevel(0);
-        Scanner s = new Scanner(content);
+        try {
+            Grid tempGrid = new Grid(25, 25, 0, 0);
+            tempGrid.setDiffLevel(0);
+            tempGrid.addGameState(GS);
 
-        s.useDelimiter(" ");
-        int frmSpd = s.nextInt();
-        tempGrid.setFrameSpeed(frmSpd);
-        s.nextLine();
-        int initLen = s.nextInt();
-        tempGrid.setInitialSize(initLen);
-        s.nextLine();
-        int growBy = s.nextInt();
-        tempGrid.setGrowBy(growBy);
-        s.nextLine();
-        boolean edge = s.nextInt() == 1;
-        tempGrid.setEdgeKills(edge);
-        s.nextLine();
-        String temp = s.nextLine();
-        while (temp.contains("*")) {
+            Scanner s = new Scanner(content);
+
+            s.useDelimiter(" ");
+            int frmSpd = s.nextInt();
+            tempGrid.setFrameSpeed(frmSpd);
             s.nextLine();
-            temp = s.nextLine();
-        }
-
-        // begin reading in grid
-        int num;
-        for (int y = 0; y < 25; y++) {
-            for (int x = 0; x < 25; x++) {
-                num = s.nextInt();
-                if (num == 1) {
-                    tempGrid.setPos(x, y);
-                    System.out.println("head at " + x + ", " + y);
-                }
-                SANDBOXPLAYAREA[y][x] = num;
+            int initLen = s.nextInt();
+            tempGrid.setInitialSize(initLen);
+            s.nextLine();
+            int growBy = s.nextInt();
+            tempGrid.setGrowBy(growBy);
+            s.nextLine();
+            boolean edge = s.nextInt() == 1;
+            tempGrid.setEdgeKills(edge);
+            s.nextLine();
+            boolean extrm = s.nextInt() == 1;
+            tempGrid.setExtremeStyleWarp(extrm);
+            s.nextLine();
+            boolean useSame = s.nextInt() == 1;
+            s.nextLine();
+            s.useDelimiter("");
+            String negative = s.next();
+            s.useDelimiter(" ");
+            System.out.println("first char: \"" + negative + "\"");
+            long seed = 0;
+            if (s.hasNextLong()) {
+                seed = s.nextLong();
+            } else {
+                seed = Long.valueOf(negative);
+                seed = -seed;
+                negative = "-";
             }
+            if (negative.equals("-")) {
+                seed = -seed;
+            } else {
+                seed = Long.valueOf(negative + seed);
+            }
+            tempGrid.setSeed(seed);
+            tempGrid.setUseSameSeed(useSame);
+            s.useDelimiter(" ");
             s.nextLine();
+            s.nextLine();
+            String temp = s.nextLine();
+            while (temp.contains("*")) {
+                s.nextLine();
+                temp = s.nextLine();
+            }
+
+            // begin reading in grid
+            int num = 0;
+            for (int y = 0; y < 25; y++) {
+                for (int x = 0; x < 25; x++) {
+                    try {
+                        num = s.nextInt();
+                    } catch (java.util.NoSuchElementException e) {
+                        System.out.println("Failed to read integer from sandbox");
+                    }
+                    if (num == 1) {
+                        tempGrid.setPos(x, y);
+                        //System.out.println("head at " + x + ", " + y);
+                    }
+                    SANDBOXPLAYAREA[y][x] = num;
+                }
+                s.nextLine();
+            }
+            tempGrid.setPlayArea(SANDBOXPLAYAREA.clone());
+            return tempGrid;
+        } catch (java.util.InputMismatchException e) {
+            System.out.println("Trouble reading in default sandbox file with content: \"" + content + "\"");
+            Grid basicGrid = new Grid(25, 25, 0, 0);
+            basicGrid.addGameState(GS);
+            basicGrid.setFrameSpeed(3);
+            basicGrid.setEdgeKills(true);
+            basicGrid.setExtremeStyleWarp(false);
+            basicGrid.setGrowBy(1);
+            basicGrid.setInitialSize(5);
+            basicGrid.setPos(0, 0);
+            basicGrid.setDiffLevel(0);
+            return basicGrid;
         }
-        tempGrid.setPlayArea(SANDBOXPLAYAREA.clone());
-        return tempGrid;
     }
 
     /**
@@ -549,12 +597,14 @@ public class Snake extends Application {
         }
     }
 
-    private static void initSandboxFile() {
+    public static void initSandboxFile() {
         try {
+            //System.out.println("Initializing sandbox");
             sandbox = new File(SANDBOXLOCATION);
             Scanner reader = new Scanner(sandbox);
-            reader.useDelimiter(" ");
-            int frmSpd = reader.nextInt();
+            reader.useDelimiter("2049jg0324u0j2m0352035");
+            board.getGrid().overwrite(loadSandboxFile(reader.next()));
+            /*int frmSpd = reader.nextInt();
             board.getGrid().setSandboxFrameSpeed(frmSpd);
             reader.nextLine();
             int initLen = reader.nextInt();
@@ -585,6 +635,7 @@ public class Snake extends Application {
                 reader.nextLine();
             }
             board.setSandbox(SANDBOXPLAYAREA.clone());
+             */
         } catch (FileNotFoundException x) {
             System.out.println("Cannot find sandbox file in " + SANDBOXLOCATION + ", try setting the working dir to src/snake.");
         }

@@ -336,12 +336,14 @@ public class Board {
      *
      * @param playArea
      */
+    /*
     public void setSandbox(int[][] playArea) {
         sandboxExists = true;
         sandbox = playArea;
         grid.setSandbox(playArea);
     }
 
+     */
     /**
      *
      * @param e
@@ -405,15 +407,16 @@ public class Board {
                 this.grid.setDiffLevel(4);
                 GS.setToPreGame();
                 MM.setCurrent(4);
-            } else if (e.getCode() == KeyCode.DIGIT0 && e.isShiftDown() && sandboxExists) {
+            } else if (e.getCode() == KeyCode.DIGIT0 && e.isShiftDown()) {
+                Snake.initSandboxFile();
                 toolFrame.setVisible(true);
                 toolFrame.requestFocus(); // bring this to front
                 testPanel.setCurrentTool(0);
                 primaryStage.requestFocus(); // but we want this one in focus still
                 this.grid.setDiffLevel(0);
-                this.grid.setPlayArea(sandbox);
                 MM.setCurrent(4);
                 GS.setToPreGame();
+                drawBlocks();
             }
         }
         if (isDirectional(e) && MM.getCurrent() == 4) {
@@ -430,7 +433,6 @@ public class Board {
                     sandbox = grid.getPlayArea();
                 }
                 grid.setApples();
-                System.out.println("from starting the game in board");
                 GS.setToGame();
             }
         }

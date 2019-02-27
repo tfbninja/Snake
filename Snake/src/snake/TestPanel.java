@@ -46,7 +46,6 @@ public class TestPanel extends javax.swing.JPanel {
         buttons.add(appleButton);
         buttons.add(rockButton);
         buttons.add(portalButton);
-        updateButtonColors(colorScheme);
         components.add(currentLabel);
         components.add(edgeKillsBox);
         components.add(frameDelayLabel);
@@ -56,9 +55,22 @@ public class TestPanel extends javax.swing.JPanel {
         components.add(sizeIncrementSpinner);
         components.add(sizeLabel);
         components.add(warpModeBox);
+        components.add(seedSpinner);
+        components.add(keepSeedBox);
+        components.add(seedLabel);
+        updateButtonColors(colorScheme);
         MM = mm;
         board = b;
         saveLabel.setVisible(false);
+    }
+
+    public void raiseAllButtons() {
+        buttons.forEach((jb) -> {
+            jb.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        });
+        loadButton.setContentAreaFilled(true);
+        saveButton.setContentAreaFilled(true);
+        clearButton.setContentAreaFilled(true);
     }
 
     /**
@@ -82,6 +94,8 @@ public class TestPanel extends javax.swing.JPanel {
         if (grid.getDiffLevel() == 0) {
             grid.setFrameSpeed((int) frameSpeedSpinner.getValue());
             grid.setEdgeKills(edgeKillsBox.isSelected());
+            grid.setSeed((long) seedSpinner.getValue());
+            grid.setUseSameSeed(keepSeedBox.isSelected());
             grid.setExtremeStyleWarp(warpModeBox.isSelected());
             grid.setGrowBy((int) sizeIncrementSpinner.getValue());
             grid.setInitialSize((int) initLengthSpinner.getValue());
@@ -110,7 +124,7 @@ public class TestPanel extends javax.swing.JPanel {
     public void updateButtonColors(String[] colorScheme) {
         Color bg = Color.decode("0x" + colorScheme[colorScheme.length - 1]);
         this.setBackground(bg);
-        this.edgeKillsBox.setBackground(bg);
+        this.keepSeedBox.setBackground(bg);
         this.warpModeBox.setBackground(bg);
         this.colorScheme = colorScheme;
         for (int i = 0; i < buttons.size(); i++) {
@@ -150,7 +164,7 @@ public class TestPanel extends javax.swing.JPanel {
         saveButton = new javax.swing.JButton();
         loadButton = new javax.swing.JButton();
         clearButton = new javax.swing.JButton();
-        edgeKillsBox = new javax.swing.JCheckBox();
+        keepSeedBox = new javax.swing.JCheckBox();
         sizeIncrementSpinner = new javax.swing.JSpinner();
         sizeLabel = new javax.swing.JLabel();
         initLengthLabel = new javax.swing.JLabel();
@@ -163,6 +177,9 @@ public class TestPanel extends javax.swing.JPanel {
         frameSpeedSpinner = new javax.swing.JSpinner();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 5), new java.awt.Dimension(0, 5), new java.awt.Dimension(32767, 5));
         filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        seedLabel = new javax.swing.JLabel();
+        seedSpinner = new javax.swing.JSpinner();
+        edgeKillsBox = new javax.swing.JCheckBox();
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Toolbox");
@@ -281,13 +298,14 @@ public class TestPanel extends javax.swing.JPanel {
         });
         add(clearButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(107, 431, -1, -1));
 
-        edgeKillsBox.setText("Edge kills");
-        edgeKillsBox.addActionListener(new java.awt.event.ActionListener() {
+        keepSeedBox.setText("Keep seed");
+        keepSeedBox.setSelected(grid.getUseSameSeed());
+        keepSeedBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                edgeKillsBoxActionPerformed(evt);
+                keepSeedBoxActionPerformed(evt);
             }
         });
-        add(edgeKillsBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 290, -1, -1));
+        add(keepSeedBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 257, -1, -1));
 
         sizeIncrementSpinner.setModel(new javax.swing.SpinnerNumberModel(1, null, null, 1));
         sizeIncrementSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -348,6 +366,26 @@ public class TestPanel extends javax.swing.JPanel {
         add(filler1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 260, -1, -1));
         add(filler2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 260, -1, -1));
 
+        seedLabel.setText("Seed");
+        add(seedLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 140, -1, -1));
+
+        seedSpinner.setModel(new javax.swing.SpinnerNumberModel(0L, null, null, 1L));
+        seedSpinner.setValue((long) grid.getSeed());
+        seedSpinner.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                seedSpinnerPropertyChange(evt);
+            }
+        });
+        add(seedSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 140, 69, -1));
+
+        edgeKillsBox.setText("Edge kills");
+        edgeKillsBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                edgeKillsBoxActionPerformed(evt);
+            }
+        });
+        add(edgeKillsBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 290, -1, -1));
+
         getAccessibleContext().setAccessibleDescription("");
     }// </editor-fold>//GEN-END:initComponents
 
@@ -374,9 +412,7 @@ public class TestPanel extends javax.swing.JPanel {
                 break;
         }
 
-        buttons.forEach((jb) -> {
-            jb.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        });
+        raiseAllButtons();
         buttons.get(index).setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         //System.out.println("Color: " + colorScheme[index]);
         currentBox.setBackground(Color.decode("0x" + colorScheme[index]));
@@ -411,7 +447,7 @@ public class TestPanel extends javax.swing.JPanel {
      * @return
      */
     public boolean getEdgeKills() {
-        return this.edgeKillsBox.isSelected();
+        return this.keepSeedBox.isSelected();
     }
 
 
@@ -427,9 +463,8 @@ public class TestPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_portalButtonActionPerformed
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
-        loadButton.setContentAreaFilled(true);
+        raiseAllButtons();
         saveButton.setContentAreaFilled(false);
-        clearButton.setContentAreaFilled(true);
         JFileChooser fChooser = new JFileChooser();
         fChooser.setFileFilter(new FileFilter() {
 
@@ -452,7 +487,7 @@ public class TestPanel extends javax.swing.JPanel {
             String text = fChooser.getSelectedFile().getName();
             int dot = text.lastIndexOf(".");
             if (dot == -1) {
-                dot = text.length() - 1;
+                dot = text.length();
             }
             filename.setText(text.substring(0, dot) + ".sandbox");
             dir.setText(fChooser.getCurrentDirectory().toString());
@@ -461,7 +496,7 @@ public class TestPanel extends javax.swing.JPanel {
             filename.setText("You pressed cancel");
             dir.setText("");
         } else {
-            String compiledSandboxFile = Snake.compileToSandboxFile(grid.getEdgeKills(), grid.getFrameSpeed(), grid.getInitialLength(), grid.getGrowBy(), grid.getPlayArea());
+            String compiledSandboxFile = Snake.compileToSandboxFile(grid.getEdgeKills(), grid.getFrameSpeed(), grid.getInitialLength(), grid.getGrowBy(), grid.getPlayArea(), grid.getExtremeWarp(), grid.getUseSameSeed(), grid.getSeed());
             String fileLoc = "";
             try {
                 fileLoc = dir.getText() + "\\" + filename.getText();
@@ -489,9 +524,8 @@ public class TestPanel extends javax.swing.JPanel {
         saveLabel.setVisible(false);
     }
     private void loadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadButtonActionPerformed
+        raiseAllButtons();
         loadButton.setContentAreaFilled(false);
-        saveButton.setContentAreaFilled(true);
-        clearButton.setContentAreaFilled(true);
         this.saveLabel.setVisible(false);
         JFileChooser fChooser = new JFileChooser();
         fChooser.setCurrentDirectory(new File("resources/"));
@@ -523,6 +557,8 @@ public class TestPanel extends javax.swing.JPanel {
         this.initLengthSpinner.setValue(grid.getInitialLength());
         this.sizeIncrementSpinner.setValue(grid.getGrowBy());
         frameSpeedSpinner.setValue(grid.getFrameSpeed());
+        keepSeedBox.setSelected(grid.getUseSameSeed());
+        seedSpinner.setValue((long) grid.getSeed());
     }
 
     private void warpModeBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_warpModeBoxActionPerformed
@@ -540,10 +576,9 @@ public class TestPanel extends javax.swing.JPanel {
         hideSaved();
     }//GEN-LAST:event_sizeIncrementSpinnerStateChanged
 
-    private void edgeKillsBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_edgeKillsBoxActionPerformed
-        grid.setEdgeKills(edgeKillsBox.isSelected());
-        hideSaved();
-    }//GEN-LAST:event_edgeKillsBoxActionPerformed
+    private void keepSeedBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_keepSeedBoxActionPerformed
+        grid.setUseSameSeed(keepSeedBox.isSelected());
+    }//GEN-LAST:event_keepSeedBoxActionPerformed
 
     private void initLengthSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_initLengthSpinnerStateChanged
         grid.setInitialSize((int) this.initLengthSpinner.getValue());
@@ -551,8 +586,7 @@ public class TestPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_initLengthSpinnerStateChanged
 
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
-        loadButton.setContentAreaFilled(true);
-        saveButton.setContentAreaFilled(true);
+        raiseAllButtons();
         clearButton.setContentAreaFilled(false);
         hideSaved();
         grid.reset();
@@ -577,6 +611,16 @@ public class TestPanel extends javax.swing.JPanel {
         setCurrentTool(3);
     }//GEN-LAST:event_rockButtonActionPerformed
 
+    private void edgeKillsBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_edgeKillsBoxActionPerformed
+        grid.setEdgeKills(edgeKillsBox.isSelected());
+        hideSaved();
+    }//GEN-LAST:event_edgeKillsBoxActionPerformed
+
+    private void seedSpinnerPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_seedSpinnerPropertyChange
+        grid.setSeed(WIDTH);
+        grid.setUseSameSeed(keepSeedBox.isSelected());
+    }//GEN-LAST:event_seedSpinnerPropertyChange
+
     private final java.util.ArrayList<JButton> buttons = new java.util.ArrayList<>();
     private final java.util.ArrayList<javax.swing.JComponent> components = new java.util.ArrayList<>();
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -599,11 +643,14 @@ public class TestPanel extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextPane jTextPane1;
+    private javax.swing.JCheckBox keepSeedBox;
     private javax.swing.JButton loadButton;
     private javax.swing.JButton portalButton;
     private javax.swing.JButton rockButton;
     private javax.swing.JButton saveButton;
     private javax.swing.JLabel saveLabel;
+    private javax.swing.JLabel seedLabel;
+    private javax.swing.JSpinner seedSpinner;
     private javax.swing.JSpinner sizeIncrementSpinner;
     private javax.swing.JLabel sizeLabel;
     private javax.swing.JCheckBox warpModeBox;

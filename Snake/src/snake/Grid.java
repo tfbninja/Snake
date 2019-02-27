@@ -30,10 +30,12 @@ public final class Grid implements squares {
     private boolean applesFrozen = false;
     private int startx;
     private int starty;
-
+    
     private boolean edgeKills = false;
-
+    
     private Random random = new Random();
+    private long seed = 0;
+    private boolean useSameSeedOnReset = false;
     private int diffLevel = 1;
     private int minDiffLevel = 0;
     private int maxDiffLevel = 4;
@@ -44,7 +46,7 @@ public final class Grid implements squares {
     private ArrayList<Pair<Integer, Integer>> pos = new ArrayList<>();
     private int initialSize = 5;
     private int snakeSize = initialSize;
-
+    
     private int applesEaten = 0;
 
     // sounds
@@ -52,10 +54,10 @@ public final class Grid implements squares {
     private Sound warp;
     private ArrayList<Sound> loseSounds = new ArrayList<>();
     private Sound bite;
-
+    
     int[] applePos = new int[2];
     private int growBy = 1;
-
+    
     private final int[] XADD = {0, 1, 0, -1};
     private final int[] YADD = {-1, 0, 1, 0};
     private int[] frameSpeeds = {3, 5, 4, 3, 2};
@@ -65,7 +67,7 @@ public final class Grid implements squares {
     private Pair<Integer, Integer> sandboxPos;
     private int[][] sandboxPlayArea = new int[25][25];
     private GameState GS;
-
+    
     private boolean extremeWarp = false;
 //</editor-fold>
 
@@ -100,6 +102,22 @@ public final class Grid implements squares {
         warp.setVolume(0.5);
         addDeathSounds();
         this.bite = new Sound("resources/sounds/bite2.wav");
+    }
+    
+    public void setSeed(long s) {
+        seed = s;
+        this.useSameSeedOnReset = true;
+        if (!GS.isGame()) {
+            this.random.setSeed(seed);
+        }
+    }
+    
+    public void useSameSeedOnReset() {
+        this.useSameSeedOnReset = true;
+    }
+    
+    public void dontUseSameSeedOnReset() {
+        this.useSameSeedOnReset = false;
     }
 
     /**
@@ -187,6 +205,9 @@ public final class Grid implements squares {
         this.starty = grid.starty;
         this.frameSpeeds = grid.frameSpeeds;
         this.tempDir = grid.tempDir;
+        this.extremeWarp = grid.extremeWarp;
+        this.useSameSeedOnReset = grid.useSameSeedOnReset;
+        this.seed = grid.seed;
         setApples();
     }
 
@@ -236,6 +257,22 @@ public final class Grid implements squares {
             }
         }
         return null;
+    }
+    
+    public boolean getExtremeWarp() {
+        return this.extremeWarp;
+    }
+    
+    public boolean getUseSameSeed() {
+        return this.useSameSeedOnReset;
+    }
+    
+    public long getSeed() {
+        return this.seed;
+    }
+    
+    public void setUseSameSeed(boolean b) {
+        this.useSameSeedOnReset = b;
     }
 
     /**
@@ -297,7 +334,7 @@ public final class Grid implements squares {
         sandboxPos = new Pair<Integer, Integer>(x, y);
         pos.add(sandboxPos);
     }
-
+    
     @Override
     public int[][] getPlayArea() {
         return this.playArea;
@@ -364,7 +401,7 @@ public final class Grid implements squares {
         }
         return size;
     }
-
+    
     private int touchingNeighbors(int xPos, int yPos) {
         int count = 0;
         if (safeCheck(xPos - 1, yPos) == safeCheck(xPos, yPos)) {
@@ -381,12 +418,12 @@ public final class Grid implements squares {
         }
         return count;
     }
-
+    
     private String formatFilePath(String badlyFormattedPath) {
         // replaces all "\" or "\\" characters with a "/"
         return badlyFormattedPath.replaceAll("\\\\", "/").replaceAll("//", "/");
     }
-
+    
     private void addDeathSounds() {
         // addes all files in resources/sounds/death to the list of sounds to play when game is lost
         File deathSoundsFolder = new File("resources/sounds/death");
@@ -456,6 +493,11 @@ public final class Grid implements squares {
     public void reset() {
         direction = 0;
         tempDir = 0;
+        if (this.useSameSeedOnReset) {
+            random.setSeed(seed);
+        } else {
+            random.setSeed(random.nextLong());
+        }
         resetSnake();
         resetSize();
         revertToInitial();
@@ -475,12 +517,15 @@ public final class Grid implements squares {
     public void setApplesEaten(int amt) {
         applesEaten = amt;
     }
-
+    
     private void setObstacles() {
-        this.setGrowBy(1);
-        this.clear();
+        if (diffLevel != 0) {
+            this.setGrowBy(1);
+            this.clear();
+        }
         switch (this.diffLevel) {
             case 0:
+                /*
                 this.extremeWarp = false;
                 this.edgeKills = sandboxEdge;
                 this.playArea = this.sandboxPlayArea;
@@ -497,7 +542,7 @@ public final class Grid implements squares {
                     this.pos.add(new Pair<>(0, 0));
                 }
                 setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
-                clear();
+                clear();*/
                 break;
             case 1:
                 this.extremeWarp = false;
@@ -527,12 +572,12 @@ public final class Grid implements squares {
 
                 //add 5 random rocks
                 for (int i = 0; i < 5; i++) {
-                    int x = (int) (Math.random() * this.width);
-                    int y = (int) (Math.random() * this.length);
+                    int x = (int) (random.nextDouble() * this.width);
+                    int y = (int) (random.nextDouble() * this.length);
                     while (getCell(x, y) != 0 || x == this.pos.get(0).getValue() || getNeighbors(x, y, 4, 2) > 0) {
                         // while the rock is about to be placed over a non-blank spot, or it is the same x value as the snake, or it has neighbors in a 2 cell radius, recalculate the position
-                        x = (int) (Math.random() * this.width);
-                        y = (int) (Math.random() * this.length);
+                        x = (int) (random.nextDouble() * this.width);
+                        y = (int) (random.nextDouble() * this.length);
                     }
                     setCell(x, y, 4);
                 }
@@ -556,9 +601,8 @@ public final class Grid implements squares {
                 break;
         }
         setApples();
-        System.out.println("from set obstacles");
     }
-
+    
     public int[][] getAppleMap() {
         return this.appleMap;
     }
@@ -567,7 +611,6 @@ public final class Grid implements squares {
      *
      */
     public void setApples() {
-        System.out.print("Set apples called ");
         if (this.applesFrozen) {
             System.out.println("Warning, setapples did nothing, apples are frozen");
         } else {
@@ -589,11 +632,9 @@ public final class Grid implements squares {
      * @param customList
      */
     public void setApples(int[][] customList) {
-        System.out.print("Set apples called with a custom list ");
         for (int r = 0; r < playArea.length; r++) {
             for (int c = 0; c < playArea[r].length; c++) {
                 int val = customList[r][c];
-                System.out.print(val + " ");
                 if (val == 3) {
                     appleMap[r][c] = 3;
                     playArea[r][c] = 3;
@@ -604,11 +645,10 @@ public final class Grid implements squares {
                     }
                 }
             }
-            System.out.println("");
         }
-
+        
     }
-
+    
     public int getNeighbors(int x, int y, int type, int radius) {
         int count = 0;
         for (int tempX = x - radius; tempX <= x + radius; tempX++) {
@@ -620,11 +660,11 @@ public final class Grid implements squares {
         }
         return count;
     }
-
+    
     public int getNeighbors(int x, int y, int type) {
         return getNeighbors(x, y, type, 1);
     }
-
+    
     private void clearObstacles() {
         for (int x = 0; x < this.width; x++) {
             for (int y = 0; y < this.length; y++) {
@@ -670,7 +710,7 @@ public final class Grid implements squares {
         int[] genRepeats = {1, 1, 1, 1, 1};
         return genRepeats[diffLevel];
     }
-
+    
     private void removeExtra() {
         while (pos.size() > snakeSize) {
             pos.remove(pos.size() - 1);
@@ -724,14 +764,14 @@ public final class Grid implements squares {
     public int[] getApplePos() {
         return applePos;
     }
-
+    
     private int[] newApple() {
         ArrayList<Pair<Integer, Integer>> openSpots = find(0);
         try {
             Pair<Integer, Integer> spot = this.pickPair(openSpots);
-
+            
             int[] newPos = {spot.getKey(), spot.getValue()};
-
+            
             int tries = 0;
             while (newPos[0] < 0 || newPos[1] < 0 || this.isOccupied(newPos[0], newPos[1])) {
                 tries++;
@@ -741,7 +781,7 @@ public final class Grid implements squares {
                 newPos[0] = random.nextInt(this.width);
                 newPos[1] = random.nextInt(this.length);
             }
-
+            
             this.setCell(newPos[0], newPos[1], 3);
             applePos[0] = newPos[0];
             applePos[1] = newPos[1];
@@ -784,11 +824,11 @@ public final class Grid implements squares {
     public int getLength() {
         return this.length;
     }
-
+    
     public void setWidth(int width) {
         this.width = width;
     }
-
+    
     public void setLength(int length) {
         this.length = length;
     }
@@ -1011,7 +1051,7 @@ public final class Grid implements squares {
      * @return
      */
     public Sound pick(ArrayList<Sound> list) {
-        int index = (int) (Math.random() * list.size());
+        int index = (int) (random.nextDouble() * list.size());
         return list.get(index);
     }
 
@@ -1021,7 +1061,7 @@ public final class Grid implements squares {
      * @return
      */
     public Pair<Integer, Integer> pickPair(ArrayList<Pair<Integer, Integer>> list) {
-        int index = (int) (Math.random() * list.size());
+        int index = (int) (random.nextDouble() * list.size());
         return list.get(index);
     }
 
@@ -1036,7 +1076,7 @@ public final class Grid implements squares {
             for (int x = 0; x < width; x++) {
                 if (safeCheck(x, y) == type) {
                     posList.add(new Pair<Integer, Integer>(x, y));
-
+                    
                 }
             }
         }
@@ -1100,18 +1140,18 @@ public final class Grid implements squares {
                 pick(loseSounds).play();
                 return;
             }
-
+            
             this.direction = this.tempDir;
             int nextX = nextPos()[0];
             int nextY = nextPos()[1];
             int headX = pos.get(0).getKey();
             int headY = pos.get(0).getValue();
-
+            
             if (this.countVal(2) + 2 > pos.size()) {
                 // if the amt of snake body + the head + the square about to be filled is more than the length, we need to chop the last part
                 this.chopTail();
             }
-
+            
             if (!this.edgeKills) {
                 boolean playWarpSound = false;
                 if (this.extremeWarp) {
@@ -1132,7 +1172,7 @@ public final class Grid implements squares {
                             this.tempDir = 1;
                             playWarpSound2 = true;
                         }
-
+                        
                         if (nextY < 0) {
                             nextY = nextX;
                             nextX = this.width - 1;
@@ -1197,7 +1237,7 @@ public final class Grid implements squares {
                     }
                 }
             }
-
+            
             if (GS.isGame() && (this.isRock(nextX, nextY) || this.edgeKills && (nextX >= this.width || nextY >= this.length || nextX < 0 || nextY < 0))) {
                 // collision with wall or rock
                 GS.setToPostGame();
@@ -1267,7 +1307,7 @@ public final class Grid implements squares {
                     this.removeExtra();
                 }
                 this.safeSetCell(headX, headY, 2);
-
+                
                 headX = nextX;
                 headY = nextY;
                 while (isPortal(nextX, nextY)) {
@@ -1278,7 +1318,7 @@ public final class Grid implements squares {
                     nextY = this.otherPortalPos(oldX, oldY)[1] + YADD[direction - 1];
                 }
                 this.safeSetCell(headX, headY, 1);
-
+                
                 this.pos.add(0, new Pair<>(headX, headY)); // add segment in front
                 this.removeExtra();
                 if (countVal(2) < pos.size() - 1) {
@@ -1287,7 +1327,7 @@ public final class Grid implements squares {
                 } else {
                     this.safeSetCell(headX, headY, 0);
                 }
-
+                
             } else if (GS.isGame() && this.isBlank(nextX, nextY)) {
                 this.pos.add(0, new Pair<>(nextX, nextY)); // add segment in front
                 this.setCell(nextX, nextY, 1); // update grid
@@ -1459,7 +1499,6 @@ public final class Grid implements squares {
         this.playArea = newPlayArea;
         if (!GS.isPostGame()) {
             setApples();
-            System.out.println("from set Play Area");
         }
     }
 
@@ -1470,7 +1509,7 @@ public final class Grid implements squares {
     public boolean isClear() {
         return countVal(0) == width * length;
     }
-
+    
     @Override
     public String toString() {
         String output = "";
