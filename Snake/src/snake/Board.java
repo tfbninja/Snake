@@ -362,6 +362,10 @@ public class Board {
             toolFrame.setVisible(false);
         }
 
+        if (e.getCode() == KeyCode.EQUALS && e.isShiftDown()) {
+            System.out.println(grid.exportCode());
+        }
+
         if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0) {
             if (null != e.getCode()) {
                 switch (e.getCode()) {

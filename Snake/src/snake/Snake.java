@@ -55,7 +55,7 @@ public class Snake extends Application {
 
     private int frame = 0;
 
-    private final boolean AI = true;
+    private final boolean AI = false;
 
     private static Board board;
 
@@ -493,90 +493,325 @@ public class Snake extends Application {
      */
     public static Grid loadSandboxFile(String content) {
         try {
-            Grid tempGrid = new Grid(25, 25, 0, 0);
-            tempGrid.setDiffLevel(0);
-            tempGrid.addGameState(GS);
+            try {
+                Grid tempGrid = new Grid(25, 25, 0, 0);
+                tempGrid.setDiffLevel(0);
+                tempGrid.addGameState(GS);
 
-            Scanner s = new Scanner(content);
+                Scanner s = new Scanner(content);
 
-            s.useDelimiter(" ");
-            int frmSpd = s.nextInt();
-            tempGrid.setFrameSpeed(frmSpd);
-            s.nextLine();
-            int initLen = s.nextInt();
-            tempGrid.setInitialSize(initLen);
-            s.nextLine();
-            int growBy = s.nextInt();
-            tempGrid.setGrowBy(growBy);
-            s.nextLine();
-            boolean edge = s.nextInt() == 1;
-            tempGrid.setEdgeKills(edge);
-            s.nextLine();
-            boolean extrm = s.nextInt() == 1;
-            tempGrid.setExtremeStyleWarp(extrm);
-            s.nextLine();
-            boolean useSame = s.nextInt() == 1;
-            s.nextLine();
-            s.useDelimiter("");
-            String negative = s.next();
-            s.useDelimiter(" ");
-            System.out.println("first char: \"" + negative + "\"");
-            long seed = 0;
-            if (s.hasNextLong()) {
-                seed = s.nextLong();
-            } else {
-                seed = Long.valueOf(negative);
-                seed = -seed;
-                negative = "-";
-            }
-            if (negative.equals("-")) {
-                seed = -seed;
-            } else {
-                seed = Long.valueOf(negative + seed);
-            }
-            tempGrid.setSeed(seed);
-            tempGrid.setUseSameSeed(useSame);
-            s.useDelimiter(" ");
-            s.nextLine();
-            s.nextLine();
-            String temp = s.nextLine();
-            while (temp.contains("*")) {
+                s.useDelimiter(" ");
+                int frmSpd = s.nextInt();
+                tempGrid.setFrameSpeed(frmSpd);
                 s.nextLine();
-                temp = s.nextLine();
-            }
-
-            // begin reading in grid
-            int num = 0;
-            for (int y = 0; y < 25; y++) {
-                for (int x = 0; x < 25; x++) {
-                    try {
-                        num = s.nextInt();
-                    } catch (java.util.NoSuchElementException e) {
-                        System.out.println("Failed to read integer from sandbox");
-                    }
-                    if (num == 1) {
-                        tempGrid.setPos(x, y);
-                        //System.out.println("head at " + x + ", " + y);
-                    }
-                    SANDBOXPLAYAREA[y][x] = num;
+                int initLen = s.nextInt();
+                tempGrid.setInitialSize(initLen);
+                s.nextLine();
+                int growBy = s.nextInt();
+                tempGrid.setGrowBy(growBy);
+                s.nextLine();
+                boolean edge = s.nextInt() == 1;
+                tempGrid.setEdgeKills(edge);
+                s.nextLine();
+                boolean extrm = s.nextInt() == 1;
+                tempGrid.setExtremeStyleWarp(extrm);
+                s.nextLine();
+                boolean useSame = s.nextInt() == 1;
+                s.nextLine();
+                s.useDelimiter("");
+                String negative = s.next();
+                s.useDelimiter(" ");
+                System.out.println("first char: \"" + negative + "\"");
+                long seed = 0;
+                if (s.hasNextLong()) {
+                    seed = s.nextLong();
+                } else {
+                    seed = Long.valueOf(negative);
+                    seed = -seed;
+                    negative = "-";
                 }
+                if (negative.equals("-")) {
+                    seed = -seed;
+                } else {
+                    seed = Long.valueOf(negative + seed);
+                }
+                tempGrid.setSeed(seed);
+                tempGrid.setUseSameSeed(useSame);
+                s.useDelimiter(" ");
                 s.nextLine();
+                s.nextLine();
+                String temp = s.nextLine();
+                while (temp.contains("*")) {
+                    s.nextLine();
+                    temp = s.nextLine();
+                }
+
+                // begin reading in grid
+                int num = 0;
+                for (int y = 0; y < 25; y++) {
+                    for (int x = 0; x < 25; x++) {
+                        try {
+                            num = s.nextInt();
+                        } catch (java.util.NoSuchElementException e) {
+                            System.out.println("Failed to read integer from sandbox");
+                        }
+                        if (num == 1) {
+                            tempGrid.setPos(x, y);
+                            //System.out.println("head at " + x + ", " + y);
+                        }
+                        SANDBOXPLAYAREA[y][x] = num;
+                    }
+                    s.nextLine();
+                }
+                tempGrid.setPlayArea(SANDBOXPLAYAREA.clone());
+                return tempGrid;
+            } catch (NumberFormatException e) {
+                System.out.println("Trouble reading in default sandbox file with content: \"" + content + "\"");
+                Grid errorGrid = new Grid(25, 25, 0, 0);
+                //<editor-fold defaultstate="collapsed" desc="Set up">
+                errorGrid.addGameState(GS);
+                errorGrid.setFrameSpeed(3);
+                errorGrid.setEdgeKills(true);
+                errorGrid.setExtremeStyleWarp(false);
+                errorGrid.setGrowBy(1);
+                errorGrid.setInitialSize(5);
+                errorGrid.setPos(0, 0);
+                errorGrid.setDiffLevel(0);
+                // Auto generated by pressing SHFT + =
+                errorGrid.setCell(0, 9, 3);
+                errorGrid.setCell(1, 9, 3);
+                errorGrid.setCell(2, 9, 3);
+                errorGrid.setCell(3, 9, 3);
+                errorGrid.setCell(5, 9, 3);
+                errorGrid.setCell(6, 9, 3);
+                errorGrid.setCell(7, 9, 3);
+                errorGrid.setCell(10, 9, 3);
+                errorGrid.setCell(11, 9, 3);
+                errorGrid.setCell(12, 9, 3);
+                errorGrid.setCell(16, 9, 3);
+                errorGrid.setCell(17, 9, 3);
+                errorGrid.setCell(20, 9, 3);
+                errorGrid.setCell(21, 9, 3);
+                errorGrid.setCell(22, 9, 3);
+                errorGrid.setCell(0, 10, 3);
+                errorGrid.setCell(5, 10, 3);
+                errorGrid.setCell(8, 10, 3);
+                errorGrid.setCell(10, 10, 3);
+                errorGrid.setCell(13, 10, 3);
+                errorGrid.setCell(15, 10, 3);
+                errorGrid.setCell(18, 10, 3);
+                errorGrid.setCell(20, 10, 3);
+                errorGrid.setCell(23, 10, 3);
+                errorGrid.setCell(0, 11, 3);
+                errorGrid.setCell(1, 11, 3);
+                errorGrid.setCell(2, 11, 3);
+                errorGrid.setCell(5, 11, 3);
+                errorGrid.setCell(6, 11, 3);
+                errorGrid.setCell(7, 11, 3);
+                errorGrid.setCell(10, 11, 3);
+                errorGrid.setCell(11, 11, 3);
+                errorGrid.setCell(12, 11, 3);
+                errorGrid.setCell(15, 11, 3);
+                errorGrid.setCell(18, 11, 3);
+                errorGrid.setCell(20, 11, 3);
+                errorGrid.setCell(21, 11, 3);
+                errorGrid.setCell(22, 11, 3);
+                errorGrid.setCell(0, 12, 3);
+                errorGrid.setCell(5, 12, 3);
+                errorGrid.setCell(7, 12, 3);
+                errorGrid.setCell(10, 12, 3);
+                errorGrid.setCell(12, 12, 3);
+                errorGrid.setCell(15, 12, 3);
+                errorGrid.setCell(18, 12, 3);
+                errorGrid.setCell(20, 12, 3);
+                errorGrid.setCell(22, 12, 3);
+                errorGrid.setCell(0, 13, 3);
+                errorGrid.setCell(1, 13, 3);
+                errorGrid.setCell(2, 13, 3);
+                errorGrid.setCell(3, 13, 3);
+                errorGrid.setCell(5, 13, 3);
+                errorGrid.setCell(8, 13, 3);
+                errorGrid.setCell(10, 13, 3);
+                errorGrid.setCell(13, 13, 3);
+                errorGrid.setCell(16, 13, 3);
+                errorGrid.setCell(17, 13, 3);
+                errorGrid.setCell(20, 13, 3);
+                errorGrid.setCell(23, 13, 3);
+                errorGrid.setCell(3, 17, 3);
+                errorGrid.setCell(4, 17, 3);
+                errorGrid.setCell(5, 17, 3);
+                errorGrid.setCell(6, 17, 3);
+                errorGrid.setCell(10, 17, 3);
+                errorGrid.setCell(11, 17, 3);
+                errorGrid.setCell(12, 17, 3);
+                errorGrid.setCell(13, 17, 3);
+                errorGrid.setCell(14, 17, 3);
+                errorGrid.setCell(17, 17, 3);
+                errorGrid.setCell(18, 17, 3);
+                errorGrid.setCell(19, 17, 3);
+                errorGrid.setCell(20, 17, 3);
+                errorGrid.setCell(3, 18, 3);
+                errorGrid.setCell(7, 18, 3);
+                errorGrid.setCell(12, 18, 3);
+                errorGrid.setCell(17, 18, 3);
+                errorGrid.setCell(21, 18, 3);
+                errorGrid.setCell(3, 19, 3);
+                errorGrid.setCell(7, 19, 3);
+                errorGrid.setCell(12, 19, 3);
+                errorGrid.setCell(17, 19, 3);
+                errorGrid.setCell(21, 19, 3);
+                errorGrid.setCell(3, 20, 3);
+                errorGrid.setCell(4, 20, 3);
+                errorGrid.setCell(5, 20, 3);
+                errorGrid.setCell(6, 20, 3);
+                errorGrid.setCell(12, 20, 3);
+                errorGrid.setCell(17, 20, 3);
+                errorGrid.setCell(18, 20, 3);
+                errorGrid.setCell(19, 20, 3);
+                errorGrid.setCell(20, 20, 3);
+                errorGrid.setCell(3, 21, 3);
+                errorGrid.setCell(6, 21, 3);
+                errorGrid.setCell(12, 21, 3);
+                errorGrid.setCell(17, 21, 3);
+                errorGrid.setCell(3, 22, 3);
+                errorGrid.setCell(7, 22, 3);
+                errorGrid.setCell(12, 22, 3);
+                errorGrid.setCell(17, 22, 3);
+                errorGrid.setCell(3, 23, 3);
+                errorGrid.setCell(7, 23, 3);
+                errorGrid.setCell(10, 23, 3);
+                errorGrid.setCell(11, 23, 3);
+                errorGrid.setCell(12, 23, 3);
+                errorGrid.setCell(13, 23, 3);
+                errorGrid.setCell(14, 23, 3);
+                errorGrid.setCell(17, 23, 3);
+//</editor-fold>
+                return errorGrid;
             }
-            tempGrid.setPlayArea(SANDBOXPLAYAREA.clone());
-            return tempGrid;
         } catch (java.util.InputMismatchException e) {
             System.out.println("Trouble reading in default sandbox file with content: \"" + content + "\"");
-            Grid basicGrid = new Grid(25, 25, 0, 0);
-            basicGrid.addGameState(GS);
-            basicGrid.setFrameSpeed(3);
-            basicGrid.setEdgeKills(true);
-            basicGrid.setExtremeStyleWarp(false);
-            basicGrid.setGrowBy(1);
-            basicGrid.setInitialSize(5);
-            basicGrid.setPos(0, 0);
-            basicGrid.setDiffLevel(0);
-            return basicGrid;
+            Grid errorGrid = new Grid(25, 25, 0, 0);
+            //<editor-fold defaultstate="collapsed" desc="Set up">
+            errorGrid.addGameState(GS);
+            errorGrid.setFrameSpeed(3);
+            errorGrid.setEdgeKills(true);
+            errorGrid.setExtremeStyleWarp(false);
+            errorGrid.setGrowBy(1);
+            errorGrid.setInitialSize(5);
+            errorGrid.setPos(0, 0);
+            errorGrid.setDiffLevel(0);
+            // Auto generated by pressing SHFT + =
+            errorGrid.setCell(0, 9, 3);
+            errorGrid.setCell(1, 9, 3);
+            errorGrid.setCell(2, 9, 3);
+            errorGrid.setCell(3, 9, 3);
+            errorGrid.setCell(5, 9, 3);
+            errorGrid.setCell(6, 9, 3);
+            errorGrid.setCell(7, 9, 3);
+            errorGrid.setCell(10, 9, 3);
+            errorGrid.setCell(11, 9, 3);
+            errorGrid.setCell(12, 9, 3);
+            errorGrid.setCell(16, 9, 3);
+            errorGrid.setCell(17, 9, 3);
+            errorGrid.setCell(20, 9, 3);
+            errorGrid.setCell(21, 9, 3);
+            errorGrid.setCell(22, 9, 3);
+            errorGrid.setCell(0, 10, 3);
+            errorGrid.setCell(5, 10, 3);
+            errorGrid.setCell(8, 10, 3);
+            errorGrid.setCell(10, 10, 3);
+            errorGrid.setCell(13, 10, 3);
+            errorGrid.setCell(15, 10, 3);
+            errorGrid.setCell(18, 10, 3);
+            errorGrid.setCell(20, 10, 3);
+            errorGrid.setCell(23, 10, 3);
+            errorGrid.setCell(0, 11, 3);
+            errorGrid.setCell(1, 11, 3);
+            errorGrid.setCell(2, 11, 3);
+            errorGrid.setCell(5, 11, 3);
+            errorGrid.setCell(6, 11, 3);
+            errorGrid.setCell(7, 11, 3);
+            errorGrid.setCell(10, 11, 3);
+            errorGrid.setCell(11, 11, 3);
+            errorGrid.setCell(12, 11, 3);
+            errorGrid.setCell(15, 11, 3);
+            errorGrid.setCell(18, 11, 3);
+            errorGrid.setCell(20, 11, 3);
+            errorGrid.setCell(21, 11, 3);
+            errorGrid.setCell(22, 11, 3);
+            errorGrid.setCell(0, 12, 3);
+            errorGrid.setCell(5, 12, 3);
+            errorGrid.setCell(7, 12, 3);
+            errorGrid.setCell(10, 12, 3);
+            errorGrid.setCell(12, 12, 3);
+            errorGrid.setCell(15, 12, 3);
+            errorGrid.setCell(18, 12, 3);
+            errorGrid.setCell(20, 12, 3);
+            errorGrid.setCell(22, 12, 3);
+            errorGrid.setCell(0, 13, 3);
+            errorGrid.setCell(1, 13, 3);
+            errorGrid.setCell(2, 13, 3);
+            errorGrid.setCell(3, 13, 3);
+            errorGrid.setCell(5, 13, 3);
+            errorGrid.setCell(8, 13, 3);
+            errorGrid.setCell(10, 13, 3);
+            errorGrid.setCell(13, 13, 3);
+            errorGrid.setCell(16, 13, 3);
+            errorGrid.setCell(17, 13, 3);
+            errorGrid.setCell(20, 13, 3);
+            errorGrid.setCell(23, 13, 3);
+            errorGrid.setCell(3, 17, 3);
+            errorGrid.setCell(4, 17, 3);
+            errorGrid.setCell(5, 17, 3);
+            errorGrid.setCell(6, 17, 3);
+            errorGrid.setCell(10, 17, 3);
+            errorGrid.setCell(11, 17, 3);
+            errorGrid.setCell(12, 17, 3);
+            errorGrid.setCell(13, 17, 3);
+            errorGrid.setCell(14, 17, 3);
+            errorGrid.setCell(17, 17, 3);
+            errorGrid.setCell(18, 17, 3);
+            errorGrid.setCell(19, 17, 3);
+            errorGrid.setCell(20, 17, 3);
+            errorGrid.setCell(3, 18, 3);
+            errorGrid.setCell(7, 18, 3);
+            errorGrid.setCell(12, 18, 3);
+            errorGrid.setCell(17, 18, 3);
+            errorGrid.setCell(21, 18, 3);
+            errorGrid.setCell(3, 19, 3);
+            errorGrid.setCell(7, 19, 3);
+            errorGrid.setCell(12, 19, 3);
+            errorGrid.setCell(17, 19, 3);
+            errorGrid.setCell(21, 19, 3);
+            errorGrid.setCell(3, 20, 3);
+            errorGrid.setCell(4, 20, 3);
+            errorGrid.setCell(5, 20, 3);
+            errorGrid.setCell(6, 20, 3);
+            errorGrid.setCell(12, 20, 3);
+            errorGrid.setCell(17, 20, 3);
+            errorGrid.setCell(18, 20, 3);
+            errorGrid.setCell(19, 20, 3);
+            errorGrid.setCell(20, 20, 3);
+            errorGrid.setCell(3, 21, 3);
+            errorGrid.setCell(6, 21, 3);
+            errorGrid.setCell(12, 21, 3);
+            errorGrid.setCell(17, 21, 3);
+            errorGrid.setCell(3, 22, 3);
+            errorGrid.setCell(7, 22, 3);
+            errorGrid.setCell(12, 22, 3);
+            errorGrid.setCell(17, 22, 3);
+            errorGrid.setCell(3, 23, 3);
+            errorGrid.setCell(7, 23, 3);
+            errorGrid.setCell(10, 23, 3);
+            errorGrid.setCell(11, 23, 3);
+            errorGrid.setCell(12, 23, 3);
+            errorGrid.setCell(13, 23, 3);
+            errorGrid.setCell(14, 23, 3);
+            errorGrid.setCell(17, 23, 3);
+//</editor-fold>
+            return errorGrid;
         }
+
     }
 
     /**
