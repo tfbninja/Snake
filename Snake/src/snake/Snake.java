@@ -55,7 +55,7 @@ public class Snake extends Application {
 
     private int frame = 0;
 
-    private final boolean AI = false;
+    private static boolean AI = false;
 
     private static Board board;
 
@@ -978,77 +978,25 @@ public class Snake extends Application {
      */
     public static void AI() {
         if (GS.isGame()) {
+            Grid grid = board.getGrid();
             int direction = board.getGrid().getDirection();
-            int randomizer = 0;
             int x = board.getGrid().getHeadX(), y = board.getGrid().getHeadY();
-            /*
-             * int[] nextPos = board.getGrid().nextPos();
-             * int[] applePos = board.getGrid().getApplePos();
-             * if (Math.abs(applePos[0] - x) > 0 && randomizer < 5) {
-             * // apple is not in same column
-             * if (applePos[0] < x) {
-             * board.getGrid().attemptSetDirection(4);
-             * } else {
-             * board.getGrid().attemptSetDirection(2);
-             * }
-             * randomizer++;
-             * } else if (Math.abs(applePos[1] - y) > 0 && randomizer < 10) {
-             * // apple is in same column but not same row
-             * if (applePos[1] < y) {
-             * board.getGrid().attemptSetDirection(1);
-             * } else {
-             * board.getGrid().attemptSetDirection(3);
-             * }
-             * } else {
-             * randomizer = 0;
-             * board.getGrid().attemptSetDirection(board.getGrid().getDirection());
-             * // there is no apple -- it's probably being re-positioned
-             * }
-             * if ((x < 1 && direction == 4 || y < 1 && direction == 1) &&
-             * board.getGrid().getEdgeKills()) {
-             * board.getGrid().turnRight();
-             * } else if ((x > board.getGrid().getWidth() - 2 && direction == 2
-             * || y > board.getGrid().getLength() - 2 && direction == 3) &&
-             * board.getGrid().getEdgeKills()) {
-             * board.getGrid().turnLeft();
-             * }
-             *
-             * // update nextPos with new direction
-             * nextPos = board.getGrid().nextPos();
-             * // value of the square in front of the snake
-             * int nextSquare = board.getGrid().safeCheck(nextPos[0],
-             * nextPos[1]);
-             * // if the square in front is not empty or an apple...
-             * if (nextSquare != 3 && nextSquare > 0) {
-             * int left = board.getGrid().getEast();
-             * int right = board.getGrid().getWest();
-             * int top = board.getGrid().getNorth();
-             * int bottom = board.getGrid().getSouth();
-             * // choose the first free direction
-             * if (top == 0 || top == 3) {
-             * board.getGrid().attemptSetDirection(1);
-             * } else if (right == 0 || right == 3) {
-             * board.getGrid().attemptSetDirection(2);
-             * } else if (left == 0 || left == 3) {
-             * board.getGrid().attemptSetDirection(4);
-             * } else if (bottom > 0 && bottom != 3) {
-             * board.getGrid().attemptSetDirection(3);
-             * } else {
-             * // completely surrounded, nothing can be done
-             * }
-             * }
-             */
-            if (x <= 0 && direction == 4) {
-                board.getGrid().attemptSetDirection(3);
-            } else if (x >= board.getGrid().getWidth() - 1 && direction == 2) {
-                board.getGrid().attemptSetDirection(3);
-            } else if (direction == 3) {
-                if (x == 0) {
-                    board.getGrid().attemptSetDirection(2);
-                } else {
-                    board.getGrid().attemptSetDirection(4);
-                }
+            int left = board.getGrid().getLeft(), right = board.getGrid().getRight(), front = board.getGrid().getFront();
+            System.out.println("Left: " + left + ", right: " + right + ", front: " + front + ", dir: " + direction);
+            if ((grid.willKill(left)) && !grid.willKill(front) && y != 0) {
+                return;
+            } else if (grid.willKill(left) && grid.willKill(front)) {
+                System.out.println("turning right");
+                grid.turnRight();
+                return;
+            } else if (grid.willKill(front) && grid.willKill(right)) {
+                System.out.println("turning left");
+                grid.turnLeft();
+                return;
+            } else if (!grid.willKill(left)) {
+                return;
             }
+            grid.turnRight();
         } else {
             // game is not in session
         }
@@ -1116,6 +1064,10 @@ public class Snake extends Application {
             return false;
         }
         return true;
+    }
+
+    public static void toggleAI() {
+        AI = !AI;
     }
 
     /**

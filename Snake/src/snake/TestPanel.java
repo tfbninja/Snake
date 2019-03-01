@@ -394,6 +394,8 @@ public class TestPanel extends javax.swing.JPanel {
      * @param index
      */
     public void setCurrentTool(int index) {
+        raiseAllButtons();
+        buttons.get(index).setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         switch (index) {
             case 0:
                 toolNum = 0;
@@ -412,10 +414,9 @@ public class TestPanel extends javax.swing.JPanel {
                 break;
         }
 
-        raiseAllButtons();
-        buttons.get(index).setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         //System.out.println("Color: " + colorScheme[index]);
         currentBox.setBackground(Color.decode("0x" + colorScheme[index]));
+        raiseAllButtons();
     }
 
     /**

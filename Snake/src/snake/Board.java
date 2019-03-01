@@ -456,6 +456,9 @@ public class Board {
         if (this.lost && (MM.getCurrent() == 3 || MM.getCurrent() == 4) && (e.getCode() == KeyCode.R || e.getCode() == KeyCode.SPACE)) {
             reset();
         }
+        if (e.getCode() == KeyCode.A && e.isShiftDown()) {
+            Snake.toggleAI();
+        }
         if (GS.isGame() && keyPresses > 1) {
             if (null != e.getCode()) {
                 switch (e.getCode()) {
