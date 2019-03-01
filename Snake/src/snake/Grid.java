@@ -68,6 +68,7 @@ public final class Grid implements squares {
     private final String RRNAME = "resources/sounds/RR.mp3";
 
     private boolean extremeWarp = false;
+    private boolean won = false;
 //</editor-fold>
 
     /*
@@ -458,6 +459,7 @@ public final class Grid implements squares {
      */
     public void reset() {
         direction = 0;
+        won = false;
         tempDir = 0;
         if (this.useSameSeedOnReset) {
             random.setSeed(seed);
@@ -1088,6 +1090,10 @@ public final class Grid implements squares {
         GS.setToPostGame();
     }
 
+    public void won() {
+        won = true;
+    }
+
     /**
      *
      */
@@ -1100,10 +1106,12 @@ public final class Grid implements squares {
 
     public void die() {
         random.setSeed(LocalDateTime.now().getNano());
-        if (random.nextInt((int) (1.0 / RRPROB)) == random.nextInt((int) (1 / RRPROB))) {
-            new Sound(RRNAME).play();
+        if (!won) {
+            if (random.nextInt((int) (1.0 / RRPROB)) == random.nextInt((int) (1 / RRPROB))) {
+                new Sound(RRNAME).play();
+            }
+            pick(loseSounds).play();
         }
-        pick(loseSounds).play();
         random.setSeed(seed);
     }
 
