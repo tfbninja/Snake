@@ -195,8 +195,8 @@ public class TestPanel extends javax.swing.JPanel {
 
         setBackground(new java.awt.Color(238, 238, 238));
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        setMinimumSize(new java.awt.Dimension(290, 480));
-        setPreferredSize(new java.awt.Dimension(290, 480));
+        setMinimumSize(new java.awt.Dimension(290, 460));
+        setPreferredSize(new java.awt.Dimension(290, 460));
 
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(20, 20, 20));
@@ -478,9 +478,9 @@ public class TestPanel extends javax.swing.JPanel {
                     .addComponent(portalButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(edgeKillsBox)
-                        .addGap(7, 7, 7)
+                        .addGap(4, 4, 4)
                         .addComponent(warpModeBox)))
-                .addGap(66, 66, 66)
+                .addGap(60, 60, 60)
                 .addComponent(saveLabel)
                 .addGap(6, 6, 6)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
