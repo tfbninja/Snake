@@ -1094,6 +1094,59 @@ public final class Grid implements squares {
         won = true;
     }
 
+    public boolean willKill(int xPos, int yPos) {
+        return safeCheck(xPos, yPos) != 0 && safeCheck(xPos, yPos) != 3;
+    }
+
+    public boolean willKill(int type) {
+        return type != 0 && type != 3;
+    }
+
+    public int getLeft() {
+        int x = this.pos.get(0).getKey();
+        int y = this.pos.get(0).getValue();
+        switch (direction) {
+            case 2:
+                return safeCheck(x, y - 1);
+            case 3:
+                return safeCheck(x + 1, y);
+            case 4:
+                return safeCheck(x, y + 1);
+            default:
+                return safeCheck(x - 1, y);
+        }
+    }
+
+    public int getRight() {
+        int x = this.pos.get(0).getKey();
+        int y = this.pos.get(0).getValue();
+        switch (direction) {
+            case 2:
+                return safeCheck(x, y + 1);
+            case 3:
+                return safeCheck(x - 1, y);
+            case 4:
+                return safeCheck(x, y - 1);
+            default:
+                return safeCheck(x + 1, y);
+        }
+    }
+
+    public int getFront() {
+        int x = this.pos.get(0).getKey();
+        int y = this.pos.get(0).getValue();
+        switch (direction) {
+            case 2:
+                return safeCheck(x + 1, y);
+            case 3:
+                return safeCheck(x, y + 1);
+            case 4:
+                return safeCheck(x - 1, y);
+            default:
+                return safeCheck(x, y - 1);
+        }
+    }
+
     /**
      *
      */

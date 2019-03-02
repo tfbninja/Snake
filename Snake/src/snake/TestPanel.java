@@ -197,14 +197,12 @@ public class TestPanel extends javax.swing.JPanel {
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setMinimumSize(new java.awt.Dimension(290, 480));
         setPreferredSize(new java.awt.Dimension(290, 480));
-        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(20, 20, 20));
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("TOOLBOX");
         jLabel2.setToolTipText("");
-        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 290, 40));
 
         blankButton.setText("Blank");
         blankButton.setActionCommand("");
@@ -217,7 +215,6 @@ public class TestPanel extends javax.swing.JPanel {
                 blankButtonActionPerformed(evt);
             }
         });
-        add(blankButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, -1, -1));
 
         headButton.setText("Head");
         headButton.setActionCommand("");
@@ -230,7 +227,6 @@ public class TestPanel extends javax.swing.JPanel {
                 headButtonActionPerformed(evt);
             }
         });
-        add(headButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, -1, -1));
 
         appleButton.setText("Apple");
         appleButton.setActionCommand("");
@@ -243,7 +239,6 @@ public class TestPanel extends javax.swing.JPanel {
                 appleButtonActionPerformed(evt);
             }
         });
-        add(appleButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, -1, -1));
 
         rockButton.setText("Rock");
         rockButton.setActionCommand("");
@@ -256,7 +251,6 @@ public class TestPanel extends javax.swing.JPanel {
                 rockButtonActionPerformed(evt);
             }
         });
-        add(rockButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 230, -1, -1));
 
         portalButton.setText("Portal");
         portalButton.setActionCommand("");
@@ -269,7 +263,6 @@ public class TestPanel extends javax.swing.JPanel {
                 portalButtonActionPerformed(evt);
             }
         });
-        add(portalButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, -1, -1));
 
         saveButton.setText("SAVE");
         saveButton.setToolTipText("Save the current sandbox file");
@@ -278,7 +271,6 @@ public class TestPanel extends javax.swing.JPanel {
                 saveButtonActionPerformed(evt);
             }
         });
-        add(saveButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 431, -1, -1));
 
         loadButton.setText("LOAD");
         loadButton.setToolTipText("Load a new sandbox file");
@@ -287,7 +279,6 @@ public class TestPanel extends javax.swing.JPanel {
                 loadButtonActionPerformed(evt);
             }
         });
-        add(loadButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(212, 431, -1, -1));
 
         clearButton.setText("CLEAR");
         clearButton.setToolTipText("Clear the grid");
@@ -296,7 +287,6 @@ public class TestPanel extends javax.swing.JPanel {
                 clearButtonActionPerformed(evt);
             }
         });
-        add(clearButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(107, 431, -1, -1));
 
         keepSeedBox.setText("Keep seed");
         keepSeedBox.setSelected(grid.getUseSameSeed());
@@ -305,7 +295,6 @@ public class TestPanel extends javax.swing.JPanel {
                 keepSeedBoxActionPerformed(evt);
             }
         });
-        add(keepSeedBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 257, -1, -1));
 
         sizeIncrementSpinner.setModel(new javax.swing.SpinnerNumberModel(1, null, null, 1));
         sizeIncrementSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -313,13 +302,10 @@ public class TestPanel extends javax.swing.JPanel {
                 sizeIncrementSpinnerStateChanged(evt);
             }
         });
-        add(sizeIncrementSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 200, 69, -1));
 
         sizeLabel.setText("Size increment");
-        add(sizeLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 200, -1, -1));
 
         initLengthLabel.setText("Initial length");
-        add(initLengthLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 230, -1, -1));
 
         warpModeBox.setText("Extreme warp");
         warpModeBox.addActionListener(new java.awt.event.ActionListener() {
@@ -327,7 +313,6 @@ public class TestPanel extends javax.swing.JPanel {
                 warpModeBoxActionPerformed(evt);
             }
         });
-        add(warpModeBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 320, -1, -1));
 
         initLengthSpinner.setModel(new javax.swing.SpinnerNumberModel(5, 1, null, 1));
         initLengthSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -335,10 +320,8 @@ public class TestPanel extends javax.swing.JPanel {
                 initLengthSpinnerStateChanged(evt);
             }
         });
-        add(initLengthSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 230, 69, -1));
 
         frameDelayLabel.setText("Frame delay");
-        add(frameDelayLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 170, -1, -1));
 
         saveLabel.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         saveLabel.setForeground(new java.awt.Color(72, 191, 58));
@@ -346,7 +329,6 @@ public class TestPanel extends javax.swing.JPanel {
         saveLabel.setText("SAVED");
         saveLabel.setFocusable(false);
         saveLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        add(saveLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 409, 63, -1));
 
         currentBox.setEnabled(false);
         currentBox.setMinimumSize(new java.awt.Dimension(55, 55));
@@ -355,19 +337,13 @@ public class TestPanel extends javax.swing.JPanel {
                 currentBoxActionPerformed(evt);
             }
         });
-        add(currentBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(219, 37, 55, 55));
 
         currentLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         currentLabel.setText("Current");
-        add(currentLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(216, 100, 60, -1));
 
         frameSpeedSpinner.setModel(new javax.swing.SpinnerNumberModel(3, 1, 30, 1));
-        add(frameSpeedSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 170, 69, -1));
-        add(filler1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 260, -1, -1));
-        add(filler2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 260, -1, -1));
 
         seedLabel.setText("Seed");
-        add(seedLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 140, -1, -1));
 
         seedSpinner.setModel(new javax.swing.SpinnerNumberModel(0L, null, null, 1L));
         seedSpinner.setValue((long) grid.getSeed());
@@ -376,7 +352,6 @@ public class TestPanel extends javax.swing.JPanel {
                 seedSpinnerPropertyChange(evt);
             }
         });
-        add(seedSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 140, 69, -1));
 
         edgeKillsBox.setText("Edge kills");
         edgeKillsBox.addActionListener(new java.awt.event.ActionListener() {
@@ -384,7 +359,135 @@ public class TestPanel extends javax.swing.JPanel {
                 edgeKillsBoxActionPerformed(evt);
             }
         });
-        add(edgeKillsBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 290, -1, -1));
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(219, 219, 219)
+                .addComponent(currentBox, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addComponent(blankButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addComponent(headButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(10, 10, 10)
+                .addComponent(seedSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(11, 11, 11)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(16, 16, 16)
+                        .addComponent(currentLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(seedLabel)))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addComponent(appleButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(10, 10, 10)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(frameSpeedSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(sizeIncrementSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(11, 11, 11)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(frameDelayLabel)
+                    .addComponent(sizeLabel)))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(80, 80, 80)
+                        .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(rockButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(50, 50, 50)
+                        .addComponent(filler2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(10, 10, 10)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(initLengthSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(keepSeedBox))
+                .addGap(3, 3, 3)
+                .addComponent(initLengthLabel))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addComponent(portalButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(10, 10, 10)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(edgeKillsBox)
+                    .addComponent(warpModeBox)))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(12, 12, 12)
+                .addComponent(saveLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(12, 12, 12)
+                .addComponent(saveButton)
+                .addGap(32, 32, 32)
+                .addComponent(clearButton)
+                .addGap(37, 37, 37)
+                .addComponent(loadButton))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(37, 37, 37)
+                        .addComponent(currentBox, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(50, 50, 50)
+                        .addComponent(blankButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(headButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(40, 40, 40)
+                        .addComponent(seedSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(currentLabel)
+                        .addGap(25, 25, 25)
+                        .addComponent(seedLabel)))
+                .addGap(10, 10, 10)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(appleButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(frameSpeedSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(10, 10, 10)
+                        .addComponent(sizeIncrementSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(frameDelayLabel)
+                        .addGap(15, 15, 15)
+                        .addComponent(sizeLabel)))
+                .addGap(10, 10, 10)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(rockButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(initLengthSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(7, 7, 7)
+                        .addComponent(keepSeedBox))
+                    .addComponent(initLengthLabel)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(30, 30, 30)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(filler2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(10, 10, 10)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(portalButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(edgeKillsBox)
+                        .addGap(7, 7, 7)
+                        .addComponent(warpModeBox)))
+                .addGap(66, 66, 66)
+                .addComponent(saveLabel)
+                .addGap(6, 6, 6)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(saveButton)
+                    .addComponent(clearButton)
+                    .addComponent(loadButton)))
+        );
 
         getAccessibleContext().setAccessibleDescription("");
     }// </editor-fold>//GEN-END:initComponents
