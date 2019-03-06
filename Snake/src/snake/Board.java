@@ -72,7 +72,7 @@ public class Board {
     private boolean sandboxExists = false;
     private int[][] sandbox;
 
-    private TestPanel testPanel;
+    private ToolPanel toolPanel;
     private final Stage primaryStage;
     private JFrame toolFrame;
 //</editor-fold>
@@ -110,7 +110,7 @@ public class Board {
         bg = "212121";
         rock = "1e1e1e";
         applesEaten = "EDDDD4";
-        testPanel.updateButtonColors(getColorScheme());
+        toolPanel.updateButtonColors(getColorScheme());
     }
 
     /**
@@ -133,7 +133,7 @@ public class Board {
         bg = "ceceb5";
         rock = "53585e";
         applesEaten = "750BE0";
-        testPanel.updateButtonColors(getColorScheme());
+        toolPanel.updateButtonColors(getColorScheme());
     }
 
     /**
@@ -337,12 +337,12 @@ public class Board {
      * @param playArea
      */
     /*
-    public void setSandbox(int[][] playArea) {
-        sandboxExists = true;
-        sandbox = playArea;
-        grid.setSandbox(playArea);
-    }
-
+     * public void setSandbox(int[][] playArea) {
+     * sandboxExists = true;
+     * sandbox = playArea;
+     * grid.setSandbox(playArea);
+     * }
+     *
      */
     /**
      *
@@ -370,19 +370,19 @@ public class Board {
             if (null != e.getCode()) {
                 switch (e.getCode()) {
                     case DIGIT0:
-                        testPanel.setCurrentTool(0);
+                        toolPanel.setCurrentTool(0);
                         break;
                     case DIGIT1:
-                        testPanel.setCurrentTool(1);
+                        toolPanel.setCurrentTool(1);
                         break;
                     case DIGIT2:
-                        testPanel.setCurrentTool(2);
+                        toolPanel.setCurrentTool(2);
                         break;
                     case DIGIT3:
-                        testPanel.setCurrentTool(3);
+                        toolPanel.setCurrentTool(3);
                         break;
                     case DIGIT4:
-                        testPanel.setCurrentTool(4);
+                        toolPanel.setCurrentTool(4);
                         break;
                     default:
                         break;
@@ -415,9 +415,9 @@ public class Board {
                 Snake.initSandboxFile();
                 toolFrame.setVisible(true);
                 toolFrame.requestFocus(); // bring this to front
-                testPanel.setCurrentTool(0);
-                testPanel.setGrid(grid);
-                testPanel.updateControls();
+                toolPanel.setCurrentTool(0);
+                toolPanel.setGrid(grid);
+                toolPanel.updateControls();
                 primaryStage.requestFocus(); // but we want this one in focus still
                 MM.setCurrent(4);
                 GS.setToPreGame();
@@ -578,8 +578,8 @@ public class Board {
      *
      * @param panel
      */
-    public void addTestPanel(TestPanel panel) {
-        testPanel = panel;
+    public void addToolPanel(ToolPanel panel) {
+        toolPanel = panel;
     }
 
     /**
@@ -628,7 +628,7 @@ public class Board {
             // sandbox mode editing
             if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0 && xVal >= 0 && xVal < grid.getWidth() && yVal >= 0 && yVal < grid.getLength()) {
 
-                int tool = testPanel.getCurrentTool();
+                int tool = toolPanel.getCurrentTool();
 
                 switch (tool) {
                     case 4:
@@ -672,8 +672,8 @@ public class Board {
 
             // sandbox mode editing
             if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0 && xVal >= 0 && xVal < grid.getWidth() && yVal >= 0 && yVal < grid.getLength()) {
-                int tool = testPanel.getCurrentTool();
-                testPanel.hideSaved();
+                int tool = toolPanel.getCurrentTool();
+                toolPanel.hideSaved();
                 switch (tool) {
                     case 1:
                         // tell the grid where the head is

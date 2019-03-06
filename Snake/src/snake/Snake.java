@@ -23,7 +23,6 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -39,7 +38,6 @@ import javax.imageio.ImageIO;
 public class Snake extends Application {
 
     //<editor-fold defaultstate="collapsed" desc="instance vars">
-// primary game window
     private final int canvasMargin = 10;
     private final int canvasW = 430;
     private final int canvasH = 430;
@@ -49,7 +47,7 @@ public class Snake extends Application {
     // secondary sandbox tool window
     private final int TOOLWIDTH = 200;
     private final int TOOLHEIGHT = 450;
-    private TestPanel testPanel;
+    private ToolPanel toolPanel;
     private JFrame toolboxFrame;
 
     private int frame = 0;
@@ -143,15 +141,15 @@ public class Snake extends Application {
         }
 
         /*
-         * Initialize the 'testPanel,' a separate AWT container containing
+         * Initialize the 'toolPanel,' a separate AWT container containing
          * controls for manipulating the Grid object with a GUI in sandbox mode
          */
-        testPanel = new TestPanel(board.getColorScheme(), board.getGrid(), MM, board, GS, (int) primaryStage.getX() - 290, (int) primaryStage.getY());
+        toolPanel = new ToolPanel(board.getColorScheme(), board.getGrid(), MM, board, GS, (int) primaryStage.getX() - 290, (int) primaryStage.getY());
 
         // The toolboxFrame is the actual window housing the AWT panel
         toolboxFrame = new JFrame("Toolbox");
         toolboxFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        toolboxFrame.getContentPane().add(testPanel);
+        toolboxFrame.getContentPane().add(toolPanel);
         toolboxFrame.pack();
         toolboxFrame.setVisible(false);
 
@@ -160,7 +158,7 @@ public class Snake extends Application {
          * keystrokes which start the different difficulty levels
          */
         board.addToolFrame(toolboxFrame);
-        board.addTestPanel(testPanel);
+        board.addToolPanel(toolPanel);
 
         if (nightMode) {
             board.setDarkMode();
@@ -240,7 +238,7 @@ public class Snake extends Application {
         });
 
         primaryStage.show();
-        toolboxFrame.setLocation((int) primaryStage.getX() - testPanel.getWidth() - 20, (int) primaryStage.getY());
+        toolboxFrame.setLocation((int) primaryStage.getX() - toolPanel.getWidth() - 20, (int) primaryStage.getY());
         toolboxFrame.setVisible(false);
 //</editor-fold>
 
@@ -248,9 +246,9 @@ public class Snake extends Application {
         new AnimationTimer() {
             @Override
             public void handle(long now) {
-                if (testPanel.isVisible()) { // only if we are using the testPanel
-                    // Set all the grid settings accessed by the testPanel to their corresponding values, and repaint the testPanel
-                    testPanel.update();
+                if (toolPanel.isVisible()) { // only if we are using the toolPanel
+                    // Set all the grid settings accessed by the toolPanel to their corresponding values, and repaint the toolPanel
+                    toolPanel.update();
                 }
 
                 if (!pause) {
@@ -378,8 +376,8 @@ public class Snake extends Application {
                                 board.getGrid().removeAll(1);
                                 board.getGrid().removeAll(2);
                                 board.getGrid().setPos(headPos2[0], headPos2[1]);
-                                board.getGrid().setGrowBy(testPanel.getGrowBy());
-                                board.getGrid().setEdgeKills(testPanel.getEdgeKills());
+                                board.getGrid().setGrowBy(toolPanel.getGrowBy());
+                                board.getGrid().setEdgeKills(toolPanel.getEdgeKills());
                                 //System.out.println("Setting to sandbox play area from snake");
                                 board.setToSandboxPlayArea();
                                 //System.out.println("Set to sandbox play area from snake");
@@ -596,6 +594,9 @@ public class Snake extends Application {
         s += " *\n * Square types:\n * 0 - blank\n * 1 - head (only one of these)\n * 2 - body\n * 3 - Apple\n * 4 - Rock\n * 5 - Invisible\n * 10 and higher - portals (no more than and no less than 2 of each type of portal)\n *\n\n";
         for (int[] y : playArea) {
             for (int x : y) {
+                if (x == 2) {
+                    x = 0;
+                }
                 s += x + " ";
             }
             s += "\n";
