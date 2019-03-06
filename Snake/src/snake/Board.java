@@ -17,7 +17,7 @@ import javafx.scene.text.Font;
 
 /**
  *
- * @author Timothy
+ * @author Tim Barber
  */
 public class Board {
 

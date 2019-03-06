@@ -51,7 +51,10 @@ public abstract class squares {
     }
 
     /**
+     * This is not usually the best approach, please Override
      *
+     * @param xPos The column number
+     * @param yPos The row number
      * @return the int stored in the grid at (xPos, yPos). If xPos or yPos is
      * out of bounds, returns -1
      */
@@ -75,6 +78,9 @@ public abstract class squares {
 
     /**
      *
+     * @param x The column number
+     * @param y The row number
+     * @param type Which neighbors should be counted
      * @see getNeighbors(int x, int y, int type, int radius);
      * @return same as getNeighbors(int x, int y, int type, int radius), but
      * with implied radius 1

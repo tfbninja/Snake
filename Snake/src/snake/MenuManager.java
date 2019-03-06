@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author Timothy
+ * @author Tim Barber
  */
 public class MenuManager {
 

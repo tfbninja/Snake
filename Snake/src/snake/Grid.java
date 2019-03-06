@@ -337,11 +337,6 @@ public final class Grid extends squares {
         pos.add(sandboxPos);
     }
 
-    @Override
-    public int[][] getPlayArea() {
-        return this.playArea;
-    }
-
     /**
      *
      * @return
@@ -808,30 +803,6 @@ public final class Grid extends squares {
         while (pos.size() > snakeSize) {
             this.setCell(this.pos.remove(this.pos.size() - 1), 0);
         }
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getWidth() {
-        return this.width;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getLength() {
-        return this.length;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public void setLength(int length) {
-        this.length = length;
     }
 
     /**

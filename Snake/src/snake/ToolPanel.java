@@ -13,9 +13,9 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
+ * V2.0
  *
  * @author Tim Barber
- * V 2.0
  */
 public class ToolPanel extends javax.swing.JPanel {
 
