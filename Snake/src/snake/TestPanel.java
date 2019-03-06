@@ -16,7 +16,7 @@ import javax.swing.JButton;
  * @author Tim Barber
  */
 public class TestPanel extends javax.swing.JPanel {
-
+    
     private JTextField filename = new JTextField();
     private JTextField dir = new JTextField();
     private int toolNum = 0;
@@ -40,6 +40,7 @@ public class TestPanel extends javax.swing.JPanel {
     public TestPanel(String[] colorScheme, Grid grid, MenuManager mm, Board b, GameState gs, int x, int y) {
         this.grid = grid;
         initComponents();
+        updateControls();
         GS = gs;
         buttons.add(blankButton);
         buttons.add(headButton);
@@ -63,7 +64,18 @@ public class TestPanel extends javax.swing.JPanel {
         board = b;
         saveLabel.setVisible(false);
     }
-
+    
+    /**
+     *
+     * @param grid
+     */
+    public void setGrid(Grid grid) {
+        this.grid = grid;
+    }
+    
+    /**
+     *
+     */
     public void raiseAllButtons() {
         buttons.forEach((jb) -> {
             jb.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -308,6 +320,7 @@ public class TestPanel extends javax.swing.JPanel {
         initLengthLabel.setText("Initial length");
 
         warpModeBox.setText("Extreme warp");
+        warpModeBox.setSelected(grid.getExtremeWarp());
         warpModeBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 warpModeBoxActionPerformed(evt);
@@ -354,6 +367,7 @@ public class TestPanel extends javax.swing.JPanel {
         });
 
         edgeKillsBox.setText("Edge kills");
+        edgeKillsBox.setSelected(grid.getEdgeKills());
         edgeKillsBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 edgeKillsBoxActionPerformed(evt);
@@ -514,7 +528,7 @@ public class TestPanel extends javax.swing.JPanel {
                 toolNum = 5;
                 break;
         }
-
+        
         raiseAllButtons();
         buttons.get(index).setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         //System.out.println("Color: " + colorScheme[index]);
@@ -552,7 +566,7 @@ public class TestPanel extends javax.swing.JPanel {
     public boolean getEdgeKills() {
         return this.keepSeedBox.isSelected();
     }
-
+    
 
     private void headButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_headButtonActionPerformed
         // TODO add your handling code here:
@@ -570,12 +584,12 @@ public class TestPanel extends javax.swing.JPanel {
         saveButton.setContentAreaFilled(false);
         JFileChooser fChooser = new JFileChooser();
         fChooser.setFileFilter(new FileFilter() {
-
+            
             @Override
             public boolean accept(File f) {
                 return f.isDirectory() || f.getName().toLowerCase().endsWith(".sandbox");
             }
-
+            
             @Override
             public String getDescription() {
                 return "Sandbox file";
@@ -659,6 +673,7 @@ public class TestPanel extends javax.swing.JPanel {
         edgeKillsBox.setSelected(grid.getEdgeKills());
         this.initLengthSpinner.setValue(grid.getInitialLength());
         this.sizeIncrementSpinner.setValue(grid.getGrowBy());
+        this.warpModeBox.setSelected(grid.getExtremeWarp());
         frameSpeedSpinner.setValue(grid.getFrameSpeed());
         keepSeedBox.setSelected(grid.getUseSameSeed());
         seedSpinner.setValue((long) grid.getSeed());
@@ -723,7 +738,7 @@ public class TestPanel extends javax.swing.JPanel {
         grid.setSeed(WIDTH);
         grid.setUseSameSeed(keepSeedBox.isSelected());
     }//GEN-LAST:event_seedSpinnerPropertyChange
-
+    
     private final java.util.ArrayList<JButton> buttons = new java.util.ArrayList<>();
     private final java.util.ArrayList<javax.swing.JComponent> components = new java.util.ArrayList<>();
     // Variables declaration - do not modify//GEN-BEGIN:variables

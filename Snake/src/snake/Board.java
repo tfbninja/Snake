@@ -416,8 +416,9 @@ public class Board {
                 toolFrame.setVisible(true);
                 toolFrame.requestFocus(); // bring this to front
                 testPanel.setCurrentTool(0);
+                testPanel.setGrid(grid);
+                testPanel.updateControls();
                 primaryStage.requestFocus(); // but we want this one in focus still
-                this.grid.setDiffLevel(0);
                 MM.setCurrent(4);
                 GS.setToPreGame();
                 drawBlocks();

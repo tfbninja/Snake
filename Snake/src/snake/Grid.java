@@ -34,8 +34,8 @@ public final class Grid implements squares {
 
     private boolean edgeKills = false;
 
-    private Random random = new Random();
-    private long seed = 0;
+    private Random random = new Random(LocalDateTime.now().getNano());
+    private long seed = random.nextLong();
     private boolean useSameSeedOnReset = false;
     private int diffLevel = 1;
     private int minDiffLevel = 0;
@@ -104,6 +104,10 @@ public final class Grid implements squares {
         this.bite = new Sound("resources/sounds/bite2.wav");
     }
 
+    /**
+     *
+     * @param s
+     */
     public void setSeed(long s) {
         seed = s;
         this.useSameSeedOnReset = true;
@@ -112,10 +116,16 @@ public final class Grid implements squares {
         }
     }
 
+    /**
+     *
+     */
     public void useSameSeedOnReset() {
         this.useSameSeedOnReset = true;
     }
 
+    /**
+     *
+     */
     public void dontUseSameSeedOnReset() {
         this.useSameSeedOnReset = false;
     }
@@ -161,7 +171,7 @@ public final class Grid implements squares {
 
     /**
      *
-     * @param amt The number of frames that should be shown per update cycle
+     * @param amt The number of frames that should be between every update cycle
      */
     public void setFrameSpeed(int amt) {
         this.frameSpeeds[0] = amt;
@@ -169,7 +179,7 @@ public final class Grid implements squares {
 
     /**
      *
-     * @param amt The number of frames that should be shown per update cycle
+     * @param amt The number of frames that should be between every update cycle
      * @param level The difficulty level to change
      */
     public void setFrameSpeed(int amt, int level) {
@@ -199,6 +209,7 @@ public final class Grid implements squares {
         this.edgeKills = grid.edgeKills;
         this.diffLevel = grid.diffLevel;
         this.direction = grid.direction;
+        this.initialSize = grid.initialSize;
         this.growBy = grid.growBy;
         this.pos = grid.pos;
         this.startx = grid.startx;
@@ -259,18 +270,34 @@ public final class Grid implements squares {
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean getExtremeWarp() {
         return this.extremeWarp;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean getUseSameSeed() {
         return this.useSameSeedOnReset;
     }
 
+    /**
+     *
+     * @return
+     */
     public long getSeed() {
         return this.seed;
     }
 
+    /**
+     *
+     * @param b
+     */
     public void setUseSameSeed(boolean b) {
         this.useSameSeedOnReset = b;
     }
@@ -573,6 +600,10 @@ public final class Grid implements squares {
         setApples();
     }
 
+    /**
+     *
+     * @return
+     */
     public int[][] getAppleMap() {
         return this.appleMap;
     }
@@ -1090,18 +1121,36 @@ public final class Grid implements squares {
         GS.setToPostGame();
     }
 
+    /**
+     *
+     */
     public void won() {
         won = true;
     }
 
+    /**
+     *
+     * @param xPos
+     * @param yPos
+     * @return
+     */
     public boolean willKill(int xPos, int yPos) {
         return safeCheck(xPos, yPos) != 0 && safeCheck(xPos, yPos) != 3;
     }
 
+    /**
+     *
+     * @param type
+     * @return
+     */
     public boolean willKill(int type) {
         return type != 0 && type != 3;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getLeft() {
         int x = this.pos.get(0).getKey();
         int y = this.pos.get(0).getValue();
@@ -1117,6 +1166,10 @@ public final class Grid implements squares {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public int getRight() {
         int x = this.pos.get(0).getKey();
         int y = this.pos.get(0).getValue();
@@ -1132,6 +1185,10 @@ public final class Grid implements squares {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public int getFront() {
         int x = this.pos.get(0).getKey();
         int y = this.pos.get(0).getValue();
@@ -1157,6 +1214,9 @@ public final class Grid implements squares {
         setPos(headPos2[0], headPos2[1]);
     }
 
+    /**
+     *
+     */
     public void die() {
         random.setSeed(LocalDateTime.now().getNano());
         if (!won) {
@@ -1432,6 +1492,10 @@ public final class Grid implements squares {
         this.playArea[y][x] = value;
     }
 
+    /**
+     *
+     * @return
+     */
     public String exportCode() {
         String output = "*****************\n";
         for (int r = 0; r < length; r++) {

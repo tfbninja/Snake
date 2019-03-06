@@ -430,6 +430,9 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="warpModeBoxActionPerformed"/>
       </Events>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="warpModeBox.setSelected(grid.getExtremeWarp());"/>
+      </AuxValues>
     </Component>
     <Component class="javax.swing.JSpinner" name="initLengthSpinner">
       <Properties>
@@ -535,6 +538,9 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="edgeKillsBoxActionPerformed"/>
       </Events>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="edgeKillsBox.setSelected(grid.getEdgeKills());"/>
+      </AuxValues>
     </Component>
   </SubComponents>
 </Form>
