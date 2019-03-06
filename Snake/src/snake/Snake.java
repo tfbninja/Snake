@@ -16,7 +16,6 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import javax.swing.JFrame;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -101,12 +100,16 @@ public class Snake extends Application {
     public void start(Stage primaryStage) {
 
         //<editor-fold defaultstate="collapsed" desc="initialization">
-// TODO: Assert that resources folder exists
-// Create Board of block objects
+        // TODO: Assert that resources folder exists
+        // Create Board of block objects
         board = new Board(canvasW, canvasH, MM, MENU, GS, primaryStage);
         board.setOutsideMargin(canvasMargin);
 
-// initialize settings to last used
+        /*
+         * Initialize settings to last used using a settings.snk file that
+         * contains variables for the background music, the sound fx, and night
+         * mode. This file is updated every 30 frames.
+         */
         try {
             settings = new File(settingsLocation);
             Scanner reader = new Scanner(settings);
@@ -119,23 +122,46 @@ public class Snake extends Application {
             reader.nextLine();
             temp = reader.next().trim();
             musicOn = temp.equals("1");
-        } catch (Exception x) { // several possible errors can happen here
+        } catch (Exception x) {
+            /*
+             * Yes, I know this is *terrible* practice, but realize that several
+             * possible errors can happen here including FileNotFound and
+             * multiple Scanner exceptions, all of which are solved by the
+             * following code. The end user will benefit from a more robust
+             * program. Additionally, for the programmer, any error is printed
+             * to console, it's not like errors are being caught behind the
+             * scenes and causing seemingly unrelated problems down the road
+             * that are near impossible to fix
+             */
             System.out.println("bad file: " + settingsLocation);
             System.out.println(x.getLocalizedMessage());
             sfxOn = true;
-            nightMode = false;
             musicOn = true;
             MENU.turnOnMusic();
             MENU.turnOnSFX();
+            nightMode = false;
         }
+
+        /*
+         * Initialize the 'testPanel,' a separate AWT container containing
+         * controls for manipulating the Grid object with a GUI in sandbox mode
+         */
         testPanel = new TestPanel(board.getColorScheme(), board.getGrid(), MM, board, GS, (int) primaryStage.getX() - 290, (int) primaryStage.getY());
+
+        // The toolboxFrame is the actual window housing the AWT panel
         toolboxFrame = new JFrame("Toolbox");
         toolboxFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         toolboxFrame.getContentPane().add(testPanel);
         toolboxFrame.pack();
         toolboxFrame.setVisible(false);
+
+        /*
+         * The board needs control of these two objects as it also manages
+         * keystrokes which start the different difficulty levels
+         */
         board.addToolFrame(toolboxFrame);
         board.addTestPanel(testPanel);
+
         if (nightMode) {
             board.setDarkMode();
         }
@@ -151,45 +177,65 @@ public class Snake extends Application {
             menuMusic.mute();
             MENU.turnOffMusic();
         }
+
+        /*
+         * Even if the music is set to off we want it on in the background so
+         * that it doesn't have to restart every single time the end user
+         * toggles the mute button
+         */
         menuMusic.loop();
 
-// init sandbox file
-        // initSandboxFile();
+        // Helper method that retrieves the high scores from the resources folder
         getScores();
-// if local files unreadable, set to 0
+
+        /*
+         * If the local files are unreadable (most likely they just haven't been
+         * created yet), set them to 0. We DON'T do this for the world scores as
+         * world high scores being unreadable/nonexistent just means the user
+         * has messed with the files or something funky is going on.
+         */
         for (int i = 0; i < scores.size(); i += 2) { // loop through local scores
-            if (scores.get(i) == -1) { // if bad encode
+            if (scores.get(i) == -1) { // if bad encode/nonexistent
                 scores.set(i, 0); // set score to 0
-                //System.out.println("Re-writing local high score " + (i / 2 + 1) + " to 0.");
                 writeEncodedScore("resources\\scores\\local\\localHighScore" + (i / 2 + 1) + ".local", 0); // write 0 to file
             }
         }
 
-// set up high score screen
+        // Initializes ImageView object for viewing the high scores (viewed by pressing 'h' on the menu screen)
         HS_IV = createHighScoreScreen();
 
-// set up help screen
+        // Initialize help screen (Accessed from menu)
         ImageView HELP_IV = getImageView("resources\\art\\help.jpg");
 
-// arrange objects in window
-        BorderPane root = new BorderPane(); // better arrangement style
+        // Arrange objects in window with a BorderPane
+        BorderPane root = new BorderPane();
         root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
         root.setStyle("-fx-background-color: black");
+
+        // More information on the MainMenu class in MainMenu.java
         root.setTop(MENU.getMenu()); // display titlescreen
 
+        // A Scene object tells a Stage object what to display
         Scene scene = new Scene(root, WIDTH, HEIGHT);
+
+        // Get the Canvas used by Board ready to display when the user selects a difficulty level
         board.drawBlocks();
+
+        // This is the class that actually displays a 'physical' window on the screen
         primaryStage.setTitle("JSnake");
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(event -> {
+            // Safely exit the program when closed
             System.exit(0);
         });
         primaryStage.setOnHidden(event -> {
             pause = true;
+            // When the main game window is hidden we don't want the toolbox shown
             toolboxFrame.setVisible(false);
         });
         primaryStage.setOnShowing(event -> {
             pause = false;
+            // If the user minimized the main window and maximized it again, bring up the toolbox
             toolboxFrame.setVisible(true);
         });
 
@@ -197,26 +243,45 @@ public class Snake extends Application {
         toolboxFrame.setLocation((int) primaryStage.getX() - testPanel.getWidth() - 20, (int) primaryStage.getY());
         toolboxFrame.setVisible(false);
 //</editor-fold>
-        // Main loop
+
+        // Main game loop - this is called every 1/30th of a second or so
         new AnimationTimer() {
             @Override
             public void handle(long now) {
-                if (testPanel.isVisible()) {
+                if (testPanel.isVisible()) { // only if we are using the testPanel
+                    // Set all the grid settings accessed by the testPanel to their corresponding values, and repaint the testPanel
                     testPanel.update();
                 }
 
                 if (!pause) {
+                    /*
+                     * frame holds the number of updates to the screen that have
+                     * ocurred since the game started, useful for timing certain
+                     * things
+                     */
                     frame++;
+
                     if (frame % 30 == 0) {
+
+                        // We really don't need to set this variable every single time the game is updated, so we only do it every 30 times
                         if (GS.isGame()) {
                             sandboxReset = false;
                         }
 
+                        // If we're currently in sandbox mode, and the board is not completely empty, and we are viewing the grid itself...
                         if (board.getGrid().getDiffLevel() == 0 && !board.getGrid().isClear() && MM.getCurrent() == 4) {
+                            // ... then save the current grid vales to unsaved.sandbox
                             try {
+                                // tempSandboxFile is a String holding all the important grid values in a custom format
                                 tempSandboxFile = compileToSandboxFile(board.getGrid().getEdgeKills(), board.getGrid().getFrameSpeed(), board.getGrid().getInitialLength(), board.getGrid().getGrowBy(), board.getGrid().getPlayArea(), board.getGrid().getExtremeWarp(), board.getGrid().getUseSameSeed(), board.getGrid().getSeed());
-                                try ( // save as unsaved.sandbox
-                                        BufferedWriter buffer = new BufferedWriter(new FileWriter("resources/unsaved.sandbox"))) {
+
+                                try (BufferedWriter buffer = new BufferedWriter(new FileWriter("resources/unsaved.sandbox"))) {
+                                    /*
+                                     * Since for some reason BufferedWriter can
+                                     * only write one line at a time, we just
+                                     * loop over the string separated by
+                                     * newlines
+                                     */
                                     for (String s : tempSandboxFile.split("\n")) {
                                         buffer.write(s);
                                         buffer.newLine();
@@ -227,6 +292,11 @@ public class Snake extends Application {
                             }
                         }
                         try {
+                            /*
+                             * Here we save the booleans for background music,
+                             * sound fx, and night mode in the settings.snk file
+                             * every 30th frame
+                             */
                             FileWriter creator;
                             try (PrintWriter printer = new PrintWriter(settingsLocation, "UTF-8")) {
                                 creator = new FileWriter(new File(settingsLocation));
@@ -243,13 +313,43 @@ public class Snake extends Application {
                             System.out.println(x.getLocalizedMessage() + " oof.");
                         }
                     }
+
+                    // Make sure the Board object is consistent with the MainMenu object
                     board.setSFX(MENU.getSFX());
+
+                    // Make sure the background music is consistent with the MainMenu object
                     if (MENU.getMusic()) {
                         menuMusic.unmute();
                     } else {
                         menuMusic.mute();
                     }
+
+                    /*
+                     * Since the board displays most of the graphics, it
+                     * naturally follows that it should manage night mode, hence
+                     * we grab it from the Board object here
+                     */
                     nightMode = board.getNightTheme();
+
+                    /*
+                     * This switch statement is the main controller of what is
+                     * going on at any given point in time, dictated by the
+                     * MenuManager class. More info on MenuManager in
+                     * MenuManager.java Essentially, the game can be showing one
+                     * of any four different screens at any point. They are: 0 -
+                     * the main menu,
+                     * 1 - the high score screen accessed from * the main menu,
+                     * 2 - the help screen,
+                     * 3 - the 'lose' or game over screen (which also displays
+                     * high scores but is not related to the high scores screen
+                     * at all), and
+                     * 4 - the game itself with the squares and such
+                     *
+                     * Whatever number the MenuManager currently has set
+                     * internally as the current screen, the switch statement
+                     * sets the appropriate object to the root variable (class
+                     * BorderPane)
+                     */
                     switch (MM.getCurrent()) {
                         case 0:
                             // show main menu
@@ -265,7 +365,7 @@ public class Snake extends Application {
                             root.setTop(HELP_IV);
                             break;
                         case 3:
-                            // game over - show lose screen and add high scores
+                            // game over - show lose screen and deal with high scores
                             GS.setToPostGame();
                             board.drawBlocks();
                             won = false;
@@ -340,9 +440,10 @@ public class Snake extends Application {
                                 root.setTop(LOSE_IV);
                                 HS_IV = createHighScoreScreen(); // re-cache high score screen
                             }
-                            break;//</editor-fold>
+                            //</editor-fold>
+                            break;
                         case 4:
-                            // show the game
+                            // show the actual game
                             sandboxReset = false;
                             if (root.getTop() != board.getCanvas() && !GS.isPostGame()) {
                                 root.setTop(board.getCanvas());
@@ -389,24 +490,39 @@ public class Snake extends Application {
         scene.setOnMousePressed(
                 (MouseEvent event) -> {
                     board.mouseClicked(event);
-                    if (board.getGrid().getDiffLevel() == 0) {
-                        testPanel.setVisible(true);
-                    }
+                    /*
+                     * if (board.getGrid().getDiffLevel() == 0) {
+                     * toolboxFrame.setVisible(true);
+                     * toolboxFrame.toFront();
+                     * primaryStage.requestFocus();
+                     * }
+                     */
                 }
         );
 
         scene.setOnMouseDragged(
                 (MouseEvent event) -> {
                     board.mouseDragged(event);
+                    /*
+                     * if (board.getGrid().getDiffLevel() == 0) {
+                     * toolboxFrame.setVisible(true);
+                     * toolboxFrame.toFront();
+                     * primaryStage.requestFocus();
+                     * }
+                     */
                 }
         );
 
         scene.setOnKeyPressed(
                 (KeyEvent eventa) -> {
-                    if (eventa.getCode() == KeyCode.DIGIT0 && eventa.isShiftDown() && MM.getCurrent() == 0) {
-                        //initSandboxFile();
-                    }
                     board.keyPressed(eventa);
+                    /*
+                     * if (board.getGrid().getDiffLevel() == 0) {
+                     * toolboxFrame.setVisible(true);
+                     * toolboxFrame.toFront();
+                     * primaryStage.requestFocus();
+                     * }
+                     */
                 }
         );
     }
@@ -420,8 +536,8 @@ public class Snake extends Application {
 
     /**
      *
-     * @param obj
-     * @return
+     * @param obj The Integer ArrayList to be copied into an int[]
+     * @return int[] containing the same values as the obj
      */
     public static int[] toList(ArrayList<Integer> obj) {
         int[] list = new int[obj.size()];
@@ -1084,6 +1200,6 @@ public class Snake extends Application {
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */

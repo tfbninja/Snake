@@ -16,7 +16,7 @@ import javax.swing.JButton;
  * @author Tim Barber
  */
 public class TestPanel extends javax.swing.JPanel {
-    
+
     private JTextField filename = new JTextField();
     private JTextField dir = new JTextField();
     private int toolNum = 0;
@@ -64,7 +64,7 @@ public class TestPanel extends javax.swing.JPanel {
         board = b;
         saveLabel.setVisible(false);
     }
-    
+
     /**
      *
      * @param grid
@@ -72,7 +72,7 @@ public class TestPanel extends javax.swing.JPanel {
     public void setGrid(Grid grid) {
         this.grid = grid;
     }
-    
+
     /**
      *
      */
@@ -528,7 +528,7 @@ public class TestPanel extends javax.swing.JPanel {
                 toolNum = 5;
                 break;
         }
-        
+
         raiseAllButtons();
         buttons.get(index).setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         //System.out.println("Color: " + colorScheme[index]);
@@ -566,7 +566,7 @@ public class TestPanel extends javax.swing.JPanel {
     public boolean getEdgeKills() {
         return this.keepSeedBox.isSelected();
     }
-    
+
 
     private void headButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_headButtonActionPerformed
         // TODO add your handling code here:
@@ -584,12 +584,12 @@ public class TestPanel extends javax.swing.JPanel {
         saveButton.setContentAreaFilled(false);
         JFileChooser fChooser = new JFileChooser();
         fChooser.setFileFilter(new FileFilter() {
-            
+
             @Override
             public boolean accept(File f) {
                 return f.isDirectory() || f.getName().toLowerCase().endsWith(".sandbox");
             }
-            
+
             @Override
             public String getDescription() {
                 return "Sandbox file";
@@ -618,13 +618,12 @@ public class TestPanel extends javax.swing.JPanel {
             try {
                 fileLoc = dir.getText() + "\\" + filename.getText();
 
-                //System.out.println(fileLoc);
-                BufferedWriter buffer = new BufferedWriter(new FileWriter(fileLoc));
-                for (String s : compiledSandboxFile.split("\n")) {
-                    buffer.write(s);
-                    buffer.newLine();
+                try (BufferedWriter buffer = new BufferedWriter(new FileWriter(fileLoc))) {
+                    for (String s : compiledSandboxFile.split("\n")) {
+                        buffer.write(s);
+                        buffer.newLine();
+                    }
                 }
-                buffer.close();
             } catch (IOException x) {
                 System.out.println("File save incomplete to \"" + fileLoc + "\"");
             }
@@ -738,7 +737,7 @@ public class TestPanel extends javax.swing.JPanel {
         grid.setSeed(WIDTH);
         grid.setUseSameSeed(keepSeedBox.isSelected());
     }//GEN-LAST:event_seedSpinnerPropertyChange
-    
+
     private final java.util.ArrayList<JButton> buttons = new java.util.ArrayList<>();
     private final java.util.ArrayList<javax.swing.JComponent> components = new java.util.ArrayList<>();
     // Variables declaration - do not modify//GEN-BEGIN:variables
