@@ -4,52 +4,58 @@ package snake;
  *
  * @author Tim Barber
  */
-interface squares {
+public abstract class squares {
 
-    int WIDTH = 1;
-    int LENGTH = 1;
-    int[][] playArea = new int[WIDTH][LENGTH];
+    private int width;
+    private int length;
+    private int[][] playArea;
 
     /**
      *
      * @return the horizontal size of the grid
      */
-    static int getWidth() {
-        return WIDTH;
+    public int getWidth() {
+        return width;
     }
 
     /**
      *
      * @return the vertical size of the grid
      */
-    static int getLength() {
-        return LENGTH;
+    public int getLength() {
+        return length;
     }
 
     /**
      *
      * @param width the new horizontal size of the grid
      */
-    void setWidth(int width);
+    public void setWidth(int width) {
+        this.width = width;
+    }
 
     /**
      *
      * @param length the new vertical size of the grid
      */
-    void setLength(int length);
+    void setLength(int length) {
+        this.length = length;
+    }
 
     /**
      *
      * @return the grid as it's native int[][] type
      */
-    int[][] getPlayArea();
+    public int[][] getPlayArea() {
+        return playArea;
+    }
 
     /**
      *
      * @return the int stored in the grid at (xPos, yPos). If xPos or yPos is
      * out of bounds, returns -1
      */
-    static int safeCheck(int xPos, int yPos) {
+    public int safeCheck(int xPos, int yPos) {
         try {
             return playArea[yPos][xPos];
         } catch (ArrayIndexOutOfBoundsException b) {
@@ -65,7 +71,7 @@ interface squares {
      * @param radius the number of spaces out from the initial, e.g. a radius of
      * one will count squares in a 3x3 box excluding the middle square
      */
-    int getNeighbors(int x, int y, int type, int radius);
+    public abstract int getNeighbors(int x, int y, int type, int radius);
 
     /**
      *
@@ -73,7 +79,7 @@ interface squares {
      * @return same as getNeighbors(int x, int y, int type, int radius), but
      * with implied radius 1
      */
-    int getNeighbors(int x, int y, int type);
+    public abstract int getNeighbors(int x, int y, int type);
 }
 
 /*

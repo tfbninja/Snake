@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  *
  * @author Tim Barber
  */
-public final class Grid implements squares {
+public final class Grid extends squares {
 
     /*
      * 0 - Blank
