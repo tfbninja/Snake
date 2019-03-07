@@ -68,8 +68,6 @@ public class Snake extends Application {
     private final String settingsLocation = "resources/settings.snk";
     private static File sandbox;
     private static final String SANDBOXLOCATION = "resources/unsaved.sandbox";
-    private static final int[][] SANDBOXPLAYAREA = new int[25][25];
-    private static Pair<Integer, Integer> sandboxHeadPos;
 
     private boolean sfxOn = true;
     private boolean musicOn = true;
@@ -447,7 +445,9 @@ public class Snake extends Application {
                                 root.setTop(board.getCanvas());
                             }
                             if (GS.isPreGame()) {
-                                int tempSize = board.getGrid().getPlayArea().length;
+                                System.out.print("play area: ");
+                                System.out.println(board.getGrid().getPlayArea());
+                                int tempSize = board.getGrid().getLength();
                                 appleMap = new int[tempSize][tempSize];
                                 for (int r = 0; r < tempSize; r++) {
                                     for (int c = 0; c < tempSize; c++) {
@@ -610,6 +610,7 @@ public class Snake extends Application {
      * @return
      */
     public static Grid loadSandboxFile(String content) {
+        pause = true;
         try {
             try {
                 Grid tempGrid = new Grid(25, 25, 0, 0);
@@ -677,11 +678,11 @@ public class Snake extends Application {
                             tempGrid.setPos(x, y);
                             //System.out.println("head at " + x + ", " + y);
                         }
-                        SANDBOXPLAYAREA[y][x] = num;
+                        tempGrid.setCell(x, y, num);
                     }
                     s.nextLine();
                 }
-                tempGrid.setPlayArea(SANDBOXPLAYAREA.clone());
+                pause = false;
                 return tempGrid;
             } catch (NumberFormatException e) {
                 System.out.println("Trouble reading in default sandbox file with content: \"" + content + "\"");
@@ -804,6 +805,7 @@ public class Snake extends Application {
                 errorGrid.setCell(14, 23, 3);
                 errorGrid.setCell(17, 23, 3);
 //</editor-fold>
+                pause = false;
                 return errorGrid;
             }
         } catch (java.util.InputMismatchException e) {
@@ -927,9 +929,9 @@ public class Snake extends Application {
             errorGrid.setCell(14, 23, 3);
             errorGrid.setCell(17, 23, 3);
 //</editor-fold>
+            pause = false;
             return errorGrid;
         }
-
     }
 
     /**

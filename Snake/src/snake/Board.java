@@ -94,7 +94,6 @@ public class Board {
         this.GS = gs;
         canvas = new Canvas(width, height);
         createGrid();
-        grid.addGameState(GS);
         grid.clearApples();
         primaryStage = primary;
     }
@@ -413,6 +412,7 @@ public class Board {
                 MM.setCurrent(4);
             } else if (e.getCode() == KeyCode.DIGIT0 && e.isShiftDown()) {
                 Snake.initSandboxFile();
+                System.out.println("Successfully initialized sandbox file");
                 toolFrame.setVisible(true);
                 toolFrame.requestFocus(); // bring this to front
                 toolPanel.setCurrentTool(0);
@@ -774,6 +774,6 @@ public class Board {
 
     @Override
     public String toString() {
-        return "";
+        return "Board[" + width + ", " + height + ", " + GRIDSIZE + "]";
     }
 }
