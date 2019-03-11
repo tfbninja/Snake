@@ -8,7 +8,6 @@ public abstract class squares {
 
     private int width;
     private int length;
-    private int[][] playArea;
 
     /**
      *
@@ -43,47 +42,24 @@ public abstract class squares {
     }
 
     /**
-     *
-     * @return the grid as it's native int[][] type
-     */
-    public int[][] getPlayArea() {
-        return playArea;
-    }
-
-    /**
-     * This is not usually the best approach, please Override
-     *
-     * @param xPos The column number
-     * @param yPos The row number
-     * @return the int stored in the grid at (xPos, yPos). If xPos or yPos is
-     * out of bounds, returns -1
-     */
-    public int safeCheck(int xPos, int yPos) {
-        try {
-            return playArea[yPos][xPos];
-        } catch (ArrayIndexOutOfBoundsException b) {
-            return -1;
-        }
-    }
-
-    /**
      * @return the number of occupied spaces matching param type near (x, y)
-     * @param x the x component of the chosen space
-     * @param y the y component of the chosen space
-     * @param type the spaces which contain an int matching type will be counted
+     * @param x      the x component of the chosen space
+     * @param y      the y component of the chosen space
+     * @param type   the spaces which contain an int matching type will be
+     *               counted
      * @param radius the number of spaces out from the initial, e.g. a radius of
-     * one will count squares in a 3x3 box excluding the middle square
+     *               one will count squares in a 3x3 box excluding the middle square
      */
     public abstract int getNeighbors(int x, int y, int type, int radius);
 
     /**
      *
-     * @param x The column number
-     * @param y The row number
+     * @param x    The column number
+     * @param y    The row number
      * @param type Which neighbors should be counted
      * @see getNeighbors(int x, int y, int type, int radius);
      * @return same as getNeighbors(int x, int y, int type, int radius), but
-     * with implied radius 1
+     *         with implied radius 1
      */
     public abstract int getNeighbors(int x, int y, int type);
 }

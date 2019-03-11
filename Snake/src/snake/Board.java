@@ -9,11 +9,10 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
-import javax.swing.JFrame;
-import javafx.util.Pair;
 import javafx.scene.text.Font;
-//</editor-fold>
+import javafx.stage.Stage;
+import javafx.util.Pair;
+import javax.swing.JFrame;
 
 /**
  *
@@ -69,7 +68,6 @@ public class Board {
     private final MainMenu MENU;
     private final GameState GS;
 
-    private boolean sandboxExists = false;
     private int[][] sandbox;
 
     private ToolPanel toolPanel;
@@ -291,6 +289,7 @@ public class Board {
      *
      */
     public void setToSandboxPlayArea() {
+        System.out.println("Setting to sandbox: " + sandbox);
         grid.setPlayArea(this.sandbox);
     }
 

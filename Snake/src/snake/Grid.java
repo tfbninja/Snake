@@ -1,11 +1,11 @@
 package snake;
 
+import java.io.File;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.io.File;
 import java.util.Random;
 import javafx.util.Pair;
-import java.time.LocalDateTime;
 
 /**
  *
@@ -80,7 +80,7 @@ public final class Grid extends squares {
      */
     /**
      *
-     * @param width The horizontal number of squares
+     * @param width  The horizontal number of squares
      * @param length The vertical number of squares
      * @param startX The x-coordinate of the snake's starting position
      * @param startY The y-coordinate of the snake's starting position
@@ -91,7 +91,7 @@ public final class Grid extends squares {
         starty = startY;
         this.width = width;
         this.length = length;
-        this.playArea = new int[this.length][this.width];
+        playArea = new int[this.length][this.width];
         Grid.savedPlayArea = new int[this.length][this.width];
         for (int i = 0; i < this.length; i++) {
             Arrays.fill(Grid.savedPlayArea[i], 0);
@@ -102,6 +102,10 @@ public final class Grid extends squares {
         warp.setVolume(0.5);
         addDeathSounds();
         this.bite = new Sound("resources/sounds/bite2.wav");
+    }
+
+    public int[][] getPlayArea() {
+        return this.playArea;
     }
 
     /**
@@ -179,7 +183,8 @@ public final class Grid extends squares {
 
     /**
      *
-     * @param amt The number of frames that should be between every update cycle
+     * @param amt   The number of frames that should be between every update
+     *              cycle
      * @param level The difficulty level to change
      */
     public void setFrameSpeed(int amt, int level) {
@@ -255,7 +260,7 @@ public final class Grid extends squares {
     /**
      *
      * @return The coordinates of the first portal without a pair reading left
-     * to right top down on the grid
+     *         to right top down on the grid
      */
     public Pair<Integer, Integer> findUnmatchedPortal() {
         if (containsUnmatchedPortal() > -1) {
@@ -305,7 +310,7 @@ public final class Grid extends squares {
     /**
      *
      * @return -1 if there are no unmatched portals, otherwise returns the
-     * lowest unmatched portal number
+     *         lowest unmatched portal number
      */
     public int containsUnmatchedPortal() {
         for (int y = 0; y < length; y++) {
@@ -377,26 +382,6 @@ public final class Grid extends squares {
             return true;
         }
         return false;
-    }
-
-    /**
-     *
-     * @param xPos
-     * @param yPos
-     * @return
-     */
-    public int getContiguousSize(int xPos, int yPos) {
-        int size = 1;
-        int type = this.safeCheck(xPos, yPos);
-        int[][] simplified = this.playArea;
-        for (int y = 0; y < simplified.length; y++) {
-            for (int x = 0; x < simplified[y].length; x++) {
-                if (simplified[y][x] != type) {
-                    simplified[y][x] = -1;
-                }
-            }
-        }
-        return size;
     }
 
     private int touchingNeighbors(int xPos, int yPos) {
