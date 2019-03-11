@@ -197,75 +197,64 @@ public class Board {
     public void drawBlocks() {
         GraphicsContext gc = this.canvas.getGraphicsContext2D();
 
-        // don't bother drawing the game if the menu is up, it'll just get drawn over
-        if (MM.getCurrent() != 0) {
+        //clear background
+        gc.setFill(Color.web(this.bg));
+        gc.fillRect(0, 0, this.width, this.height);
 
-            //clear background
-            gc.setFill(Color.web(this.bg));
-            gc.fillRect(0, 0, this.width, this.height);
+        // draw black border
+        gc.setStroke(Color.BLACK);
+        gc.setLineWidth(borderSize);
+        gc.fillRect(borderSize / 2, borderSize / 2, width - borderSize, height - borderSize);
 
-            // draw black border
-            gc.setStroke(Color.BLACK);
-            gc.setLineWidth(borderSize);
-            gc.fillRect(borderSize / 2, borderSize / 2, width - borderSize, height - borderSize);
-
-            if (this.grid.getEdgeKills()) {
-                // draw red border indicating that edge kills
-                gc.setStroke(Color.CRIMSON.darker());
-            } else {
-                // draw green border indicating that warp mode is on
-                gc.setStroke(Color.CHARTREUSE);
-            }
-            gc.setLineWidth(edgeSize);
-            int pixelSize = GRIDSIZE * size + GRIDSIZE * margin;
-            gc.strokeRect(XMARGIN - edgeSize / 2, YMARGIN - edgeSize / 2, pixelSize + edgeSize - 1, pixelSize + edgeSize - 1);
-
-            //draw squares
-            int xPixel = this.XMARGIN;
-            for (int x = 0; x < this.grid.getWidth(); x++) {
-                int yPixel = this.YMARGIN;
-                for (int y = 0; y < this.grid.getLength(); y++) {
-                    Block temp = new Block();
-                    if (this.grid.isApple(x, y)) {
-                        temp.setColor(Color.web(this.apple)); // red
-                    } else if (this.grid.isBody(x, y)) {
-                        temp.setColor(Color.web(this.body)); // green
-                    } else if (this.grid.isHead(x, y)) {
-                        temp.setColor(Color.web(this.head)); // brown
-                    } else if (this.grid.isBlank(x, y)) {
-                        temp.setColor(Color.web(this.blank)); // light blue
-                    } else if (this.grid.isRock(x, y)) {
-                        temp.setColor(Color.web(this.rock)); // gray
-                    } else if (this.grid.isPortal(x, y) && grid.find(grid.safeCheck(x, y)).size() == 2) {
-                        temp.setColor(Color.web(portalColors[(grid.safeCheck(x, y) - 10) % this.portalColors.length]));
-                    } else { // unmatched portal
-                        temp.setColor(Color.BLACK);
-                    }
-                    temp.setX(xPixel);
-                    temp.setY(yPixel);
-                    temp.setWidth(size);
-                    temp.setHeight(size);
-                    temp.draw(canvas);
-                    yPixel += margin + size;
-                }
-                xPixel += margin + size;
-            }
-
-            // draw apples eaten
-            gc.setFill(Color.web(applesEaten));
-            gc.setFont(Font.font("Impact", 22));
-            gc.fillText("Apples eaten: " + this.getGrid().getApplesEaten(), XMARGIN + width / 2 - 100, YMARGIN + getPixelDimensions()[1] + 22);
-
-            if (!this.lost && GS.isPostGame()) {
-                this.lost = true;
-            }
-
-            // we've drawn all the blocks, now if we've lost we need to act on it
-            if (this.lost == true) {
-                GS.setToPostGame();
-            }
+        if (this.grid.getEdgeKills()) {
+            // draw red border indicating that edge kills
+            gc.setStroke(Color.CRIMSON.darker());
         } else {
+            // draw green border indicating that warp mode is on
+            gc.setStroke(Color.CHARTREUSE);
+        }
+        gc.setLineWidth(edgeSize);
+        int pixelSize = GRIDSIZE * size + GRIDSIZE * margin;
+        gc.strokeRect(XMARGIN - edgeSize / 2, YMARGIN - edgeSize / 2, pixelSize + edgeSize - 1, pixelSize + edgeSize - 1);
 
+        //draw squares
+        int xPixel = this.XMARGIN;
+        for (int x = 0; x < this.grid.getWidth(); x++) {
+            int yPixel = this.YMARGIN;
+            for (int y = 0; y < this.grid.getLength(); y++) {
+                Block temp = new Block();
+                if (this.grid.isApple(x, y)) {
+                    temp.setColor(Color.web(this.apple)); // red
+                } else if (this.grid.isBody(x, y)) {
+                    temp.setColor(Color.web(this.body)); // green
+                } else if (this.grid.isHead(x, y)) {
+                    temp.setColor(Color.web(this.head)); // brown
+                } else if (this.grid.isBlank(x, y)) {
+                    temp.setColor(Color.web(this.blank)); // light blue
+                } else if (this.grid.isRock(x, y)) {
+                    temp.setColor(Color.web(this.rock)); // gray
+                } else if (this.grid.isPortal(x, y) && grid.find(grid.safeCheck(x, y)).size() == 2) {
+                    temp.setColor(Color.web(portalColors[(grid.safeCheck(x, y) - 10) % this.portalColors.length]));
+                } else { // unmatched portal
+                    temp.setColor(Color.BLACK);
+                }
+                temp.setX(xPixel);
+                temp.setY(yPixel);
+                temp.setWidth(size);
+                temp.setHeight(size);
+                temp.draw(canvas);
+                yPixel += margin + size;
+            }
+            xPixel += margin + size;
+        }
+
+        // draw apples eaten
+        gc.setFill(Color.web(applesEaten));
+        gc.setFont(Font.font("Impact", 22));
+        gc.fillText("Apples eaten: " + this.getGrid().getApplesEaten(), XMARGIN + width / 2 - 100, YMARGIN + getPixelDimensions()[1] + 22);
+
+        if (!this.lost && GS.isPostGame()) {
+            this.lost = true;
         }
     }
 

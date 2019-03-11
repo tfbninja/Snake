@@ -23,8 +23,6 @@ public final class Grid extends squares {
      * 10 and higher - portals
      */
     //<editor-fold defaultstate="collapsed" desc="instance vars">
-    private int width;
-    private int length;
     private int[][] playArea;
     private static int[][] savedPlayArea;
     private int[][] appleMap;
@@ -80,20 +78,19 @@ public final class Grid extends squares {
      */
     /**
      *
-     * @param width  The horizontal number of squares
+     * @param width The horizontal number of squares
      * @param length The vertical number of squares
      * @param startX The x-coordinate of the snake's starting position
      * @param startY The y-coordinate of the snake's starting position
      */
     public Grid(int width, int length, int startX, int startY) {
+        super(width, length);
         appleMap = new int[width][length];
         startx = startX;
         starty = startY;
-        this.width = width;
-        this.length = length;
-        playArea = new int[this.length][this.width];
-        Grid.savedPlayArea = new int[this.length][this.width];
-        for (int i = 0; i < this.length; i++) {
+        playArea = new int[super.getLength()][super.getWidth()];
+        Grid.savedPlayArea = new int[super.getLength()][super.getWidth()];
+        for (int i = 0; i < super.getLength(); i++) {
             Arrays.fill(Grid.savedPlayArea[i], 0);
         }
         this.pos.add(new Pair<>(startX, startY)); // add head to list
@@ -183,8 +180,8 @@ public final class Grid extends squares {
 
     /**
      *
-     * @param amt   The number of frames that should be between every update
-     *              cycle
+     * @param amt The number of frames that should be between every update
+     * cycle
      * @param level The difficulty level to change
      */
     public void setFrameSpeed(int amt, int level) {
@@ -248,8 +245,8 @@ public final class Grid extends squares {
      * @param type The kind of int to remove and set to zero in the playArea
      */
     public void removeAll(int type) {
-        for (int y = 0; y < length; y++) {
-            for (int x = 0; x < width; x++) {
+        for (int y = 0; y < super.getLength(); y++) {
+            for (int x = 0; x < super.getWidth(); x++) {
                 if (safeCheck(x, y) == type) {
                     safeSetCell(x, y, 0);
                 }
@@ -260,12 +257,12 @@ public final class Grid extends squares {
     /**
      *
      * @return The coordinates of the first portal without a pair reading left
-     *         to right top down on the grid
+     * to right top down on the grid
      */
     public Pair<Integer, Integer> findUnmatchedPortal() {
         if (containsUnmatchedPortal() > -1) {
-            for (int y = 0; y < length; y++) {
-                for (int x = 0; x < width; x++) {
+            for (int y = 0; y < super.getLength(); y++) {
+                for (int x = 0; x < super.getWidth(); x++) {
                     if (isPortal(x, y) && find(safeCheck(x, y)).size() == 1) {
                         return new Pair<Integer, Integer>(x, y);
                     }
@@ -310,11 +307,11 @@ public final class Grid extends squares {
     /**
      *
      * @return -1 if there are no unmatched portals, otherwise returns the
-     *         lowest unmatched portal number
+     * lowest unmatched portal number
      */
     public int containsUnmatchedPortal() {
-        for (int y = 0; y < length; y++) {
-            for (int x = 0; x < width; x++) {
+        for (int y = 0; y < super.getLength(); y++) {
+            for (int x = 0; x < super.getWidth(); x++) {
                 if (isPortal(x, y) && find(safeCheck(x, y)).size() == 1) {
                     return safeCheck(x, y);
                 }
@@ -348,8 +345,8 @@ public final class Grid extends squares {
      */
     public int highestNumber() {
         int highest = 0;
-        for (int y = 0; y < length; y++) {
-            for (int x = 0; x < width; x++) {
+        for (int y = 0; y < super.getLength(); y++) {
+            for (int x = 0; x < super.getWidth(); x++) {
                 if (safeCheck(x, y) > highest) {
                     highest = safeCheck(x, y);
                 }
@@ -537,7 +534,7 @@ public final class Grid extends squares {
                 // set middle square as rock
                 clearObstacles();
                 clearApples();
-                //setCell(this.width / 2, this.length / 2, 4);
+                //setCell(super.getWidth() / 2, super.getLength() / 2, 4);
                 newApple(); // add an apple
                 setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
                 break;
@@ -549,12 +546,12 @@ public final class Grid extends squares {
 
                 //add 5 random rocks
                 for (int i = 0; i < 5; i++) {
-                    int x = (int) (random.nextDouble() * this.width);
-                    int y = (int) (random.nextDouble() * this.length);
+                    int x = (int) (random.nextDouble() * super.getWidth());
+                    int y = (int) (random.nextDouble() * super.getLength());
                     while (getCell(x, y) != 0 || x == this.pos.get(0).getValue() || getNeighbors(x, y, 4, 2) > 0) {
                         // while the rock is about to be placed over a non-blank spot, or it is the same x value as the snake, or it has neighbors in a 2 cell radius, recalculate the position
-                        x = (int) (random.nextDouble() * this.width);
-                        y = (int) (random.nextDouble() * this.length);
+                        x = (int) (random.nextDouble() * super.getWidth());
+                        y = (int) (random.nextDouble() * super.getLength());
                     }
                     setCell(x, y, 4);
                 }
@@ -647,8 +644,8 @@ public final class Grid extends squares {
     }
 
     private void clearObstacles() {
-        for (int x = 0; x < this.width; x++) {
-            for (int y = 0; y < this.length; y++) {
+        for (int x = 0; x < super.getWidth(); x++) {
+            for (int y = 0; y < super.getLength(); y++) {
                 if (getCell(x, y) == 4) {
                     setCell(x, y, 0);
                 }
@@ -696,8 +693,8 @@ public final class Grid extends squares {
         while (pos.size() > snakeSize) {
             pos.remove(pos.size() - 1);
         }
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < length; y++) {
+        for (int x = 0; x < super.getWidth(); x++) {
+            for (int y = 0; y < super.getLength(); y++) {
                 if (getCell(x, y) == 2 && !pos.contains(new Pair<Integer, Integer>(x, y))) {
                     setCell(x, y, 0);
                 }
@@ -727,8 +724,8 @@ public final class Grid extends squares {
     public void clearApples() {
         if (diffLevel > 0) {
             if (countVal(3) != 0) {
-                for (int y = 0; y < this.length; y++) {
-                    for (int x = 0; x < this.width - 1; x++) {
+                for (int y = 0; y < super.getLength(); y++) {
+                    for (int x = 0; x < super.getWidth() - 1; x++) {
                         if (this.getCell(x, y) == 3 || this.getCell(x, y) >= 10) {
                             this.setCell(x, y, 0);
                         }
@@ -759,8 +756,8 @@ public final class Grid extends squares {
                 if (tries > 2000) {
                     return null;
                 }
-                newPos[0] = random.nextInt(this.width);
-                newPos[1] = random.nextInt(this.length);
+                newPos[0] = random.nextInt(super.getWidth());
+                newPos[1] = random.nextInt(super.getLength());
             }
 
             this.setCell(newPos[0], newPos[1], 3);
@@ -1029,8 +1026,8 @@ public final class Grid extends squares {
      */
     public ArrayList<Pair<Integer, Integer>> find(int type) {
         ArrayList<Pair<Integer, Integer>> posList = new ArrayList<>();
-        for (int y = 0; y < length; y++) {
-            for (int x = 0; x < width; x++) {
+        for (int y = 0; y < super.getLength(); y++) {
+            for (int x = 0; x < super.getWidth(); x++) {
                 if (safeCheck(x, y) == type) {
                     posList.add(new Pair<Integer, Integer>(x, y));
 
@@ -1211,17 +1208,17 @@ public final class Grid extends squares {
                 if (this.extremeWarp) {
                     // extreme warp, warp x with y
                     boolean playWarpSound2 = false;
-                    while (nextX < 0 || nextX >= this.width || nextY < 0 || nextY >= this.length) {
+                    while (nextX < 0 || nextX >= super.getWidth() || nextY < 0 || nextY >= super.getLength()) {
                         if (nextX < 0) {
-                            nextX = this.width - nextY - 1;
+                            nextX = super.getWidth() - nextY - 1;
                             nextY = 0;
                             this.direction = 3;
                             this.tempDir = 3;
                             playWarpSound2 = true;
                         }
-                        if (nextX >= this.width) {
-                            nextX = this.width - nextY - 1;
-                            nextY = this.length - 1;
+                        if (nextX >= super.getWidth()) {
+                            nextX = super.getWidth() - nextY - 1;
+                            nextY = super.getLength() - 1;
                             this.direction = 1;
                             this.tempDir = 1;
                             playWarpSound2 = true;
@@ -1229,12 +1226,12 @@ public final class Grid extends squares {
 
                         if (nextY < 0) {
                             nextY = nextX;
-                            nextX = this.width - 1;
+                            nextX = super.getWidth() - 1;
                             this.direction = 4;
                             this.tempDir = 4;
                             playWarpSound2 = true;
                         }
-                        if (nextY >= this.length) {
+                        if (nextY >= super.getLength()) {
                             nextY = nextX;
                             nextX = 0;
                             this.direction = 2;
@@ -1247,16 +1244,16 @@ public final class Grid extends squares {
                     }
                 } else {
                     if (nextX < 0) {
-                        nextX = this.width - 1;
+                        nextX = super.getWidth() - 1;
                         playWarpSound = true;
-                    } else if (nextX >= this.width) {
+                    } else if (nextX >= super.getWidth()) {
                         nextX = 0;
                         playWarpSound = true;
                     }
                     if (nextY < 0) {
-                        nextY = this.length - 1;
+                        nextY = super.getLength() - 1;
                         playWarpSound = true;
-                    } else if (nextY >= this.length) {
+                    } else if (nextY >= super.getLength()) {
                         nextY = 0;
                         playWarpSound = true;
                     }
@@ -1272,7 +1269,7 @@ public final class Grid extends squares {
                         die();
                     }
                 }
-                if (nextX >= this.width) {
+                if (nextX >= super.getWidth()) {
                     GS.setToPostGame();
                     if (soundOn) {
                         die();
@@ -1284,7 +1281,7 @@ public final class Grid extends squares {
                         die();
                     }
                 }
-                if (nextY >= this.length) {
+                if (nextY >= super.getLength()) {
                     GS.setToPostGame();
                     if (soundOn) {
                         die();
@@ -1292,7 +1289,7 @@ public final class Grid extends squares {
                 }
             }
 
-            if (GS.isGame() && (this.isRock(nextX, nextY) || this.edgeKills && (nextX >= this.width || nextY >= this.length || nextX < 0 || nextY < 0))) {
+            if (GS.isGame() && (this.isRock(nextX, nextY) || this.edgeKills && (nextX >= super.getWidth() || nextY >= super.getLength() || nextX < 0 || nextY < 0))) {
                 // collision with wall or rock
                 GS.setToPostGame();
                 if (soundOn) {
@@ -1415,7 +1412,7 @@ public final class Grid extends squares {
      * sets all squares to 0
      */
     public void clear() {
-        this.playArea = new int[this.length][this.width];
+        this.playArea = new int[super.getLength()][super.getWidth()];
     }
 
     /**
@@ -1454,8 +1451,8 @@ public final class Grid extends squares {
      */
     public String exportCode() {
         String output = "*****************\n";
-        for (int r = 0; r < length; r++) {
-            for (int c = 0; c < width; c++) {
+        for (int r = 0; r < super.getLength(); r++) {
+            for (int c = 0; c < super.getWidth(); c++) {
                 if (safeCheck(c, r) != 0) {
                     output += ".setCell(" + c + ", " + r + ", " + safeCheck(c, r) + ");\n";
                 }
@@ -1473,16 +1470,16 @@ public final class Grid extends squares {
      */
     public void safeSetCell(int x, int y, int value) {
         while (x < 0) {
-            x = width + x;
+            x = super.getWidth() + x;
         }
-        while (x > width - 1) {
-            x -= (width - 1);
+        while (x > super.getWidth() - 1) {
+            x -= (super.getWidth() - 1);
         }
         while (y < 0) {
-            y = length + y;
+            y = super.getLength() + y;
         }
-        while (y > length - 1) {
-            y -= (length - 1);
+        while (y > super.getLength() - 1) {
+            y -= (super.getLength() - 1);
         }
         setCell(x, y, value);
     }
@@ -1513,11 +1510,11 @@ public final class Grid extends squares {
      * @return
      */
     public int safeCheck(int xPos, int yPos) {
-        if (xPos > width) {
-            xPos = xPos % width;
+        if (xPos > super.getWidth()) {
+            xPos = xPos % super.getWidth();
         }
-        if (yPos > length) {
-            yPos = yPos % length;
+        if (yPos > super.getLength()) {
+            yPos = yPos % super.getLength();
         }
         try {
             return this.playArea[yPos][xPos];
@@ -1543,8 +1540,8 @@ public final class Grid extends squares {
     public int countVal(int value) {
         /*
          * int count = 0;
-         * for (int y = 0; y < this.length; y++) {
-         * for (int x = 0; x < this.width; x++) {
+         * for (int y = 0; y < super.getLength(); y++) {
+         * for (int x = 0; x < super.getWidth(); x++) {
          * if (this.playArea[y][x] == value) {
          * count++;
          * }
@@ -1552,8 +1549,8 @@ public final class Grid extends squares {
          * }
          */
         int count2 = 0;
-        for (int x = 0; x < this.width; x++) {
-            for (int y = 0; y < this.length; y++) {
+        for (int x = 0; x < super.getWidth(); x++) {
+            for (int y = 0; y < super.getLength(); y++) {
                 if (safeCheck(x, y) == value) {
                     count2++;
                 }
@@ -1578,14 +1575,14 @@ public final class Grid extends squares {
      * @return
      */
     public boolean isClear() {
-        return countVal(0) == width * length;
+        return countVal(0) == super.getWidth() * super.getLength();
     }
 
     @Override
     public String toString() {
         String output = "";
-        for (int y = 0; y < this.width; y++) {
-            for (int x = 0; x < this.length; x++) {
+        for (int y = 0; y < super.getWidth(); y++) {
+            for (int x = 0; x < super.getLength(); x++) {
                 output += String.valueOf(this.playArea[y][x]);
                 output += " ";
             }

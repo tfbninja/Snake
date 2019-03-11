@@ -9,6 +9,11 @@ public abstract class squares {
     private int width;
     private int length;
 
+    public squares(int width, int length) {
+        this.width = width;
+        this.length = length;
+    }
+
     /**
      *
      * @return the horizontal size of the grid
@@ -43,23 +48,23 @@ public abstract class squares {
 
     /**
      * @return the number of occupied spaces matching param type near (x, y)
-     * @param x      the x component of the chosen space
-     * @param y      the y component of the chosen space
-     * @param type   the spaces which contain an int matching type will be
-     *               counted
+     * @param x the x component of the chosen space
+     * @param y the y component of the chosen space
+     * @param type the spaces which contain an int matching type will be
+     * counted
      * @param radius the number of spaces out from the initial, e.g. a radius of
-     *               one will count squares in a 3x3 box excluding the middle square
+     * one will count squares in a 3x3 box excluding the middle square
      */
     public abstract int getNeighbors(int x, int y, int type, int radius);
 
     /**
      *
-     * @param x    The column number
-     * @param y    The row number
+     * @param x The column number
+     * @param y The row number
      * @param type Which neighbors should be counted
      * @see getNeighbors(int x, int y, int type, int radius);
      * @return same as getNeighbors(int x, int y, int type, int radius), but
-     *         with implied radius 1
+     * with implied radius 1
      */
     public abstract int getNeighbors(int x, int y, int type);
 }

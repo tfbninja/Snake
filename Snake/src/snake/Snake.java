@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -472,6 +473,7 @@ public class Snake extends Application {
                                     GS.setToPreGame();
                                 }
                             }
+                            break;
                     }
                 }
             }

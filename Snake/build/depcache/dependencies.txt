@@ -309,9 +309,9 @@ java.awt.datatransfer.StringSelection
 snake.ToolPanel
 java.lang.Object
 javafx.stage.Stage
-snake.MenuManager
 snake.Grid
 java.lang.String
+snake.MenuManager
 snake.Snake
 javafx.scene.input.KeyEvent
 ||:snake.Enigma
