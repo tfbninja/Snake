@@ -20,23 +20,47 @@ public class Logger {
     private String log = "JSnake Log - " + formatDateTime() + "\n\n";
     private int logs = 1;
 
+    /**
+     * Default
+     */
     public Logger() {
         objs = new ArrayList<>();
     }
 
+    /**
+     * Preset list
+     *
+     * @param objList List of Loggable types
+     */
     public Logger(ArrayList<Loggable> objList) {
         objs = objList;
     }
 
+    /**
+     * Init with one Loggable
+     *
+     * @param l Loggable class
+     */
     public Logger(Loggable l) {
         objs = new ArrayList<>();
         objs.add(l);
     }
 
+    /**
+     * Adds a Loggable class/obj to the list
+     *
+     * @param l Loggable object
+     */
     public void add(Loggable l) {
         objs.add(l);
     }
 
+    /**
+     * Returns a string of length two containing the input int
+     *
+     * @param x integer to convert
+     * @return String of length 2 properly formatted
+     */
     public String twoDigit(int x) {
         String o = String.valueOf(x);
         if (o.length() == 1) {
@@ -45,6 +69,13 @@ public class Logger {
         return o.substring(0, 2);
     }
 
+    /**
+     * Returns a string of length len containing the input int
+     *
+     * @param x   integer to convert
+     * @param len desired length of output string
+     * @return String of length len properly formatted
+     */
     public String xDigit(int x, int len) {
         String o = String.valueOf(x);
         while (o.length() < len) {
@@ -53,6 +84,11 @@ public class Logger {
         return o.substring(0, len);
     }
 
+    /**
+     * Formats the date and time nicely
+     *
+     * @return The date and time as a String in a consistent format
+     */
     public String formatDateTime() {
         return LocalDateTime.now().getMonth().getValue() + "/"
                 + LocalDateTime.now().getDayOfMonth() + "/"
@@ -63,6 +99,9 @@ public class Logger {
                 + xDigit(LocalDateTime.now().getNano(), 3);
     }
 
+    /**
+     * Iterates the log
+     */
     public void logState() {
         log += "Log " + logs + " - " + formatDateTime() + "\n";
         for (Loggable l : objs) {
@@ -81,10 +120,20 @@ public class Logger {
         log += "End of log.";
     }
 
+    /**
+     * Gives the current state of the log String
+     *
+     * @return the current log string
+     */
     public String getLog() {
         return this.log;
     }
 
+    /**
+     * Saves the log string to a file (destination)
+     *
+     * @param destination The directory and filename of the new file
+     */
     public void saveLogFile(String destination) {
         endLog();
 

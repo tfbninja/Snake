@@ -6,8 +6,18 @@ package snake;
  */
 public interface Loggable {
 
+    /**
+     * Returns the state of the important variables in this class
+     *
+     * @return String of variables
+     */
     String getState();
 
+    /**
+     * Returns the major events that happened while this class was initialized
+     *
+     * @return String of the events
+     */
     String getEvents();
 }
 

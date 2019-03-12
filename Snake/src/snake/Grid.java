@@ -108,6 +108,11 @@ public final class Grid extends squares implements Updateable, Loggable {
         events += "Initialized. | ";
     }
 
+    /**
+     * Returns the major events that happened while this class was initialized
+     *
+     * @return String of events
+     */
     @Override
     public String getEvents() {
         return events + "end]";
@@ -134,6 +139,11 @@ public final class Grid extends squares implements Updateable, Loggable {
         }
     }
 
+    /**
+     * Returns the state of the important variables in this class
+     *
+     * @return String of variables
+     */
     @Override
     public String getState() {
         return "[Init len: " + this.initialSize + ", "
@@ -488,7 +498,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     }
 
     /**
-     *
+     * Resets game-by-game variables to prepare for next round
      */
     public void reset() {
         direction = 0;
@@ -505,7 +515,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     }
 
     /**
-     *
+     * Resets the snake size variable to it's initial value
      */
     public void resetSize() {
         snakeSize = initialSize;
@@ -615,7 +625,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     }
 
     /**
-     *
+     * Sets the apple positions in the appleMap
      */
     public void setApples() {
         if (this.applesFrozen) {
@@ -748,7 +758,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     }
 
     /**
-     *
+     * Clears all apples from the playArea
      */
     public void clearApples() {
         if (diffLevel > 0) {
@@ -808,7 +818,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     }
 
     /**
-     *
+     * Removes extra snake segments from the playArea
      */
     public void chopTail() {
         while (pos.size() > snakeSize) {
@@ -849,6 +859,11 @@ public final class Grid extends squares implements Updateable, Loggable {
         return this.direction;
     }
 
+    /**
+     * Returns the compass rose name corresponding to the direction variable
+     *
+     * @return North, South, East, or West (On weird case returns direction)
+     */
     public String getDirectionName() {
         switch (direction) {
             case 1:
@@ -907,7 +922,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     }
 
     /**
-     *
+     * Literally turns right
      */
     public void turnRight() {
         this.tempDir++;
@@ -915,7 +930,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     }
 
     /**
-     *
+     * Literally turns left
      */
     public void turnLeft() {
         this.tempDir--;
@@ -939,7 +954,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     }
 
     /**
-     *
+     * Increases the snake size by the growth rate
      */
     public void grow() {
         this.snakeSize += this.growBy;
@@ -1112,14 +1127,14 @@ public final class Grid extends squares implements Updateable, Loggable {
     }
 
     /**
-     *
+     * Kills the snake
      */
     public void kill() {
         GS.setToPostGame();
     }
 
     /**
-     *
+     * iT sHoUlD bE cAlLeD wIn
      */
     public void won() {
         won = true;
@@ -1202,7 +1217,8 @@ public final class Grid extends squares implements Updateable, Loggable {
     }
 
     /**
-     *
+     * Resets game-by-game variables in preparation for next round. Also clears
+     * grid of snake segments
      */
     public void resetSnake() {
         int[] headPos2 = getStartPos();
@@ -1455,7 +1471,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     }
 
     /**
-     *
+     * Not really used but saves the play area to the savedPlayArea variable
      */
     public void savePlayArea() {
         Grid.savedPlayArea = this.playArea;

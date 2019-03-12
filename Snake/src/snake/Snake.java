@@ -92,11 +92,21 @@ public class Snake extends Application implements Loggable {
     private String events = "";
 //</editor-fold>
 
+    /**
+     * Returns the major events that happened while this class was initialized
+     *
+     * @return String of events
+     */
     @Override
     public String getEvents() {
         return events + "end]";
     }
 
+    /**
+     * Returns the state of the important variables in this class
+     *
+     * @return String of all variables
+     */
     @Override
     public String getState() {
         return "[Frame: " + frame + ", "

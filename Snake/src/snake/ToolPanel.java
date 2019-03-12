@@ -688,7 +688,8 @@ public class ToolPanel extends javax.swing.JPanel implements Updateable {
     }
 
     private void currentBoxActionPerformed(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
+        // does nothing
+        return;
     }
 
     private void sizeIncrementSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {

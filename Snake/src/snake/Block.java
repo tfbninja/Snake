@@ -146,6 +146,11 @@ public class Block implements Locatable {
         this.color = color;
     }
 
+    /**
+     * Draws a block on the canvas
+     *
+     * @param canvas the canvas to draw the block on
+     */
     public void update(Canvas canvas) {
         GraphicsContext graphics = canvas.getGraphicsContext2D();
         graphics.setFill(this.color);
