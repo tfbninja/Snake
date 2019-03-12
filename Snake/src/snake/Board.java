@@ -16,6 +16,7 @@ import javafx.util.Pair;
 import javax.swing.JFrame;
 
 /**
+ * Graphics runner and user input handler
  *
  * @author Tim Barber
  */
@@ -80,12 +81,12 @@ public class Board implements Loggable {
 
     /**
      *
-     * @param w
-     * @param h
-     * @param mm
-     * @param menu
-     * @param gs
-     * @param primary
+     * @param w the horizontal width
+     * @param h the vertical height
+     * @param mm the MenuManager object
+     * @param menu the Menu object
+     * @param gs the GameState object
+     * @param primary the stage object holding the various graphical components
      */
     public Board(int w, int h, MenuManager mm, MainMenu menu, GameState gs, Stage primary) {
         this.width = w;
@@ -155,7 +156,7 @@ public class Board implements Loggable {
 
     /**
      *
-     * @return
+     * @return A list of colors formatted like this: "rrggbb"
      */
     public String[] getColorScheme() {
         String[] colorScheme = {blank, head, apple, rock, portalColors[0], bg};
@@ -178,7 +179,7 @@ public class Board implements Loggable {
 
     /**
      *
-     * @param amt
+     * @param amt the pixel length of the black border around the game
      */
     public void setOutsideMargin(int amt) {
         this.outsideMargin = amt;
@@ -195,7 +196,7 @@ public class Board implements Loggable {
 
     /**
      *
-     * @return
+     * @return the grid object used by Board
      */
     public Grid getGrid() {
         return this.grid;
@@ -203,7 +204,7 @@ public class Board implements Loggable {
 
     /**
      *
-     * @param newGrid
+     * @param newGrid the new grid to use
      */
     public void setGrid(Grid newGrid) {
         this.grid = newGrid;
@@ -216,7 +217,7 @@ public class Board implements Loggable {
 
     /**
      *
-     * @return
+     * @return the boolean representing whether night mode is enabled
      */
     public boolean getNightTheme() {
         return this.nightTheme;
@@ -224,7 +225,7 @@ public class Board implements Loggable {
 
     /**
      *
-     * @param val
+     * @param val the boolean representing whether night mode will be enabled
      */
     public void setNightTheme(boolean val) {
         this.nightTheme = val;
@@ -344,7 +345,7 @@ public class Board implements Loggable {
 
     /**
      *
-     * @return
+     * @return whether the SFX are on
      */
     public boolean getSFXOn() {
         return this.soundOn;
@@ -352,7 +353,7 @@ public class Board implements Loggable {
 
     /**
      *
-     * @param val
+     * @param val the value determining whether the SFX is on
      */
     public void setSFX(boolean val) {
         this.soundOn = val;
@@ -369,19 +370,7 @@ public class Board implements Loggable {
 
     /**
      *
-     * @param playArea
-     */
-    /*
-     * public void setSandbox(int[][] playArea) {
-     * sandboxExists = true;
-     * sandbox = playArea;
-     * grid.setSandbox(playArea);
-     * }
-     *
-     */
-    /**
-     *
-     * @param e
+     * @param e KeyEvent holding the key press information
      */
     public void keyPressed(KeyEvent e) {
         if (e.getCode() == KeyCode.R && MM.getCurrent() == 3) {
@@ -588,7 +577,8 @@ public class Board implements Loggable {
 
     /**
      *
-     * @return
+     * @return the lowest int starting from ten that has no corresponding pair
+     * in the grid
      */
     public int findUnusedPortalNum() {
         int num = 10;
@@ -600,8 +590,8 @@ public class Board implements Loggable {
 
     /**
      *
-     * @param AWTTool
-     * @return
+     * @param AWTTool the integer used to denote the current tool by toolPanel
+     * @return the integer used by the grid class
      */
     public int AWTToolToRealTool(int AWTTool) {
         switch (AWTTool) {
@@ -624,7 +614,7 @@ public class Board implements Loggable {
 
     /**
      *
-     * @param panel
+     * @param panel the toolPanel object used for sandbox mode
      */
     public void addToolPanel(ToolPanel panel) {
         toolPanel = panel;
@@ -632,7 +622,7 @@ public class Board implements Loggable {
 
     /**
      *
-     * @param frame
+     * @param frame the 'physical' window holding the toolPanel
      */
     public void addToolFrame(JFrame frame) {
         toolFrame = frame;
@@ -640,7 +630,7 @@ public class Board implements Loggable {
 
     /**
      *
-     * @param e
+     * @param e MouseEvent holding information of the mouse drag
      */
     public void mouseDragged(MouseEvent e) {
         double mouseX = e.getX();
@@ -693,7 +683,7 @@ public class Board implements Loggable {
 
     /**
      *
-     * @param e
+     * @param e MouseEvent holding information of the mouse click
      */
     public void mouseClicked(MouseEvent e) {
         this.mouseClicks++;
@@ -814,7 +804,7 @@ public class Board implements Loggable {
 
     /**
      *
-     * @return
+     * @return the canvas object used
      */
     public Canvas getCanvas() {
         return canvas;

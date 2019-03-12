@@ -30,11 +30,11 @@ public class Block implements Locatable {
 
     /**
      *
-     * @param xPos
-     * @param yPos
-     * @param width
-     * @param height
-     * @param color
+     * @param xPos the x position
+     * @param yPos the y position
+     * @param width the horizontal width
+     * @param height the vertical height
+     * @param color the color
      */
     public Block(int xPos, int yPos, int width, int height, Color color) {
         this.xPos = xPos;
@@ -46,12 +46,12 @@ public class Block implements Locatable {
 
     /**
      *
-     * @param xPos
-     * @param yPos
-     * @param width
-     * @param height
-     * @param color
-     * @param name
+     * @param xPos the x position
+     * @param yPos the y position
+     * @param width the horizontal width
+     * @param height the vertical height
+     * @param color the color
+     * @param name the name
      */
     public Block(int xPos, int yPos, int width, int height, Color color, String name) {
         this.xPos = xPos;
@@ -64,10 +64,10 @@ public class Block implements Locatable {
 
     /**
      *
-     * @param xPos
-     * @param yPos
-     * @param width
-     * @param height
+     * @param xPos the x position
+     * @param yPos the y position
+     * @param width the horizontal width
+     * @param height the vertical height
      */
     public Block(int xPos, int yPos, int width, int height) {
         this.xPos = xPos;
@@ -79,7 +79,7 @@ public class Block implements Locatable {
 
     /**
      *
-     * @param xPos
+     * @param xPos the new x position of the block
      */
     @Override
     public void setX(int xPos) {
@@ -88,7 +88,7 @@ public class Block implements Locatable {
 
     /**
      *
-     * @param yPos
+     * @param yPos the new y position of the block
      */
     @Override
     public void setY(int yPos) {
@@ -97,7 +97,7 @@ public class Block implements Locatable {
 
     /**
      *
-     * @return
+     * @return the name of the block
      */
     public String getName() {
         return name;
@@ -105,7 +105,7 @@ public class Block implements Locatable {
 
     /**
      *
-     * @param name
+     * @param name the new name of the block
      */
     public void setName(String name) {
         this.name = name;
@@ -113,8 +113,8 @@ public class Block implements Locatable {
 
     /**
      *
-     * @param x
-     * @param y
+     * @param x the new x coordinate for the block
+     * @param y the new y coordinate for the block
      */
     @Override
     public void setPos(int x, int y) {
@@ -124,7 +124,7 @@ public class Block implements Locatable {
 
     /**
      *
-     * @param width
+     * @param width the new width of the block
      */
     public void setWidth(int width) {
         this.width = width;
@@ -132,7 +132,7 @@ public class Block implements Locatable {
 
     /**
      *
-     * @param height
+     * @param height the new height of the block
      */
     public void setHeight(int height) {
         this.height = height;
@@ -140,7 +140,7 @@ public class Block implements Locatable {
 
     /**
      *
-     * @param color
+     * @param color the new color of the block
      */
     public void setColor(Color color) {
         this.color = color;
@@ -159,8 +159,8 @@ public class Block implements Locatable {
 
     /**
      *
-     * @param canvas
-     * @param radius
+     * @param canvas the canvas on which to draw
+     * @param radius the radius of the corner
      */
     public void drawRounded(Canvas canvas, double radius) {
         GraphicsContext graphics = canvas.getGraphicsContext2D();
@@ -170,7 +170,7 @@ public class Block implements Locatable {
 
     /**
      *
-     * @return
+     * @return the x position
      */
     public int getX() {
         return this.xPos;
@@ -178,7 +178,7 @@ public class Block implements Locatable {
 
     /**
      *
-     * @return
+     * @return the y position
      */
     public int getY() {
         return this.yPos;
@@ -186,7 +186,7 @@ public class Block implements Locatable {
 
     /**
      *
-     * @return
+     * @return the width
      */
     public int getWidth() {
         return this.width;
@@ -194,7 +194,7 @@ public class Block implements Locatable {
 
     /**
      *
-     * @return
+     * @return the height
      */
     public int getHeight() {
         return this.height;
@@ -202,7 +202,7 @@ public class Block implements Locatable {
 
     /**
      *
-     * @return
+     * @return the color
      */
     public Color getColor() {
         return this.color;

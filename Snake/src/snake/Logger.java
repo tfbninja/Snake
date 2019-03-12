@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 /**
+ * Log class that keeps track of all important events that happen during
+ * gameplay
  *
  * @author Tim Barber
  */
@@ -72,7 +74,7 @@ public class Logger {
     /**
      * Returns a string of length len containing the input int
      *
-     * @param x   integer to convert
+     * @param x integer to convert
      * @param len desired length of output string
      * @return String of length len properly formatted
      */

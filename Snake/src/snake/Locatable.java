@@ -2,38 +2,38 @@ package snake;
 
 /**
  *
- * @author Timothy
+ * @author Tim Barber
  */
 public interface Locatable {
 
     /**
      *
-     * @param x
-     * @param y
+     * @param x the x position
+     * @param y the y position
      */
     public void setPos(int x, int y);
 
     /**
      *
-     * @param x
+     * @param x the x position
      */
     public void setX(int x);
 
     /**
      *
-     * @param y
+     * @param y the y position
      */
     public void setY(int y);
 
     /**
      *
-     * @return
+     * @return the x position
      */
     public int getX();
 
     /**
      *
-     * @return
+     * @return the y position
      */
     public int getY();
 }

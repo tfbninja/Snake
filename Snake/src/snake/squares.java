@@ -1,6 +1,7 @@
 package snake;
 
 /**
+ * Parent class for Grid that provides some basic methods
  *
  * @author Tim Barber
  */
@@ -63,11 +64,11 @@ public abstract class squares {
     public abstract int getNeighbors(int x, int y, int type, int radius);
 
     /**
+     * see getNeighbors(int x, int y, int type, int radius)
      *
      * @param x The column number
      * @param y The row number
      * @param type Which neighbors should be counted
-     * @see getNeighbors(int x, int y, int type, int radius);
      * @return same as getNeighbors(int x, int y, int type, int radius), but
      * with implied radius 1
      */

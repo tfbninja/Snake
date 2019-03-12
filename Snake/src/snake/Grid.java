@@ -9,6 +9,7 @@ import java.util.Random;
 import javafx.util.Pair;
 
 /**
+ * Number crunching class that contains all fundamental game components
  *
  * @author Tim Barber
  */
@@ -84,7 +85,7 @@ public final class Grid extends squares implements Updateable, Loggable {
      */
     /**
      *
-     * @param width  The horizontal number of squares
+     * @param width The horizontal number of squares
      * @param length The vertical number of squares
      * @param startX The x-coordinate of the snake's starting position
      * @param startY The y-coordinate of the snake's starting position
@@ -219,8 +220,8 @@ public final class Grid extends squares implements Updateable, Loggable {
 
     /**
      *
-     * @param amt   The number of frames that should be between every update
-     *              cycle
+     * @param amt The number of frames that should be between every update
+     * cycle
      * @param level The difficulty level to change
      */
     public void setFrameSpeed(int amt, int level) {
@@ -296,7 +297,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     /**
      *
      * @return The coordinates of the first portal without a pair reading left
-     *         to right top down on the grid
+     * to right top down on the grid
      */
     public Pair<Integer, Integer> findUnmatchedPortal() {
         if (containsUnmatchedPortal() > -1) {
@@ -346,7 +347,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     /**
      *
      * @return -1 if there are no unmatched portals, otherwise returns the
-     *         lowest unmatched portal number
+     * lowest unmatched portal number
      */
     public int containsUnmatchedPortal() {
         for (int y = 0; y < super.getLength(); y++) {

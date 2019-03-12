@@ -14,6 +14,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * V2.0
+ * Separate AWT window that provides easy manipulation of the Grid class via a
+ * GUI
  *
  * @author Tim Barber
  */
@@ -32,7 +34,7 @@ public class ToolPanel extends javax.swing.JPanel implements Updateable {
      * Creates new form ToolPanel
      *
      * @param colorScheme The button colors
-     * @param grid        The grid to control
+     * @param grid The grid to control
      * @param mm
      * @param b
      * @param gs

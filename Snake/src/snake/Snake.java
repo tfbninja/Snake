@@ -31,6 +31,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 /**
+ * Runner class that initiates all high level tasks pertaining to the game
  *
  * @author Tim Barber
  */
