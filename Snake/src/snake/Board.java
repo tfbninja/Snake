@@ -132,7 +132,7 @@ public class Board implements Loggable {
                 + "MM: " + MM + ", "
                 + "MENU: " + MENU + ", "
                 + "GS: " + GS + ", "
-                + "sandbox: " + Arrays.deepToString(sandbox) + ", "
+                + "sandbox is not null: " + (sandbox != null) + ", "
                 + "tool panel is not null: " + (toolPanel != null) + ", "
                 + "stage is not null: " + (primaryStage != null) + ", "
                 + "tool frame is not null: " + (toolFrame != null)
@@ -325,7 +325,7 @@ public class Board implements Loggable {
      * Resets sandbox map (only called after you die)
      */
     public void setToSandboxPlayArea() {
-        System.out.println("Setting to sandbox: " + sandbox);
+        events += "Set to sandbox, sandbox is null: " + (sandbox == null) + " | ";
         grid.setPlayArea(this.sandbox);
     }
 

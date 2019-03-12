@@ -119,7 +119,7 @@ public class Snake extends Application implements Loggable {
                 + "musicOn: " + musicOn + ", "
                 + "night mode: " + nightMode + ", "
                 + "sandboxReset: " + sandboxReset + ", "
-                + "Apple map: " + Arrays.deepToString(appleMap) + ", "
+                + "Apple map is not null: " + (appleMap != null) + ", "
                 + "Menu Manager: " + MM + ", "
                 + "Main Menu: " + MENU + ", "
                 + "Game State: " + GS + ", "
