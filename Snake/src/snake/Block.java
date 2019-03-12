@@ -18,7 +18,7 @@ public class Block implements Locatable {
     private String name;
 
     /**
-     *
+     * Default constructor - sets everything to 0
      */
     public Block() {
         this.xPos = 0;
@@ -146,11 +146,7 @@ public class Block implements Locatable {
         this.color = color;
     }
 
-    /**
-     *
-     * @param canvas
-     */
-    public void draw(Canvas canvas) {
+    public void update(Canvas canvas) {
         GraphicsContext graphics = canvas.getGraphicsContext2D();
         graphics.setFill(this.color);
         graphics.fillRect(getX(), getY(), getWidth(), getHeight());

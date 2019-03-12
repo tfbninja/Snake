@@ -5,7 +5,6 @@ import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -28,7 +27,10 @@ public class FilePicker extends JFrame {
     private JButton save = new JButton("Save");
 
     /**
-     *
+     * I didn't write this class but I did pick through it to understand what it
+     * does, and it creates a JPanel for viewing the directory, and adds open
+     * and save buttons that use the actionListeners below. It uses a java
+     * preset: "JFilePicker" to do most of the heavy lifting.
      */
     public FilePicker() {
         JPanel panel = new JPanel();

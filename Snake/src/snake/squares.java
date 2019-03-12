@@ -9,6 +9,11 @@ public abstract class squares {
     private int width;
     private int length;
 
+    /**
+     *
+     * @param width
+     * @param length
+     */
     public squares(int width, int length) {
         this.width = width;
         this.length = length;

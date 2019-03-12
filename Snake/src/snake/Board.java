@@ -3,6 +3,7 @@ package snake;
 //<editor-fold defaultstate="collapsed" desc="imports">
 import java.awt.Toolkit;
 import java.awt.datatransfer.*;
+import java.util.Arrays;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
@@ -18,7 +19,7 @@ import javax.swing.JFrame;
  *
  * @author Tim Barber
  */
-public class Board {
+public class Board implements Loggable {
 
     //<editor-fold defaultstate="collapsed" desc="instance vars">
     private final int width;
@@ -73,6 +74,8 @@ public class Board {
     private ToolPanel toolPanel;
     private final Stage primaryStage;
     private JFrame toolFrame;
+
+    private String events = "";
 //</editor-fold>
 
     /**
@@ -94,10 +97,40 @@ public class Board {
         createGrid();
         grid.clearApples();
         primaryStage = primary;
+        events += "Initialized | ";
+    }
+
+    @Override
+    public String getEvents() {
+        return events + "end]";
+    }
+
+    @Override
+    public String getState() {
+        return "[mouse clicks: " + mouseClicks + ", "
+                + "grid is not null: " + (grid != null) + ", "
+                + "Canvas is not null: " + (canvas != null) + ", "
+                + "Colors: [blank: \"" + blank + "\", apple: \"" + apple + "\", "
+                + "body: \"" + body + "\", head: \""
+                + head + "\", bg: \"" + bg + "\", rock: \""
+                + rock + "\", applesEaten: \"" + applesEaten
+                + "\", portal colors: " + Arrays.deepToString(portalColors) + "], "
+                + "lost: " + lost + ", "
+                + "key presses: " + keyPresses + ", "
+                + "sound on: " + soundOn + ", "
+                + "night theme: " + this.nightTheme + ", "
+                + "MM: " + MM + ", "
+                + "MENU: " + MENU + ", "
+                + "GS: " + GS + ", "
+                + "sandbox: " + Arrays.deepToString(sandbox) + ", "
+                + "tool panel is not null: " + (toolPanel != null) + ", "
+                + "stage is not null: " + (primaryStage != null) + ", "
+                + "tool frame is not null: " + (toolFrame != null)
+                + "]";
     }
 
     /**
-     *
+     * Sets the different colors variables to a dark colors cheme
      */
     public void setDarkMode() {
         blank = "444444";
@@ -120,7 +153,7 @@ public class Board {
     }
 
     /**
-     *
+     * Sets the different color variables to a light theme (default)
      */
     public void setLightMode() {
         blank = "74bfb0";
@@ -142,7 +175,8 @@ public class Board {
     }
 
     /**
-     *
+     * The less repeated code, the better. All this does is create a grid and
+     * load it with the necessary values
      */
     public void createGrid() {
         grid = new Grid(GRIDSIZE, GRIDSIZE, 21, 20);
@@ -186,8 +220,10 @@ public class Board {
         this.nightTheme = val;
         if (val) {
             setDarkMode();
+            events += "set to Dark Mode | ";
         } else {
             setLightMode();
+            events += "set to Light Mode | ";
         }
     }
 
@@ -201,16 +237,16 @@ public class Board {
         gc.setFill(Color.web(this.bg));
         gc.fillRect(0, 0, this.width, this.height);
 
-        // draw black border
+        // update black border
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(borderSize);
         gc.fillRect(borderSize / 2, borderSize / 2, width - borderSize, height - borderSize);
 
         if (this.grid.getEdgeKills()) {
-            // draw red border indicating that edge kills
+            // update red border indicating that edge kills
             gc.setStroke(Color.CRIMSON.darker());
         } else {
-            // draw green border indicating that warp mode is on
+            // update green border indicating that warp mode is on
             gc.setStroke(Color.CHARTREUSE);
         }
         gc.setLineWidth(edgeSize);
@@ -242,13 +278,13 @@ public class Board {
                 temp.setY(yPixel);
                 temp.setWidth(size);
                 temp.setHeight(size);
-                temp.draw(canvas);
+                temp.update(canvas);
                 yPixel += margin + size;
             }
             xPixel += margin + size;
         }
 
-        // draw apples eaten
+        // update apples eaten
         gc.setFill(Color.web(applesEaten));
         gc.setFont(Font.font("Impact", 22));
         gc.fillText("Apples eaten: " + this.getGrid().getApplesEaten(), XMARGIN + width / 2 - 100, YMARGIN + getPixelDimensions()[1] + 22);
@@ -259,7 +295,8 @@ public class Board {
     }
 
     /**
-     *
+     * Resets game-by-game variables and prepares for next round - used for the
+     * standard difficulty levels, 1-4
      */
     public void reset() {
         keyPresses = 0;
@@ -275,7 +312,7 @@ public class Board {
     }
 
     /**
-     *
+     * Resets sandbox map (only called after you die)
      */
     public void setToSandboxPlayArea() {
         System.out.println("Setting to sandbox: " + sandbox);
@@ -283,7 +320,8 @@ public class Board {
     }
 
     /**
-     *
+     * Resets game-by-game variables but keeps the same grid object - used in
+     * sandbox mode
      */
     public void resetKeepGrid() {
         grid.reset();
@@ -337,6 +375,7 @@ public class Board {
      */
     public void keyPressed(KeyEvent e) {
         if (e.getCode() == KeyCode.R && MM.getCurrent() == 3) {
+            events += "reset | ";
             reset();
         }
         if (e.getCode() == KeyCode.N) {
@@ -344,12 +383,14 @@ public class Board {
             this.setNightTheme(nightTheme);
         }
         if (e.getCode() == KeyCode.ESCAPE) {
+            events += "ESC to menu | ";
             reset();
             MM.setCurrent(0);
             toolFrame.setVisible(false);
         }
 
         if (e.getCode() == KeyCode.EQUALS && e.isShiftDown()) {
+            events += "Grid exported | ";
             System.out.println(grid.exportCode());
         }
 
@@ -380,27 +421,32 @@ public class Board {
         if (MM.getCurrent() == 0) {
             if (e.getCode() == KeyCode.DIGIT1) {
                 // easy mode chosen
+                events += "chose easy mode | ";
                 grid.setDiffLevel(1);
                 MM.setCurrent(4);
                 GS.setToPreGame();
             } else if (e.getCode() == KeyCode.DIGIT2) {
+                events += "chose medium mode | ";
                 // medium mode chosen
                 this.grid.setDiffLevel(2);
                 MM.setCurrent(4);
                 GS.setToPreGame();
             } else if (e.getCode() == KeyCode.DIGIT3) {
+                events += "chose hard mode | ";
                 // hard mode chosen
                 this.grid.setDiffLevel(3);
                 GS.setToPreGame();
                 MM.setCurrent(4);
             } else if (e.getCode() == KeyCode.DIGIT4) {
+                events += "chose extreme mode | ";
                 // impossible mode chosen
                 this.grid.setDiffLevel(4);
                 GS.setToPreGame();
                 MM.setCurrent(4);
             } else if (e.getCode() == KeyCode.DIGIT0 && e.isShiftDown()) {
+                events += "chose sandbox mode | ";
                 Snake.initSandboxFile();
-                System.out.println("Successfully initialized sandbox file");
+                events += "loaded sandbox file | ";
                 toolFrame.setVisible(true);
                 toolFrame.requestFocus(); // bring this to front
                 toolPanel.setCurrentTool(0);
@@ -430,6 +476,7 @@ public class Board {
             }
         }
         if (e.getCode() == KeyCode.H) {
+            events += "help screen | ";
             if (MM.getCurrent() == 0) {
                 MM.setCurrent(1);
             } else if (MM.getCurrent() == 1) {
@@ -438,12 +485,15 @@ public class Board {
         }
         if (e.getCode() == KeyCode.M) {
             toggleMusic();
+            events += "music set to " + (MENU.getMusic() ? "on" : "off") + " | ";
         }
         if (e.getCode() == KeyCode.X) {
             toggleSFX();
+            events += "SFX set to " + (MENU.getSFX() ? "on" : "off") + " | ";
         }
         if (this.lost && (MM.getCurrent() == 3 || MM.getCurrent() == 4) && (e.getCode() == KeyCode.R || e.getCode() == KeyCode.SPACE)) {
             reset();
+            events += "reset | ";
         }
         if (GS.isGame() && keyPresses > 1) {
             if (null != e.getCode()) {
@@ -503,7 +553,7 @@ public class Board {
     }
 
     /**
-     *
+     * Toggles background music and updates MENU controller
      */
     public void toggleMusic() {
         if (MENU.getMusic()) {
@@ -515,7 +565,7 @@ public class Board {
     }
 
     /**
-     *
+     * Toggles SFX and updates MENU controller
      */
     public void toggleSFX() {
         if (MENU.getSFX()) {
@@ -762,6 +812,6 @@ public class Board {
 
     @Override
     public String toString() {
-        return "Board[" + width + ", " + height + ", " + GRIDSIZE + "]";
+        return "Board: [" + width + ", " + height + ", " + GRIDSIZE + "]";
     }
 }

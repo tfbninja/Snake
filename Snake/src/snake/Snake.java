@@ -34,7 +34,7 @@ import javax.swing.JFrame;
  *
  * @author Tim Barber
  */
-public class Snake extends Application {
+public class Snake extends Application implements Loggable {
 
     //<editor-fold defaultstate="collapsed" desc="instance vars">
     private final int canvasMargin = 10;
@@ -87,16 +87,45 @@ public class Snake extends Application {
     private static final GameState GS = new GameState(1);
 
     private static boolean pause = false;
+
+    private Logger log = new Logger(this);
+    private String events = "";
 //</editor-fold>
 
     @Override
-    public void start(Stage primaryStage) {
+    public String getEvents() {
+        return events + "end]";
+    }
 
+    @Override
+    public String getState() {
+        return "[Frame: " + frame + ", "
+                + "AI: " + AI + ", "
+                + "Board is not null: " + (board != null) + ", "
+                + "Grid is not null: " + (board.getGrid() != null) + ", "
+                + "Won: " + won + ", "
+                + "Scores overwritten: " + scoresOverwritten + ", "
+                + "sfxOn: " + sfxOn + ", "
+                + "musicOn: " + musicOn + ", "
+                + "night mode: " + nightMode + ", "
+                + "sandboxReset: " + sandboxReset + ", "
+                + "Apple map: " + Arrays.deepToString(appleMap) + ", "
+                + "Menu Manager: " + MM + ", "
+                + "Main Menu: " + MENU + ", "
+                + "Game State: " + GS + ", "
+                + "pause: " + pause + ", "
+                + "]";
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
         //<editor-fold defaultstate="collapsed" desc="initialization">
         // TODO: Assert that resources folder exists
         // Create Board of block objects
         board = new Board(canvasW, canvasH, MM, MENU, GS, primaryStage);
         board.setOutsideMargin(canvasMargin);
+        log.add(board);
+        log.add(board.getGrid());
 
         /*
          * Initialize settings to last used using a settings.snk file that
@@ -218,6 +247,7 @@ public class Snake extends Application {
         primaryStage.setTitle("JSnake");
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(event -> {
+            log.saveLogFile("resources/logs/log" + log.formatDateTime().replaceAll("[.:/ ]", "") + ".snklog");
             // Safely exit the program when closed
             System.exit(0);
         });
@@ -236,7 +266,8 @@ public class Snake extends Application {
         toolboxFrame.setLocation((int) primaryStage.getX() - toolPanel.getWidth() - 20, (int) primaryStage.getY());
         toolboxFrame.setVisible(false);
 //</editor-fold>
-
+        events += "Initialized. | ";
+        log.logState();
         // Main game loop - this is called every 1/30th of a second or so
         new AnimationTimer() {
             @Override
@@ -255,6 +286,10 @@ public class Snake extends Application {
                     frame++;
                     if (frame % 30 == 0) {
 
+                        if (frame % 900 == 0) {
+                            // approx once every 30 seconds
+                            log.logState();
+                        }
                         // We really don't need to set this variable every single time the game is updated, so we only do it every 30 times
                         if (GS.isGame()) {
                             sandboxReset = false;
@@ -280,6 +315,7 @@ public class Snake extends Application {
                                     }
                                 }
                             } catch (IOException x) {
+                                events += "Could not save temp sandbox file. | ";
                                 System.out.println("Could not save temp sandbox file.");
                             }
                         }
@@ -302,7 +338,8 @@ public class Snake extends Application {
                             }
                             creator.close();
                         } catch (IOException x) {
-                            System.out.println(x.getLocalizedMessage() + " oof.");
+                            events += "Could not save settings | ";
+                            System.out.println("Could not save settings - " + x.getLocalizedMessage());
                         }
                     }
 
@@ -372,10 +409,7 @@ public class Snake extends Application {
                                 board.getGrid().setPos(headPos2[0], headPos2[1]);
                                 board.getGrid().setGrowBy(toolPanel.getGrowBy());
                                 board.getGrid().setEdgeKills(toolPanel.getEdgeKills());
-                                //System.out.println("Setting to sandbox play area from snake");
                                 board.setToSandboxPlayArea();
-                                //System.out.println("Set to sandbox play area from snake");
-                                //board.getGrid().unFreezeApples();
                                 board.getGrid().setApples(appleMap);
                                 board.drawBlocks();
                                 MM.setCurrent(4);
@@ -457,13 +491,14 @@ public class Snake extends Application {
                                 scoresOverwritten = false;
                                 if (frame % board.getGrid().getFrameSpeed() == 0) {
                                     for (int i = 0; i < board.getGrid().getGensPerFrame(); i++) {
-                                        board.getGrid().nextGen();
+                                        board.getGrid().update();
                                     }
                                 }
                                 if (board.getGrid().countVal(0) == 0 && !won && GS.isGame()) {
                                     won = true;
                                     if (MENU.getSFX()) {
                                         DAWON.play();
+                                        events += "Won. | ";
                                         board.getGrid().won();
                                     }
                                 }
@@ -482,6 +517,7 @@ public class Snake extends Application {
         // Input handling
         scene.setOnMousePressed(
                 (MouseEvent event) -> {
+                    events += "Mouse clk at (" + event.getX() + ", " + event.getY() + ") | ";
                     board.mouseClicked(event);
                 }
         );
@@ -805,11 +841,10 @@ public class Snake extends Application {
     }
 
     /**
-     *
+     * Initialize the sandbox file from the default location
      */
     public static void initSandboxFile() {
         try {
-            //System.out.println("Initializing sandbox");
             sandbox = new File(SANDBOXLOCATION);
             Scanner reader = new Scanner(sandbox);
             reader.useDelimiter("2049jg0324u0j2m0352035");
@@ -917,7 +952,7 @@ public class Snake extends Application {
     }
 
     /**
-     *
+     * Called every grid.update() if the boolean AI is true
      */
     public static void AI() {
         if (GS.isGame()) {

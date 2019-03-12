@@ -28,7 +28,6 @@ public class Sound { // Holds one audio file
     FloatControl gainControl;
 
     //
-
     /**
      *
      * @param filename
@@ -83,7 +82,7 @@ public class Sound { // Holds one audio file
     }
 
     /**
-     *
+     * Toggles the mute setting
      */
     public void toggleMute() {
         muteControl.setValue(!muteControl.getValue());
@@ -91,7 +90,7 @@ public class Sound { // Holds one audio file
     }
 
     /**
-     *
+     * Mutes this sound
      */
     public void mute() {
         this.mediaPlayer.setMute(true);
@@ -100,7 +99,7 @@ public class Sound { // Holds one audio file
     }
 
     /**
-     *
+     * Unmutes this sound
      */
     public void unmute() {
         this.mediaPlayer.setMute(false);
@@ -109,7 +108,7 @@ public class Sound { // Holds one audio file
     }
 
     /**
-     *
+     * Loops this sound until stopped
      */
     public void loop() {
         // taken from https://stackoverflow.com/questions/30587437
@@ -118,7 +117,7 @@ public class Sound { // Holds one audio file
     }
 
     /**
-     *
+     * Plays this sound once
      */
     public void play() {
         // hey... it works alright? Don't question it
@@ -132,7 +131,7 @@ public class Sound { // Holds one audio file
     }
 
     /**
-     *
+     * Stops this sound
      */
     public void stop() {
         mediaPlayer.stop();
@@ -140,7 +139,7 @@ public class Sound { // Holds one audio file
     }
 
     /**
-     *
+     * Pauses this sound
      */
     public void pause() {
         mediaPlayer.pause();

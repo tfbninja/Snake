@@ -47,7 +47,7 @@ public class MenuManager {
     }
 
     /**
-     *
+     * Shows the first menu option in the list
      */
     public void setMain() {
         clearDisplaying(menuNames.size());

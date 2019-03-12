@@ -4,6 +4,7 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Random;
 import javafx.util.Pair;
 
@@ -11,7 +12,7 @@ import javafx.util.Pair;
  *
  * @author Tim Barber
  */
-public final class Grid extends squares {
+public final class Grid extends squares implements Updateable, Loggable {
 
     /*
      * 0 - Blank
@@ -52,6 +53,9 @@ public final class Grid extends squares {
     private boolean soundOn = true;
     private Sound warp;
     private ArrayList<Sound> loseSounds = new ArrayList<>();
+
+    // makes sure we're not randomly picking the same sound over and over again
+    private int deathCounter = 0;
     private Sound bite;
 
     int[] applePos = new int[2];
@@ -67,6 +71,8 @@ public final class Grid extends squares {
 
     private boolean extremeWarp = false;
     private boolean won = false;
+
+    private String events = "";
 //</editor-fold>
 
     /*
@@ -78,7 +84,7 @@ public final class Grid extends squares {
      */
     /**
      *
-     * @param width The horizontal number of squares
+     * @param width  The horizontal number of squares
      * @param length The vertical number of squares
      * @param startX The x-coordinate of the snake's starting position
      * @param startY The y-coordinate of the snake's starting position
@@ -99,8 +105,19 @@ public final class Grid extends squares {
         warp.setVolume(0.5);
         addDeathSounds();
         this.bite = new Sound("resources/sounds/bite2.wav");
+        events += "Initialized. | ";
     }
 
+    @Override
+    public String getEvents() {
+        return events + "end]";
+    }
+
+    /**
+     * Returns playArea
+     *
+     * @return the int matrix holding the grid values
+     */
     public int[][] getPlayArea() {
         return this.playArea;
     }
@@ -117,29 +134,41 @@ public final class Grid extends squares {
         }
     }
 
+    @Override
+    public String getState() {
+        return "[Init len: " + this.initialSize + ", "
+                + "grow: " + this.growBy + ", "
+                + "apples eaten: " + applesEaten + ", "
+                + "length: " + pos.size() + ", "
+                + "startx: " + startx + ", "
+                + "starty: " + starty + ", "
+                + "playArea: " + Arrays.deepToString(playArea) + ", "
+                + "]";
+    }
+
     /**
-     *
+     * This enables the setting that keeps the same seed for the apples
      */
     public void useSameSeedOnReset() {
         this.useSameSeedOnReset = true;
     }
 
     /**
-     *
+     * This disables the setting that keeps the same seed for the apples
      */
     public void dontUseSameSeedOnReset() {
         this.useSameSeedOnReset = false;
     }
 
     /**
-     *
+     * Prevents the master apple map from being changed
      */
     public void freezeApples() {
         this.applesFrozen = true;
     }
 
     /**
-     *
+     * Allows the master apple map to be changed
      */
     public void unFreezeApples() {
         this.applesFrozen = false;
@@ -180,8 +209,8 @@ public final class Grid extends squares {
 
     /**
      *
-     * @param amt The number of frames that should be between every update
-     * cycle
+     * @param amt   The number of frames that should be between every update
+     *              cycle
      * @param level The difficulty level to change
      */
     public void setFrameSpeed(int amt, int level) {
@@ -257,7 +286,7 @@ public final class Grid extends squares {
     /**
      *
      * @return The coordinates of the first portal without a pair reading left
-     * to right top down on the grid
+     *         to right top down on the grid
      */
     public Pair<Integer, Integer> findUnmatchedPortal() {
         if (containsUnmatchedPortal() > -1) {
@@ -307,7 +336,7 @@ public final class Grid extends squares {
     /**
      *
      * @return -1 if there are no unmatched portals, otherwise returns the
-     * lowest unmatched portal number
+     *         lowest unmatched portal number
      */
     public int containsUnmatchedPortal() {
         for (int y = 0; y < super.getLength(); y++) {
@@ -409,7 +438,6 @@ public final class Grid extends squares {
         File[] directoryListing = deathSoundsFolder.listFiles();
         if (directoryListing != null) {
             for (File child : directoryListing) {
-                //System.out.println(formatFilePath(child.getPath()));
                 this.loseSounds.add(new Sound(formatFilePath(child.getPath())));
             }
         } else {
@@ -434,15 +462,16 @@ public final class Grid extends squares {
     }
 
     /**
+     * Sets the growBy variable
      *
-     * @param amt
+     * @param amt the rate at which the snake grows
      */
     public void setGrowBy(int amt) {
         this.growBy = amt;
     }
 
     /**
-     *
+     * Reverts the apples in playArea to their initial positions
      */
     public void revertToInitial() {
         for (int r = 0; r < playArea.length; r++) {
@@ -820,6 +849,20 @@ public final class Grid extends squares {
         return this.direction;
     }
 
+    public String getDirectionName() {
+        switch (direction) {
+            case 1:
+                return "North";
+            case 2:
+                return "East";
+            case 3:
+                return "South";
+            case 4:
+                return "West";
+        }
+        return "" + direction;
+    }
+
     /**
      *
      * @param dir
@@ -827,6 +870,7 @@ public final class Grid extends squares {
     public void attemptSetDirection(int dir) {
         if (Math.abs(this.direction - dir) != 2 && Math.abs(this.tempDir - dir) != 2) {
             this.tempDir = dir;
+
         }
     }
 
@@ -1168,15 +1212,24 @@ public final class Grid extends squares {
     }
 
     /**
-     *
+     * Plays a pseudo-random death sound (using the time as a seed). Doesn't
+     * repeat sounds.
      */
     public void die() {
+        events += " die at " + applesEaten + " | ";
         random.setSeed(LocalDateTime.now().getNano());
         if (!won) {
             if (random.nextInt((int) (1.0 / RRPROB)) == random.nextInt((int) (1 / RRPROB))) {
                 new Sound(RRNAME).play();
             }
-            pick(loseSounds).play();
+            if (deathCounter >= loseSounds.size() - 5) { // we don't need to play EVERY sound before we use the other ones, but definitely not two in a row, that gets annoying
+                Collections.shuffle(loseSounds);
+                deathCounter = 0;
+            }
+            if (soundOn) {
+                loseSounds.get(deathCounter).play();
+            }
+            deathCounter++;
         }
         random.setSeed(seed);
     }
@@ -1184,7 +1237,8 @@ public final class Grid extends squares {
     /**
      *
      */
-    public void nextGen() {
+    @Override
+    public void update() {
         if (GS.isGame()) {
             if (this.snakeSize < 1) {
                 GS.setToPostGame();
@@ -1192,7 +1246,14 @@ public final class Grid extends squares {
                 return;
             }
 
+            boolean trigger = false;
+            if (this.direction != tempDir) {
+                trigger = true;
+            }
             this.direction = this.tempDir;
+            if (trigger) {
+                events += getDirectionName().charAt(0);
+            }
             int nextX = nextPos()[0];
             int nextY = nextPos()[1];
             int headX = pos.get(0).getKey();
@@ -1240,6 +1301,7 @@ public final class Grid extends squares {
                         }
                         if (playWarpSound2 && soundOn) {
                             warp.play();
+                            events += "!";
                         }
                     }
                 } else {
@@ -1265,45 +1327,36 @@ public final class Grid extends squares {
                 // edge kills
                 if (nextX < 0) {
                     GS.setToPostGame();
-                    if (soundOn) {
-                        die();
-                    }
+                    die();
                 }
                 if (nextX >= super.getWidth()) {
                     GS.setToPostGame();
-                    if (soundOn) {
-                        die();
-                    }
+                    die();
                 }
                 if (nextY < 0) {
                     GS.setToPostGame();
-                    if (soundOn) {
-                        die();
-                    }
+                    die();
                 }
                 if (nextY >= super.getLength()) {
                     GS.setToPostGame();
-                    if (soundOn) {
-                        die();
-                    }
+                    die();
                 }
             }
 
             if (GS.isGame() && (this.isRock(nextX, nextY) || this.edgeKills && (nextX >= super.getWidth() || nextY >= super.getLength() || nextX < 0 || nextY < 0))) {
                 // collision with wall or rock
+                events += " Wall or Rock";
                 GS.setToPostGame();
-                if (soundOn) {
-                    die();
-                }
+                die();
             } else if (GS.isGame() && isSnake(nextX, nextY)) {
                 // collision with self
+                events += " Snake";
                 GS.setToPostGame();
-                if (soundOn) {
-                    die();
-                }
+                die();
             } else if (GS.isGame() && this.isApple(nextX, nextY)) {
                 // ate an apple
                 this.applesEaten++;
+                events += "A";
                 if (soundOn) {
                     bite.play();
                 }
@@ -1326,7 +1379,7 @@ public final class Grid extends squares {
                 }
             } else if (GS.isGame() && this.isPortal(nextX, nextY)) {
                 // if next square is a portal
-
+                events += "P";
                 while (isPortal(nextX, nextY)) {
                     // while the square being teleported to contains a portal...
                     // teleport to the next portal
@@ -1580,14 +1633,7 @@ public final class Grid extends squares {
 
     @Override
     public String toString() {
-        String output = "";
-        for (int y = 0; y < super.getWidth(); y++) {
-            for (int x = 0; x < super.getLength(); x++) {
-                output += String.valueOf(this.playArea[y][x]);
-                output += " ";
-            }
-            output += "\n";
-        }
+        String output = "Grid: " + Arrays.deepToString(playArea);
         return output;
     }
 }
