@@ -1,13 +1,15 @@
 package snake;
 
-import java.util.ArrayList;
-
 /**
+ * Very long, super important class that is definitely not just here to
+ * implement polymorphism
  *
  * @author Tim Barber
  */
 public abstract class Controller {
 
-    private ArrayList<Integer> list;
-    private ArrayList<String> names;
+    /*
+     * Turns off all variables
+     */
+    public abstract void turnOff();
 }

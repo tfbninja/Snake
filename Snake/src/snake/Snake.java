@@ -3,18 +3,11 @@ package snake;
 //<editor-fold defaultstate="collapsed" desc="imports">
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InvalidObjectException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Random;
 import java.util.Scanner;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -27,8 +20,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+//</editor-fold>
 
 /**
  * Runner class that initiates all high level tasks pertaining to the game
@@ -44,6 +39,8 @@ public class Snake extends Application implements Loggable {
     private final int WIDTH = 430 + canvasMargin * 2;
     private final int HEIGHT = 430 + canvasMargin * 2;
 
+    private static final Random random = new Random(System.currentTimeMillis());
+
     // secondary sandbox tool window
     private ToolPanel toolPanel;
     private JFrame toolboxFrame;
@@ -54,13 +51,17 @@ public class Snake extends Application implements Loggable {
 
     private static Board board;
 
-    private final Sound menuMusic = new Sound("resources/sounds/menuMusic.wav");
+    private ArrayList<Sound> bgMusic = new ArrayList<>();
     private final Sound DAWON = new Sound("resources/sounds/DAWON.mp3");
     private boolean won = false;
     private static ArrayList<Integer> scores = new ArrayList<>();
-    private ImageView HS_IV; // High Score screen stored in an 'ImageView' class
+    private static ArrayList<String> names = new ArrayList<>();
+    private static String[] funnyDefaultNames = {"ERR", "OOF", "RIP", "NAN", "LCS", "NMN"};
+    private static ImageView HS_IV; // High Score screen stored in an 'ImageView' class
 
     private boolean scoresOverwritten = false;
+    private static String tempName = "";
+    private static int tempFrame = 900;
 
     private File settings;
     private final String settingsLocation = "resources/settings.snk";
@@ -90,8 +91,22 @@ public class Snake extends Application implements Loggable {
     private static boolean pause = false;
 
     private Logger log = new Logger(this);
-    private String events = "";
+    private static String events = "";
 //</editor-fold>
+
+    public void setupBGMusic() {
+        // addes all files in resources/sounds/death to the list of sounds to play when game is lost
+        File bgMusicFolder = new File("resources/sounds/bg");
+        File[] directoryListing = bgMusicFolder.listFiles();
+        if (directoryListing != null) {
+            for (File child : directoryListing) {
+                this.bgMusic.add(new Sound(Grid.formatFilePath(child.getPath())));
+            }
+        } else {
+            events += "Can not find resources/sounds/bg folder | ";
+            System.out.println("Cannot find the resources/sounds/bg folder... try setting the working directory to the folder that Snake.java or Snake.jar is contained in.");
+        }
+    }
 
     /**
      * Returns the major events that happened while this class was initialized
@@ -101,6 +116,33 @@ public class Snake extends Application implements Loggable {
     @Override
     public String getEvents() {
         return events + "end]";
+    }
+
+    public void muteBG() {
+        for (Sound s : bgMusic) {
+            s.mute();
+        }
+    }
+
+    public void unmuteBG() {
+        for (Sound s : bgMusic) {
+            s.unmute();
+        }
+    }
+
+    public void playBG() {
+        bgMusic.get(0).play();
+        bgMusic.add(bgMusic.get(0));
+        bgMusic.remove(0);
+    }
+
+    public void loopBG() {
+        for (Sound s : bgMusic) {
+            if (s.isPlaying()) {
+                return;
+            }
+        }
+        playBG();
     }
 
     /**
@@ -128,10 +170,21 @@ public class Snake extends Application implements Loggable {
                 + "]";
     }
 
+    public static String randomStr(int len) {
+        String out = "";
+        for (int i = 0; i < len; i++) {
+            out += (char) (65 + (random.nextInt(26)));
+        }
+        if (random.nextInt(7) == random.nextInt(7)) {
+            out = funnyDefaultNames[random.nextInt(funnyDefaultNames.length - 1)];
+        }
+        return out;
+    }
+
     @Override
     public void start(Stage primaryStage) {
         //<editor-fold defaultstate="collapsed" desc="initialization">
-        // TODO: Assert that resources folder exists
+        setupBGMusic();
         // Create Board of block objects
         board = new Board(canvasW, canvasH, MM, MENU, GS, primaryStage);
         board.setOutsideMargin(canvasMargin);
@@ -207,7 +260,7 @@ public class Snake extends Application implements Loggable {
         if (musicOn) {
             MENU.turnOnMusic();
         } else {
-            menuMusic.mute();
+            muteBG();
             MENU.turnOffMusic();
         }
 
@@ -216,7 +269,7 @@ public class Snake extends Application implements Loggable {
          * that it doesn't have to restart every single time the end user
          * toggles the mute button
          */
-        menuMusic.loop();
+        playBG();
 
         // Helper method that retrieves the high scores from the resources folder
         getScores();
@@ -230,12 +283,12 @@ public class Snake extends Application implements Loggable {
         for (int i = 0; i < scores.size(); i += 2) { // loop through local scores
             if (scores.get(i) == -1) { // if bad encode/nonexistent
                 scores.set(i, 0); // set score to 0
-                writeEncodedScore("resources\\scores\\local\\localHighScore" + (i / 2 + 1) + ".local", 0); // write 0 to file
+                writeEncodedScore("resources\\scores\\local\\localHighScore" + (i / 2 + 1) + ".local", 0, randomStr(3)); // write 0 to file
             }
         }
 
         // Initializes ImageView object for viewing the high scores (viewed by pressing 'h' on the menu screen)
-        HS_IV = createHighScoreScreen();
+        loadHighScoreScreen();
 
         // Initialize help screen (Accessed from menu)
         ImageView HELP_IV = getImageView("resources\\art\\help.jpg");
@@ -296,7 +349,7 @@ public class Snake extends Application implements Loggable {
                      */
                     frame++;
                     if (frame % 30 == 0) {
-
+                        loopBG();
                         if (frame % 900 == 0) {
                             // approx once every 30 seconds
                             log.logState();
@@ -359,9 +412,9 @@ public class Snake extends Application implements Loggable {
 
                     // Make sure the background music is consistent with the MainMenu object
                     if (MENU.getMusic()) {
-                        menuMusic.unmute();
+                        unmuteBG();
                     } else {
-                        menuMusic.mute();
+                        muteBG();
                     }
 
                     /*
@@ -434,21 +487,41 @@ public class Snake extends Application implements Loggable {
 
                                 if (highScore) {
                                     //  (if score is higher than local or world)
+                                    HighScore tempWindow = new HighScore();
+                                    tempWindow.execute();
 
+                                    new AnimationTimer() {
+                                        @Override
+                                        public void handle(long now) {
+                                            tempFrame--;
+                                            if (tempFrame % 30 == 0) {
+                                                tempWindow.setCounter(tempFrame / 30);
+                                                events += "Waiting on name at " + (tempFrame) + " | ";
+                                                System.out.println((tempFrame / 30) + " ready" + tempWindow.ready());
+                                            }
+                                            if (tempWindow.ready()) {
+                                                stop();
+                                                return;
+                                            }
+                                        }
+                                    }.start();
+                                    tempFrame = 900;
+                                    String name = tempName;
                                     // write scores to files
-                                    writeEncodedScore("resources\\scores\\local\\localHighScore" + thisDifficulty + ".local", thisScore);
+
+                                    writeEncodedScore("resources\\scores\\local\\localHighScore" + thisDifficulty + ".local", thisScore, name);
 
                                     if (thisScore > scores.get((thisDifficulty - 1) * 2 + 1)) {
                                         if (checkFileExists("resources\\scores\\world\\worldHighScore" + thisDifficulty + ".world")) {
-                                            writeEncodedScore("resources\\scores\\world\\worldHighScore" + thisDifficulty + ".world", thisScore);
+                                            writeEncodedScore("resources\\scores\\world\\worldHighScore" + thisDifficulty + ".world", thisScore, name);
                                         } else {
-                                            // if there's no world file, it ain't legit
-                                            //System.out.println("maybe keep the world high score file around buddy...");
+                                            // if there's no world file, it ain't legit                                        }
                                         }
                                     }
-                                }
-                                // re-grab scores
+                                } // re-grab scores
+
                                 getScores();
+
                                 // copy the master image
                                 overlayImage("resources\\art\\loseScreenMaster.png", "resources\\art\\loseScreen.png", String.valueOf(thisScore), 248, 194, new Font("Impact", 26), 177, 96, 15);
                                 int y = 320;
@@ -458,14 +531,14 @@ public class Snake extends Application implements Loggable {
                                         if (i > 1) {
                                             y += 27;
                                         }
-                                        x = 264;
+                                        x = 234;
                                     } else {
-                                        x = 153;
+                                        x = 125;
                                     }
                                     if (i / 2 + 1 == thisDifficulty && highScore && thisScore > oldScores[i]) {
-                                        overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 22), 255, 0, 0);
+                                        overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", String.valueOf(scores.get(i)) + " - " + names.get(i), x, y, new Font("Impact", 22), 255, 0, 0);
                                     } else {
-                                        overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 22), 177, 96, 15);
+                                        overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", String.valueOf(scores.get(i)) + " - " + names.get(i), x, y, new Font("Impact", 22), 177, 96, 15);
                                     }
                                 }
 
@@ -474,11 +547,13 @@ public class Snake extends Application implements Loggable {
                                 }
                                 scoresOverwritten = true;
                                 ImageView LOSE_IV = getImageView("resources\\art\\loseScreen.png");
+
                                 root.setTop(LOSE_IV);
-                                HS_IV = createHighScoreScreen(); // re-cache high score screen
-                            }
-                            //</editor-fold>
+
+                                loadHighScoreScreen(); // re-cache high score screen
+                            } //</editor-fold>
                             break;
+
                         case 4:
                             // show the actual game
                             sandboxReset = false;
@@ -523,7 +598,8 @@ public class Snake extends Application implements Loggable {
                     }
                 }
             }
-        }.start();
+        }.
+                start();
 
         // Input handling
         scene.setOnMousePressed(
@@ -566,6 +642,10 @@ public class Snake extends Application implements Loggable {
             index++;
         }
         return list;
+    }
+
+    public static void setUserName(String s) {
+        tempName = s;
     }
 
     /**
@@ -865,7 +945,7 @@ public class Snake extends Application implements Loggable {
         }
     }
 
-    private static ImageView createHighScoreScreen() {
+    public static void loadHighScoreScreen() {
         // re-grab scores
         getScores();
         // copy the master image
@@ -877,15 +957,15 @@ public class Snake extends Application implements Loggable {
                 if (i > 1) {
                     y += 35;
                 }
-                x = 320;
+                x = 284;
             } else {
-                x = 193;
+                x = 156;
             }
-            overlayImage("resources\\art\\HighScoreScreen.png", "resources\\art\\HighScoreScreen.png", String.valueOf(scores.get(i)), x, y, new Font("Impact", 28), 177, 96, 15);
+            overlayImage("resources\\art\\HighScoreScreen.png", "resources\\art\\HighScoreScreen.png", String.valueOf(scores.get(i)) + " - " + names.get(i), x, y, new Font("Impact", 28), 177, 96, 15);
         }
         // set up lose screen
         ImageView iv = getImageView("resources\\art\\HighScoreScreen.png");
-        return iv;
+        HS_IV = iv;
     }
 
     /**
@@ -914,14 +994,23 @@ public class Snake extends Application implements Loggable {
 
     private static void getScores() {
         scores = new ArrayList<>();
-        scores.add(readDecodedFile("resources/scores/local/localHighScore1.local"));
-        scores.add(readDecodedFile("resources/scores/world/worldHighScore1.world"));
-        scores.add(readDecodedFile("resources/scores/local/localHighScore2.local"));
-        scores.add(readDecodedFile("resources/scores/world/worldHighScore2.world"));
-        scores.add(readDecodedFile("resources/scores/local/localHighScore3.local"));
-        scores.add(readDecodedFile("resources/scores/world/worldHighScore3.world"));
-        scores.add(readDecodedFile("resources/scores/local/localHighScore4.local"));
-        scores.add(readDecodedFile("resources/scores/world/worldhighScore4.world"));
+        names = new ArrayList<>();
+        scores.add(readDecodedFile("resources/scores/local/localHighScore1.local").getKey());
+        scores.add(readDecodedFile("resources/scores/world/worldHighScore1.world").getKey());
+        scores.add(readDecodedFile("resources/scores/local/localHighScore2.local").getKey());
+        scores.add(readDecodedFile("resources/scores/world/worldHighScore2.world").getKey());
+        scores.add(readDecodedFile("resources/scores/local/localHighScore3.local").getKey());
+        scores.add(readDecodedFile("resources/scores/world/worldHighScore3.world").getKey());
+        scores.add(readDecodedFile("resources/scores/local/localHighScore4.local").getKey());
+        scores.add(readDecodedFile("resources/scores/world/worldhighScore4.world").getKey());
+        names.add(readDecodedFile("resources/scores/local/localHighScore1.local").getValue());
+        names.add(readDecodedFile("resources/scores/world/worldHighScore1.world").getValue());
+        names.add(readDecodedFile("resources/scores/local/localHighScore2.local").getValue());
+        names.add(readDecodedFile("resources/scores/world/worldHighScore2.world").getValue());
+        names.add(readDecodedFile("resources/scores/local/localHighScore3.local").getValue());
+        names.add(readDecodedFile("resources/scores/world/worldHighScore3.world").getValue());
+        names.add(readDecodedFile("resources/scores/local/localHighScore4.local").getValue());
+        names.add(readDecodedFile("resources/scores/world/worldhighScore4.world").getValue());
     }
 
     /**
@@ -929,24 +1018,33 @@ public class Snake extends Application implements Loggable {
      * @param fileName
      * @return
      */
-    public static int readDecodedFile(String fileName) {
+    public static Pair<Integer, String> readDecodedFile(String fileName) {
         int decodedScore = -1;
+        String name = "AAA";
         try {
             File highScore = new File(fileName);
             Scanner reader = new Scanner(highScore);
-            reader.useDelimiter("YeetCommunismChungusMan");
-            String temp = reader.next().trim();
+            String temp = reader.nextLine().trim();
+            try {
+                name = reader.nextLine().trim();
+            } catch (java.util.NoSuchElementException x) {
+                name = randomStr(3);
+                events += "no name for score \"" + fileName + "\" | ";
+            }
             try {
                 decodedScore = Enigma.decode(temp);
             } catch (InvalidObjectException ioe) {
-                //System.out.println("bad encode for file " + fileName);
-                return decodedScore;
+                events += "bad encode for highscore file " + fileName + " | ";
+                Pair<Integer, String> out = new Pair<>(decodedScore, name);
+                return out;
             }
         } catch (FileNotFoundException x) {
-            //System.out.println("bad file: " + fileName);
-            return decodedScore;
+            events += "bad file: " + fileName + " | ";
+            Pair<Integer, String> out = new Pair<>(decodedScore, name);
+            return out;
         }
-        return decodedScore;
+        Pair<Integer, String> out = new Pair<>(decodedScore, name);
+        return out;
     }
 
     /**
@@ -1011,16 +1109,19 @@ public class Snake extends Application implements Loggable {
      * @param filename
      * @param score
      */
-    public static void writeEncodedScore(String filename, int score) {
+    public static void writeEncodedScore(String filename, int score, String username) {
         try {
             FileWriter creator;
             try (PrintWriter printer = new PrintWriter(filename, "UTF-8")) {
                 creator = new FileWriter(new File(filename));
                 printer.print(Enigma.encode(score));
+                printer.println();
+                printer.print(username);
             }
             creator.close();
         } catch (IOException x) {
-            System.out.println(x.getLocalizedMessage() + " oof.");
+            events += "could not save score \"" + score + "\" to \"" + filename + "\" - " + x.getLocalizedMessage() + " | ";
+            System.out.println("Trouble saving score \"" + score + "\" to \"" + filename + "\" - " + x.getLocalizedMessage());
         }
     }
 
@@ -1086,21 +1187,33 @@ public class Snake extends Application implements Loggable {
  *
  * Copyright (c) 2018 Tim Barber.
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy
+ * of this software and associated documentation files (the
+ * "Software"), to deal
+ * in the Software without restriction, including without
+ * limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
+ * The above copyright notice and this permission notice shall
+ * be included in
  * all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ * KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+ * EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE
  * SOFTWARE.
  */

@@ -81,11 +81,11 @@ public class Board implements Loggable {
 
     /**
      *
-     * @param w the horizontal width
-     * @param h the vertical height
-     * @param mm the MenuManager object
-     * @param menu the Menu object
-     * @param gs the GameState object
+     * @param w       the horizontal width
+     * @param h       the vertical height
+     * @param mm      the MenuManager object
+     * @param menu    the Menu object
+     * @param gs      the GameState object
      * @param primary the stage object holding the various graphical components
      */
     public Board(int w, int h, MenuManager mm, MainMenu menu, GameState gs, Stage primary) {
@@ -383,9 +383,10 @@ public class Board implements Loggable {
         }
         if (e.getCode() == KeyCode.ESCAPE) {
             events += "ESC to menu | ";
-            reset();
             MM.setCurrent(0);
+            reset();
             toolFrame.setVisible(false);
+            Snake.loadHighScoreScreen();
         }
 
         if (e.getCode() == KeyCode.EQUALS && e.isShiftDown()) {
@@ -578,7 +579,7 @@ public class Board implements Loggable {
     /**
      *
      * @return the lowest int starting from ten that has no corresponding pair
-     * in the grid
+     *         in the grid
      */
     public int findUnusedPortalNum() {
         int num = 10;

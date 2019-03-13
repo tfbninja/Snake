@@ -1,19 +1,21 @@
 package snake;
 
 /**
+ * This class controls the current state of the game
  *
  * @author Tim Barber
  */
-public class GameState {
+public class GameState extends Controller {
 
     private boolean preGame;
     private boolean game;
     private boolean postGame;
 
     /**
+     * Only constructor
      *
      * @param state The value of which state the game is currently in: pre,
-     * during, or post
+     *              during, or post
      */
     public GameState(int state) {
         switch (state) {
@@ -30,26 +32,23 @@ public class GameState {
      * Sets the preGame value to true and the others to false
      */
     public final void setToPreGame() {
+        turnOff();
         preGame = true;
-        game = false;
-        postGame = false;
     }
 
     /**
      * Sets the game value to true and the others to false
      */
     public final void setToGame() {
-        preGame = false;
+        turnOff();
         game = true;
-        postGame = false;
     }
 
     /**
      * Sets the postGame value to true and the others to false
      */
     public final void setToPostGame() {
-        preGame = false;
-        game = false;
+        turnOff();
         postGame = true;
     }
 
@@ -91,5 +90,15 @@ public class GameState {
      */
     public boolean isPostGame() {
         return postGame;
+    }
+
+    /*
+     * Sets all vars to false
+     */
+    @Override
+    public void turnOff() {
+        preGame = false;
+        game = false;
+        postGame = false;
     }
 }

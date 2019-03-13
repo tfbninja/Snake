@@ -16,7 +16,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  *
  * @author Tim Barber
  */
-public class Sound { // Holds one audio file
+public class Sound implements Comparable { // Holds one audio file
 
     private String filename;
     private URL resource;
@@ -26,6 +26,7 @@ public class Sound { // Holds one audio file
     private BooleanControl muteControl;
     private double volumeLevel = 1.0;
     FloatControl gainControl;
+    private boolean isWav = false;
 
     //
     /**
@@ -45,6 +46,7 @@ public class Sound { // Holds one audio file
         // this block of code only works on .wav files as far as I can tell, but
         // it can loop
         if (filename.contains(".wav")) {
+            isWav = true;
             try {
                 try {
                     try {
@@ -63,6 +65,43 @@ public class Sound { // Holds one audio file
                 System.out.println("Unable to find audio file " + filename);
             }
         }
+    }
+
+    public Sound(String filename, boolean asMP3) {
+        this.filename = filename;
+        // this block of code can deal with at least .mp3 and .wav, possibly more
+        // however I can't figure out how to make a mediaPlayer loop
+        // taken from http://www.java2s.com/Code/Java/JavaFX/Playmp3file.htm
+        resource = getClass().getResource(filename);
+        media = new Media(resource.toString());
+        mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.setVolume(1.0);
+
+        if (filename.contains(".wav") && !asMP3) {
+            isWav = true;
+            try {
+                try {
+                    try {
+                        // taken from https://stackoverflow.com/questions/30587437
+                        clip = AudioSystem.getClip();
+                        clip.open(AudioSystem.getAudioInputStream(new File(filename)));
+                        muteControl = (BooleanControl) clip.getControl(BooleanControl.Type.MUTE);
+                        gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                    } catch (UnsupportedAudioFileException c) {
+                        System.out.println("Unsuppported audio file " + filename);
+                    }
+                } catch (IOException b) {
+                    System.out.println("Input/output exception with file " + filename);
+                }
+            } catch (LineUnavailableException a) {
+                System.out.println("Unable to find audio file " + filename);
+            }
+        }
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        return filename.compareTo(((Sound) o).filename);
     }
 
     /**
@@ -85,7 +124,9 @@ public class Sound { // Holds one audio file
      * Toggles the mute setting
      */
     public void toggleMute() {
-        muteControl.setValue(!muteControl.getValue());
+        if (isWav) {
+            muteControl.setValue(!muteControl.getValue());
+        }
         this.mediaPlayer.setMute(!this.mediaPlayer.muteProperty().getValue());
     }
 
@@ -95,7 +136,9 @@ public class Sound { // Holds one audio file
     public void mute() {
         this.mediaPlayer.setMute(true);
         //gainControl.setValue(0);
-        muteControl.setValue(true);
+        if (isWav) {
+            muteControl.setValue(true);
+        }
     }
 
     /**
@@ -104,7 +147,9 @@ public class Sound { // Holds one audio file
     public void unmute() {
         this.mediaPlayer.setMute(false);
         //gainControl.setValue((float) volumeLevel);
-        muteControl.setValue(false);
+        if (isWav) {
+            muteControl.setValue(false);
+        }
     }
 
     /**
@@ -116,6 +161,10 @@ public class Sound { // Holds one audio file
         clip.loop(999);
     }
 
+    public boolean isPlaying() {
+        return mediaPlayer.currentRateProperty().get() != 0;
+    }
+
     /**
      * Plays this sound once
      */
@@ -124,7 +173,7 @@ public class Sound { // Holds one audio file
         mediaPlayer.pause();
         mediaPlayer.stop();
         mediaPlayer.play();
-        if (filename.contains(".wav")) {
+        if (isWav) {
             clip.setMicrosecondPosition(0);
             clip.start();
         }

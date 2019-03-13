@@ -3,10 +3,11 @@ package snake;
 import java.util.ArrayList;
 
 /**
+ * This Class controls what should be displayed on screen at all times
  *
  * @author Tim Barber
  */
-public class MenuManager {
+public class MenuManager extends Controller {
 
     private ArrayList<String> menuNames;
     private ArrayList<Boolean> currentlyDisplaying;
@@ -18,15 +19,8 @@ public class MenuManager {
     public MenuManager(ArrayList<String> menuNames) {
         this.menuNames = menuNames;
         this.currentlyDisplaying = new ArrayList<>(menuNames.size());
-        clearDisplaying(menuNames.size());
+        turnOff();
         this.currentlyDisplaying.set(0, true);
-    }
-
-    private void clearDisplaying(int size) {
-        this.currentlyDisplaying.clear();
-        for (int i = 0; i < size; i++) {
-            this.currentlyDisplaying.add(false);
-        }
     }
 
     /**
@@ -42,7 +36,7 @@ public class MenuManager {
      * @param index
      */
     public void setCurrent(int index) {
-        clearDisplaying(menuNames.size());
+        turnOff();
         this.currentlyDisplaying.set(index, true);
     }
 
@@ -50,7 +44,7 @@ public class MenuManager {
      * Shows the first menu option in the list
      */
     public void setMain() {
-        clearDisplaying(menuNames.size());
+        turnOff();
         this.currentlyDisplaying.set(0, true);
     }
 
@@ -79,5 +73,16 @@ public class MenuManager {
      */
     public boolean isOff(int index) {
         return !this.currentlyDisplaying.get(index);
+    }
+
+    /*
+     * Sets all menus to off
+     */
+    @Override
+    public void turnOff() {
+        this.currentlyDisplaying.clear();
+        for (int i = 0; i < menuNames.size(); i++) {
+            this.currentlyDisplaying.add(false);
+        }
     }
 }

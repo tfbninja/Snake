@@ -4,10 +4,12 @@ import javafx.scene.image.ImageView;
 import static snake.Snake.getImageView;
 
 /**
+ * This class controls background music and sfx, and correspondingly which
+ * version of the main menu to show
  *
  * @author Tim Barber
  */
-public class MainMenu {
+public class MainMenu extends Controller {
 
     private boolean music = true;
     private boolean sfx = true;
@@ -22,10 +24,10 @@ public class MainMenu {
      */
     public MainMenu() {
         // set up files
-        OnOn = getImageView("resources/art/updatedMenus/menuMOnSOn.png");
-        OnOff = getImageView("resources/art/updatedMenus/menuMOnSOff.png");
-        OffOn = getImageView("resources/art/updatedMenus/menuMOffSOn.png");
-        OffOff = getImageView("resources/art/updatedMenus/menuMOffSOff.png");
+        OnOn = getImageView("resources/art/updatedMenus/ButtonShadows/menuMOnSOn.png");
+        OnOff = getImageView("resources/art/updatedMenus/ButtonShadows/menuMOnSOff.png");
+        OffOn = getImageView("resources/art/updatedMenus/ButtonShadows/menuMOffSOn.png");
+        OffOff = getImageView("resources/art/updatedMenus/ButtonShadows/menuMOffSOff.png");
     }
 
     /**
@@ -50,6 +52,22 @@ public class MainMenu {
      */
     public ImageView getMenu() {
         return current;
+    }
+
+    /*
+     * Sets all vars to false
+     */
+    @Override
+    public void turnOff() {
+        music = false;
+        sfx = false;
+        current = OffOff;
+    }
+
+    public void turnOn() {
+        music = true;
+        sfx = true;
+        current = OnOn;
     }
 
     /**

@@ -68,7 +68,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     private Pair<Integer, Integer> sandboxPos;
     private GameState GS;
     private final double RRPROB = 0.01;
-    private final String RRNAME = "resources/sounds/RR.mp3";
+    private final Sound RR = new Sound("resources/sounds/RR.mp3");
 
     private boolean extremeWarp = false;
     private boolean won = false;
@@ -85,7 +85,7 @@ public final class Grid extends squares implements Updateable, Loggable {
      */
     /**
      *
-     * @param width The horizontal number of squares
+     * @param width  The horizontal number of squares
      * @param length The vertical number of squares
      * @param startX The x-coordinate of the snake's starting position
      * @param startY The y-coordinate of the snake's starting position
@@ -105,7 +105,7 @@ public final class Grid extends squares implements Updateable, Loggable {
         this.warp = new Sound("resources/sounds/warp.mp3");
         warp.setVolume(0.5);
         addDeathSounds();
-        this.bite = new Sound("resources/sounds/bite2.wav");
+        this.bite = new Sound("resources/sounds/bite2.wav", true);
         events += "Initialized. | ";
     }
 
@@ -117,6 +117,23 @@ public final class Grid extends squares implements Updateable, Loggable {
     @Override
     public String getEvents() {
         return events + "end]";
+    }
+
+    /**
+     * Returns the state of the important variables in this class
+     *
+     * @return String of variables
+     */
+    @Override
+    public String getState() {
+        return "[Init len: " + this.initialSize + ", "
+                + "grow: " + this.growBy + ", "
+                + "apples eaten: " + applesEaten + ", "
+                + "length: " + pos.size() + ", "
+                + "startx: " + startx + ", "
+                + "starty: " + starty + ", "
+                + "playArea: " + Arrays.deepToString(playArea) + ", "
+                + "]";
     }
 
     /**
@@ -138,23 +155,6 @@ public final class Grid extends squares implements Updateable, Loggable {
         if (!GS.isGame()) {
             this.random.setSeed(seed);
         }
-    }
-
-    /**
-     * Returns the state of the important variables in this class
-     *
-     * @return String of variables
-     */
-    @Override
-    public String getState() {
-        return "[Init len: " + this.initialSize + ", "
-                + "grow: " + this.growBy + ", "
-                + "apples eaten: " + applesEaten + ", "
-                + "length: " + pos.size() + ", "
-                + "startx: " + startx + ", "
-                + "starty: " + starty + ", "
-                + "playArea: " + Arrays.deepToString(playArea) + ", "
-                + "]";
     }
 
     /**
@@ -220,8 +220,8 @@ public final class Grid extends squares implements Updateable, Loggable {
 
     /**
      *
-     * @param amt The number of frames that should be between every update
-     * cycle
+     * @param amt   The number of frames that should be between every update
+     *              cycle
      * @param level The difficulty level to change
      */
     public void setFrameSpeed(int amt, int level) {
@@ -297,14 +297,14 @@ public final class Grid extends squares implements Updateable, Loggable {
     /**
      *
      * @return The coordinates of the first portal without a pair reading left
-     * to right top down on the grid
+     *         to right top down on the grid
      */
     public Pair<Integer, Integer> findUnmatchedPortal() {
         if (containsUnmatchedPortal() > -1) {
             for (int y = 0; y < super.getLength(); y++) {
                 for (int x = 0; x < super.getWidth(); x++) {
                     if (isPortal(x, y) && find(safeCheck(x, y)).size() == 1) {
-                        return new Pair<Integer, Integer>(x, y);
+                        return new Pair<>(x, y);
                     }
                 }
             }
@@ -347,7 +347,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     /**
      *
      * @return -1 if there are no unmatched portals, otherwise returns the
-     * lowest unmatched portal number
+     *         lowest unmatched portal number
      */
     public int containsUnmatchedPortal() {
         for (int y = 0; y < super.getLength(); y++) {
@@ -375,7 +375,7 @@ public final class Grid extends squares implements Updateable, Loggable {
      */
     public void setSandboxHeadPos(int x, int y) {
         pos.clear();
-        sandboxPos = new Pair<Integer, Integer>(x, y);
+        sandboxPos = new Pair<>(x, y);
         pos.add(sandboxPos);
     }
 
@@ -415,10 +415,7 @@ public final class Grid extends squares implements Updateable, Loggable {
      * @return
      */
     public boolean isPortal(int xPos, int yPos) {
-        if (safeCheck(xPos, yPos) >= 10) {
-            return true;
-        }
-        return false;
+        return safeCheck(xPos, yPos) >= 10;
     }
 
     private int touchingNeighbors(int xPos, int yPos) {
@@ -438,7 +435,7 @@ public final class Grid extends squares implements Updateable, Loggable {
         return count;
     }
 
-    private String formatFilePath(String badlyFormattedPath) {
+    public static String formatFilePath(String badlyFormattedPath) {
         // replaces all "\" or "\\" characters with a "/"
         return badlyFormattedPath.replaceAll("\\\\", "/").replaceAll("//", "/");
     }
@@ -451,6 +448,7 @@ public final class Grid extends squares implements Updateable, Loggable {
             for (File child : directoryListing) {
                 this.loseSounds.add(new Sound(formatFilePath(child.getPath())));
             }
+            Collections.shuffle(loseSounds);
         } else {
             System.out.println("Cannot find the resources/sounds/death folder... try setting the working directory to the folder that Snake.java or Snake.jar is contained in.");
         }
@@ -667,6 +665,7 @@ public final class Grid extends squares implements Updateable, Loggable {
 
     }
 
+    @Override
     public int getNeighbors(int x, int y, int type, int radius) {
         int count = 0;
         for (int tempX = x - radius; tempX <= x + radius; tempX++) {
@@ -679,6 +678,7 @@ public final class Grid extends squares implements Updateable, Loggable {
         return count;
     }
 
+    @Override
     public int getNeighbors(int x, int y, int type) {
         return getNeighbors(x, y, type, 1);
     }
@@ -735,7 +735,7 @@ public final class Grid extends squares implements Updateable, Loggable {
         }
         for (int x = 0; x < super.getWidth(); x++) {
             for (int y = 0; y < super.getLength(); y++) {
-                if (getCell(x, y) == 2 && !pos.contains(new Pair<Integer, Integer>(x, y))) {
+                if (getCell(x, y) == 2 && !pos.contains(new Pair<>(x, y))) {
                     setCell(x, y, 0);
                 }
             }
@@ -815,7 +815,7 @@ public final class Grid extends squares implements Updateable, Loggable {
      * @param y
      */
     public void setTail(int x, int y) {
-        this.pos.set(this.pos.size() - 1, new Pair<Integer, Integer>(x, y));
+        this.pos.set(this.pos.size() - 1, new Pair<>(x, y));
     }
 
     /**
@@ -1089,7 +1089,7 @@ public final class Grid extends squares implements Updateable, Loggable {
         for (int y = 0; y < super.getLength(); y++) {
             for (int x = 0; x < super.getWidth(); x++) {
                 if (safeCheck(x, y) == type) {
-                    posList.add(new Pair<Integer, Integer>(x, y));
+                    posList.add(new Pair<>(x, y));
 
                 }
             }
@@ -1237,18 +1237,29 @@ public final class Grid extends squares implements Updateable, Loggable {
         random.setSeed(LocalDateTime.now().getNano());
         if (!won) {
             if (random.nextInt((int) (1.0 / RRPROB)) == random.nextInt((int) (1 / RRPROB))) {
-                new Sound(RRNAME).play();
+                if (soundOn) {
+                    RR.play();
+                }
             }
-            if (deathCounter >= loseSounds.size() - 5) { // we don't need to play EVERY sound before we use the other ones, but definitely not two in a row, that gets annoying
-                Collections.shuffle(loseSounds);
-                deathCounter = 0;
+            if (deathCounter > 0) {
+                Sound temp = loseSounds.get(deathCounter - 1);
+                loseSounds.remove(deathCounter - 1);
+                if (deathCounter >= loseSounds.size() - 4) { // we don't need to play EVERY sound before we use the other ones, but definitely not two in a row, that gets annoying
+                    Collections.shuffle(loseSounds);
+                    loseSounds.add(temp);
+                    deathCounter = 0;
+                }
             }
             if (soundOn) {
                 loseSounds.get(deathCounter).play();
             }
             deathCounter++;
         }
-        random.setSeed(seed);
+        if (this.useSameSeedOnReset) {
+            random.setSeed(seed);
+        } else {
+            random.setSeed(LocalDateTime.now().getNano());
+        }
     }
 
     /**
@@ -1423,7 +1434,7 @@ public final class Grid extends squares implements Updateable, Loggable {
                         die();
                         return;
                     }
-                    this.pos.add(0, new Pair<Integer, Integer>(nextX, nextY)); // add segment in front
+                    this.pos.add(0, new Pair<>(nextX, nextY)); // add segment in front
                     this.setCell(nextX, nextY, 1); // update grid
                     this.removeExtra();
                 }
