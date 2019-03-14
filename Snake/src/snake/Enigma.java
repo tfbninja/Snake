@@ -20,13 +20,11 @@ public class Enigma {
      * num * 2 + 3
      * Unicode(num + 67)
      */
-
     /**
      *
-     * @param num
-     * @return
+     * @param num the raw number to encode
+     * @return the encoded version of num
      */
-
     public static String encode(int num) {
         String first = String.valueOf((char) (num + 63));
         String mid = String.valueOf(num * 2 + 3);
@@ -36,8 +34,8 @@ public class Enigma {
 
     /**
      *
-     * @param encoded
-     * @return
+     * @param encoded the encoded string
+     * @return the original integer
      * @throws InvalidObjectException
      */
     public static int decode(String encoded) throws InvalidObjectException {

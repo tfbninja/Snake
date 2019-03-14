@@ -630,6 +630,12 @@ public class Snake extends Application implements Loggable {
                 }
         );
 
+        scene.setOnMouseReleased((MouseEvent event) -> {
+            events += "Mouse released | ";
+            board.mouseReleased(event);
+        }
+        );
+
         scene.setOnKeyPressed(
                 (KeyEvent eventa) -> {
                     board.keyPressed(eventa);

@@ -77,15 +77,16 @@ public class Board implements Loggable {
     private JFrame toolFrame;
 
     private String events = "";
+    private boolean mouseIsBeingDragged = false;
 //</editor-fold>
 
     /**
      *
-     * @param w       the horizontal width
-     * @param h       the vertical height
-     * @param mm      the MenuManager object
-     * @param menu    the Menu object
-     * @param gs      the GameState object
+     * @param w the horizontal width
+     * @param h the vertical height
+     * @param mm the MenuManager object
+     * @param menu the Menu object
+     * @param gs the GameState object
      * @param primary the stage object holding the various graphical components
      */
     public Board(int w, int h, MenuManager mm, MainMenu menu, GameState gs, Stage primary) {
@@ -579,7 +580,7 @@ public class Board implements Loggable {
     /**
      *
      * @return the lowest int starting from ten that has no corresponding pair
-     *         in the grid
+     * in the grid
      */
     public int findUnusedPortalNum() {
         int num = 10;
@@ -634,6 +635,8 @@ public class Board implements Loggable {
      * @param e MouseEvent holding information of the mouse drag
      */
     public void mouseDragged(MouseEvent e) {
+        // interpolate drags
+        mouseIsBeingDragged = true;
         double mouseX = e.getX();
         double mouseY = e.getY();
         // account for border outside of canvas
@@ -680,6 +683,23 @@ public class Board implements Loggable {
                 }
             }
         }
+    }
+
+    public void mouseReleased(MouseEvent e) {
+        mouseIsBeingDragged = false;
+        double mouseX = e.getX();
+        double mouseY = e.getY();
+        // account for border outside of canvas
+        mouseY -= outsideMargin;
+        mouseX -= outsideMargin;
+        int mX = (int) mouseX;
+        int mY = (int) mouseY;
+        // top right:
+        // margin * x + xPos + (size * (x-1)) : += size
+        //solve:
+        //margin * (x+1)) + (size * (x-1)) = z, z = margin * x + xPos + margin + size * x - size, z = x(margin + size) + xPos + margin - size, (z + size - margin)/(margin + size) = x
+        int xVal = (mX + size - XMARGIN) / (margin + size) - 1;
+        int yVal = (mY + size - YMARGIN) / (margin + size) - 1;
     }
 
     /**

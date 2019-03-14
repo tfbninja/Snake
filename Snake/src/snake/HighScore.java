@@ -53,6 +53,12 @@ public class HighScore extends javax.swing.JPanel {
         okButton = new javax.swing.JButton();
         counter = new javax.swing.JLabel();
 
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
+            }
+        });
+
         ENTERYOURNAME.setFont(new java.awt.Font("Impact", 1, 36)); // NOI18N
         ENTERYOURNAME.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         ENTERYOURNAME.setText("ENTER YOUR NAME");
@@ -165,6 +171,10 @@ public class HighScore extends javax.swing.JPanel {
 
         }
     }//GEN-LAST:event_nameFieldKeyReleased
+
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+
+    }//GEN-LAST:event_formKeyPressed
 
     public void setFocusOnField() {
         nameField.requestFocus();
