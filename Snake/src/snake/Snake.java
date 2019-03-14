@@ -1,6 +1,7 @@
 package snake;
 
 //<editor-fold defaultstate="collapsed" desc="imports">
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -23,7 +24,6 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
-//</editor-fold>
 
 /**
  * Runner class that initiates all high level tasks pertaining to the game
@@ -60,7 +60,7 @@ public class Snake extends Application implements Loggable {
     private static ImageView HS_IV; // High Score screen stored in an 'ImageView' class
 
     private boolean scoresOverwritten = false;
-    private static String tempName = "";
+    public static String tempName = "";
     private static int tempFrame = 900;
 
     private File settings;
@@ -487,28 +487,43 @@ public class Snake extends Application implements Loggable {
 
                                 if (highScore) {
                                     //  (if score is higher than local or world)
+                                    JFrame window = new JFrame();
                                     HighScore tempWindow = new HighScore();
-                                    tempWindow.execute();
 
-                                    new AnimationTimer() {
-                                        @Override
-                                        public void handle(long now) {
-                                            tempFrame--;
-                                            if (tempFrame % 30 == 0) {
-                                                tempWindow.setCounter(tempFrame / 30);
-                                                events += "Waiting on name at " + (tempFrame) + " | ";
-                                                System.out.println((tempFrame / 30) + " ready" + tempWindow.ready());
+                                    window.setLocation((int) primaryStage.getX() + 100, (int) primaryStage.getY() + 50);
+                                    window.setTitle("HIGHSCORE");
+                                    window.add(tempWindow);
+                                    window.setSize(new Dimension(tempWindow.getPreferredSize().width + 5, tempWindow.getPreferredSize().height + 25));
+                                    window.setResizable(false);
+                                    window.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+                                    window.setType(java.awt.Window.Type.UTILITY);
+                                    window.setVisible(true);
+                                    window.setAlwaysOnTop(true);
+                                    window.requestFocus();
+                                    window.requestFocusInWindow();
+                                    tempWindow.setFocusOnField();
+
+                                    for (int i = 120; i >= 0; i--) {
+                                        if (tempName.isEmpty()) {
+                                            try {
+                                                if (i % 4 == 0) {
+                                                    tempWindow.setCounter(i / 4);
+                                                }
+                                                Thread.sleep(250);
+                                            } catch (InterruptedException ex) {
+                                                //System.out.println("interuppted");
                                             }
-                                            if (tempWindow.ready()) {
-                                                stop();
-                                                return;
-                                            }
+                                        } else {
+                                            break;
                                         }
-                                    }.start();
-                                    tempFrame = 900;
-                                    String name = tempName;
-                                    // write scores to files
+                                    }
 
+                                    window.setVisible(false);
+                                    window.dispose();
+                                    String name = tempName;
+                                    tempName = "";
+
+                                    // write scores to files
                                     writeEncodedScore("resources\\scores\\local\\localHighScore" + thisDifficulty + ".local", thisScore, name);
 
                                     if (thisScore > scores.get((thisDifficulty - 1) * 2 + 1)) {
@@ -1188,32 +1203,20 @@ public class Snake extends Application implements Loggable {
  * Copyright (c) 2018 Tim Barber.
  *
  * Permission is hereby granted, free of charge, to any person
- * obtaining a copy
- * of this software and associated documentation files (the
- * "Software"), to deal
- * in the Software without restriction, including without
- * limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell
- * copies of the Software, and to permit persons to whom the
- * Software is
- * furnished to do so, subject to the following conditions:
+ * obtaining a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including without
+ * limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom
+ * the Software is furnished to do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall
- * be included in
- * all copies or substantial portions of the Software.
+ * be included in all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
- * KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
- * EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE
- * SOFTWARE.
+ * KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+ * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+ * OR OTHER DEALINGS IN THE SOFTWARE.
  */

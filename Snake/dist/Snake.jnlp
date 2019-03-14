@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="Snake.jar" size="74136675" download="eager" />
+    <jar href="Snake.jar" size="122292665" download="eager" />
     <jar href="lib\AbsoluteLayout.jar" size="2903" download="eager" />
     <jar href="lib\beansbinding-1.2.1.jar" size="631289" download="eager" />
   </resources>
