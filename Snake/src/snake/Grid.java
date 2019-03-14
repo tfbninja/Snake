@@ -57,7 +57,16 @@ public final class Grid extends squares implements Updateable, Loggable {
 
     // makes sure we're not randomly picking the same sound over and over again
     private int deathCounter = 0;
-    private Sound bite;
+    /*
+     * Alright I get it, you're like "why the heck is he filling an arraylist
+     * with 30 sound object, that works fine... for the regular difficulties.
+     * On sandbox mode however, where you can have 624 apples on the board at a
+     * time, that poor sound object is getting called constantly, and every
+     * single time it gets called it has to wait for the sound to finish before
+     * it plays again. So, now we have 30 sounds to split the work.
+     */
+    private ArrayList<Sound> bites = new ArrayList<>();
+    private String biteLocation = "resources/sounds/bite.mp3";
 
     int[] applePos = new int[2];
     private int growBy = 1;
@@ -105,8 +114,21 @@ public final class Grid extends squares implements Updateable, Loggable {
         this.warp = new Sound("resources/sounds/warp.mp3");
         warp.setVolume(0.5);
         addDeathSounds();
-        this.bite = new Sound("resources/sounds/bite2.wav", true);
+        initBites(30);
         events += "Initialized. | ";
+    }
+
+    public void initBites(int amt) {
+        bites.clear();
+        for (int i = 0; i < amt; i++) {
+            bites.add(new Sound(biteLocation));
+        }
+    }
+
+    public void playBite() {
+        bites.get(0).play();
+        bites.add(new Sound(biteLocation));
+        bites.remove(0);
     }
 
     /**
@@ -500,9 +522,9 @@ public final class Grid extends squares implements Updateable, Loggable {
      * Resets game-by-game variables to prepare for next round
      */
     public void reset() {
-        direction = 0;
+        boolean temp = soundOn;
+        this.soundOn = false;
         won = false;
-        tempDir = 0;
         if (this.useSameSeedOnReset) {
             random.setSeed(seed);
         } else {
@@ -511,6 +533,9 @@ public final class Grid extends squares implements Updateable, Loggable {
         resetSnake();
         resetSize();
         revertToInitial();
+        tempDir = 0;
+        direction = 0;
+        this.soundOn = temp;
     }
 
     /**
@@ -789,17 +814,6 @@ public final class Grid extends squares implements Updateable, Loggable {
             Pair<Integer, Integer> spot = this.pickPair(openSpots);
 
             int[] newPos = {spot.getKey(), spot.getValue()};
-
-            int tries = 0;
-            while (newPos[0] < 0 || newPos[1] < 0 || this.isOccupied(newPos[0], newPos[1])) {
-                tries++;
-                if (tries > 2000) {
-                    return null;
-                }
-                newPos[0] = random.nextInt(super.getWidth());
-                newPos[1] = random.nextInt(super.getLength());
-            }
-
             this.setCell(newPos[0], newPos[1], 3);
             applePos[0] = newPos[0];
             applePos[1] = newPos[1];
@@ -1385,9 +1399,7 @@ public final class Grid extends squares implements Updateable, Loggable {
                 // ate an apple
                 this.applesEaten++;
                 events += "A";
-                if (soundOn) {
-                    bite.play();
-                }
+
                 grow();
                 clearApples();
                 newApple();
@@ -1404,6 +1416,9 @@ public final class Grid extends squares implements Updateable, Loggable {
                     this.setCell(headX, headY, 2);
                 } else {
                     this.setCell(headX, headY, 0);
+                }
+                if (soundOn) {
+                    playBite();
                 }
             } else if (GS.isGame() && this.isPortal(nextX, nextY)) {
                 // if next square is a portal
@@ -1424,7 +1439,7 @@ public final class Grid extends squares implements Updateable, Loggable {
                     // ate an apple
                     this.applesEaten++;
                     if (soundOn) {
-                        bite.play();
+                        playBite();
                     }
                     grow();
                     clearApples();

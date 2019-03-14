@@ -178,7 +178,6 @@ javax.swing.GroupLayout$SequentialGroup
 javax.swing.LayoutStyle
 javax.swing.GroupLayout$Alignment
 javax.swing.GroupLayout
-java.lang.Math
 javax.swing.JTextField
 java.lang.Short
 javax.swing.SwingConstants
