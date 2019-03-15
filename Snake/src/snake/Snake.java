@@ -8,6 +8,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.awt.Robot;
+import java.awt.event.InputEvent;
 import java.util.Random;
 import java.util.Scanner;
 import javafx.animation.AnimationTimer;
@@ -497,11 +499,22 @@ public class Snake extends Application implements Loggable {
                                     window.setResizable(false);
                                     window.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
                                     window.setType(java.awt.Window.Type.UTILITY);
+                                    window.setAutoRequestFocus(true);
                                     window.setVisible(true);
                                     window.setAlwaysOnTop(true);
                                     window.requestFocus();
                                     window.requestFocusInWindow();
                                     tempWindow.setFocusOnField();
+                                    Robot bot;
+                                    try {
+                                        bot = new Robot();
+                                        int mask = InputEvent.BUTTON1_DOWN_MASK;
+                                        bot.mouseMove(100, 200);
+                                        bot.mousePress(mask);
+                                        bot.mouseRelease(mask);
+                                    } catch (Exception e) {
+
+                                    }
 
                                     for (int i = 120; i >= 0; i--) {
                                         if (tempName.isEmpty()) {
