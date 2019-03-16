@@ -587,8 +587,8 @@ public final class Grid extends squares implements Updateable, Loggable {
                 this.growBy = 2;
                 clearObstacles();
                 clearApples();
-                newApple(); // add an apple
                 setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
+                newApple(); // add an apple
                 break;
             case 2:
                 this.extremeWarp = false;
@@ -598,8 +598,8 @@ public final class Grid extends squares implements Updateable, Loggable {
                 clearObstacles();
                 clearApples();
                 //setCell(super.getWidth() / 2, super.getLength() / 2, 4);
-                newApple(); // add an apple
                 setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
+                newApple(); // add an apple
                 break;
             case 3:
                 this.extremeWarp = false;
@@ -619,8 +619,8 @@ public final class Grid extends squares implements Updateable, Loggable {
                     setCell(x, y, 4);
                 }
                 clearApples();
-                newApple(); // add an apple
                 setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
+                newApple(); // add an apple
                 break;
             case 4:
                 this.setGrowBy(5);
@@ -628,13 +628,13 @@ public final class Grid extends squares implements Updateable, Loggable {
                 this.extremeWarp = true;
                 clearObstacles();
                 clearApples();
-                newApple(); // add an apple
                 setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
+                newApple(); // add an apple
                 break;
             default:
                 clearApples();
-                newApple(); // add an apple
                 setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
+                newApple(); // add an apple
                 break;
         }
         setApples();
@@ -1282,6 +1282,9 @@ public final class Grid extends squares implements Updateable, Loggable {
     @Override
     public void update() {
         if (GS.isGame()) {
+            if (countVal(3) == 0 && diffLevel > 0 && diffLevel <= 4) {
+                newApple();
+            }
             if (this.snakeSize < 1) {
                 GS.setToPostGame();
                 die();

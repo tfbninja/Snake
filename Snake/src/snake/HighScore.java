@@ -169,6 +169,13 @@ public class HighScore extends javax.swing.JPanel {
 
         }    }//GEN-LAST:event_nameFieldKeyPressed
 
+    public int getFieldX() {
+        return nameField.getX();
+    }
+
+    public int getFieldY() {
+        return nameField.getY();
+    }
     private void nameFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nameFieldKeyReleased
         // make the text upper case and trim it down to 3 characters
         nameField.setText(nameField.getText().toUpperCase().substring(0, (nameField.getText().length() < 3 ? nameField.getText().length() : 3)));

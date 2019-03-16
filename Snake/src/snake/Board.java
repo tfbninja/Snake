@@ -78,15 +78,17 @@ public class Board implements Loggable {
 
     private String events = "";
     private boolean mouseIsBeingDragged = false;
+    private int oldMouseX;
+    private int oldMouseY;
 //</editor-fold>
 
     /**
      *
-     * @param w the horizontal width
-     * @param h the vertical height
-     * @param mm the MenuManager object
-     * @param menu the Menu object
-     * @param gs the GameState object
+     * @param w       the horizontal width
+     * @param h       the vertical height
+     * @param mm      the MenuManager object
+     * @param menu    the Menu object
+     * @param gs      the GameState object
      * @param primary the stage object holding the various graphical components
      */
     public Board(int w, int h, MenuManager mm, MainMenu menu, GameState gs, Stage primary) {
@@ -447,6 +449,7 @@ public class Board implements Loggable {
             } else if (e.getCode() == KeyCode.DIGIT0 && e.isShiftDown()) {
                 events += "chose sandbox mode | ";
                 Snake.initSandboxFile();
+                sandbox = new int[grid.getWidth()][grid.getLength()];
                 events += "loaded sandbox file | ";
                 toolFrame.setVisible(true);
                 toolFrame.requestFocus(); // bring this to front
@@ -580,7 +583,7 @@ public class Board implements Loggable {
     /**
      *
      * @return the lowest int starting from ten that has no corresponding pair
-     * in the grid
+     *         in the grid
      */
     public int findUnusedPortalNum() {
         int num = 10;
@@ -636,6 +639,10 @@ public class Board implements Loggable {
      */
     public void mouseDragged(MouseEvent e) {
         // interpolate drags
+        boolean interpolate = false;
+        if (!mouseIsBeingDragged) {
+            interpolate = true;
+        }
         mouseIsBeingDragged = true;
         double mouseX = e.getX();
         double mouseY = e.getY();
@@ -650,6 +657,12 @@ public class Board implements Loggable {
         //margin * (x+1)) + (size * (x-1)) = z, z = margin * x + xPos + margin + size * x - size, z = x(margin + size) + xPos + margin - size, (z + size - margin)/(margin + size) = x
         int xVal = (mX + size - XMARGIN) / (margin + size) - 1;
         int yVal = (mY + size - YMARGIN) / (margin + size) - 1;
+        int oldXVal = 0;
+        int oldYVal = 0;
+        if (interpolate) {
+            oldXVal = (oldMouseX + size - XMARGIN) / (margin + size) - 1;
+            oldYVal = (oldMouseY + size - YMARGIN) / (margin + size) - 1;
+        }
         //xVal %= this.gridSize;
         //yVal %= this.gridSize;
 
@@ -677,12 +690,50 @@ public class Board implements Loggable {
                     case 3:
                     case 0:
                         grid.setCell(xVal, yVal, tool);
+                        if (interpolate) {
+                            //int step = size / 2;
+                            int xfactor = (xVal - oldXVal) / (Math.abs(xVal - oldXVal));
+                            int yStep = (yVal - oldYVal) / (xVal - oldXVal);
+                            int tempY = oldYVal;
+                            for (int x = oldXVal; x > x; x += xfactor) {
+                                grid.setCell(x, tempY, tool);
+                                tempY += yStep;
+                                if (xfactor > 0) {
+                                    if (x >= xVal) {
+                                        break;
+                                    }
+                                } else {
+                                    if (x <= xVal) {
+                                        break;
+                                    }
+                                }
+                            }
+
+                            int yfactor = (yVal - oldYVal) / (Math.abs(yVal - oldYVal));
+                            int tempX = oldXVal;
+                            int xStep = (xVal - oldXVal) / (yVal - oldYVal);
+                            for (int y = oldYVal; y > y; y += yfactor) {
+                                grid.setCell(tempX, y, tool);
+                                tempX += xStep;
+                                if (yfactor > 0) {
+                                    if (y >= yVal) {
+                                        break;
+                                    }
+                                } else {
+                                    if (y <= yVal) {
+                                        break;
+                                    }
+                                }
+                            }
+                        }
                         break;
                     default:
                         break;
                 }
             }
         }
+        oldMouseX = (int) mouseX;
+        oldMouseY = (int) mouseY;
     }
 
     public void mouseReleased(MouseEvent e) {

@@ -3,13 +3,13 @@ package snake;
 //<editor-fold defaultstate="collapsed" desc="imports">
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Robot;
+import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.awt.Robot;
-import java.awt.event.InputEvent;
 import java.util.Random;
 import java.util.Scanner;
 import javafx.animation.AnimationTimer;
@@ -187,6 +187,7 @@ public class Snake extends Application implements Loggable {
     public void start(Stage primaryStage) {
         //<editor-fold defaultstate="collapsed" desc="initialization">
         setupBGMusic();
+        //Assert resources folder
         // Create Board of block objects
         board = new Board(canvasW, canvasH, MM, MENU, GS, primaryStage);
         board.setOutsideMargin(canvasMargin);
@@ -492,7 +493,7 @@ public class Snake extends Application implements Loggable {
                                     JFrame window = new JFrame();
                                     HighScore tempWindow = new HighScore();
 
-                                    window.setLocation((int) primaryStage.getX() + 100, (int) primaryStage.getY() + 50);
+                                    window.setLocation((int) primaryStage.getX() + 50, (int) primaryStage.getY() + 50);
                                     window.setTitle("HIGHSCORE");
                                     window.add(tempWindow);
                                     window.setSize(new Dimension(tempWindow.getPreferredSize().width + 5, tempWindow.getPreferredSize().height + 25));
@@ -506,10 +507,12 @@ public class Snake extends Application implements Loggable {
                                     window.requestFocusInWindow();
                                     tempWindow.setFocusOnField();
                                     Robot bot;
+                                    //int oldX = ; // get old position so it can be moved back
+                                    //int oldY = ;
                                     try {
                                         bot = new Robot();
                                         int mask = InputEvent.BUTTON1_DOWN_MASK;
-                                        bot.mouseMove(100, 200);
+                                        bot.mouseMove(window.getX() + tempWindow.getFieldX() + 5, window.getY() + tempWindow.getFieldY() + 5);
                                         bot.mousePress(mask);
                                         bot.mouseRelease(mask);
                                     } catch (Exception e) {
@@ -802,12 +805,15 @@ public class Snake extends Application implements Loggable {
 
                 // begin reading in grid
                 int num = 0;
+                outer:
                 for (int y = 0; y < 25; y++) {
                     for (int x = 0; x < 25; x++) {
                         try {
                             num = s.nextInt();
                         } catch (java.util.NoSuchElementException e) {
                             System.out.println("Failed to read integer from sandbox");
+                            events += "Bad sandbox file | ";
+                            throw new java.util.InputMismatchException("Bad sandbox file");
                         }
                         if (num == 1) {
                             tempGrid.setPos(x, y);
@@ -823,7 +829,8 @@ public class Snake extends Application implements Loggable {
             }
         } catch (java.util.InputMismatchException e) {
         }
-        System.out.println("Trouble reading in default sandbox file with content: \"" + content + "\"");
+        System.out.println("Trouble reading in default sandbox file with content: \"" + content.replaceAll("\n", " (newline) ") + "\"");
+        events += "Trouble reading in default sandbox file with content: \"" + content.replaceAll("\n", " (newline) ") + "\"";
         Grid errorGrid = new Grid(25, 25, 0, 0);
         //<editor-fold defaultstate="collapsed" desc="Set up">
         errorGrid.addGameState(GS);
@@ -969,13 +976,16 @@ public class Snake extends Application implements Loggable {
      * Initialize the sandbox file from the default location
      */
     public static void initSandboxFile() {
+        events += "Initializing sandbox file... ";
         try {
             sandbox = new File(SANDBOXLOCATION);
             Scanner reader = new Scanner(sandbox);
             reader.useDelimiter("2049jg0324u0j2m0352035");
             board.getGrid().overwrite(loadSandboxFile(reader.next()));
+            events += "finished and grid overwritten";
         } catch (FileNotFoundException x) {
             System.out.println("Cannot find sandbox file in " + SANDBOXLOCATION + ", try setting the working dir to src/snake.");
+            events += "ERROR could not load sandbox file, file not found at \"" + SANDBOXLOCATION + "\", try setting the working dir to src/snake. | ";
         }
     }
 
