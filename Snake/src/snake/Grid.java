@@ -83,6 +83,8 @@ public final class Grid extends squares implements Updateable, Loggable {
     private boolean won = false;
 
     private String events = "";
+
+    private ToolPanel toolPanel;
 //</editor-fold>
 
     /*
@@ -94,7 +96,7 @@ public final class Grid extends squares implements Updateable, Loggable {
      */
     /**
      *
-     * @param width  The horizontal number of squares
+     * @param width The horizontal number of squares
      * @param length The vertical number of squares
      * @param startX The x-coordinate of the snake's starting position
      * @param startY The y-coordinate of the snake's starting position
@@ -242,8 +244,8 @@ public final class Grid extends squares implements Updateable, Loggable {
 
     /**
      *
-     * @param amt   The number of frames that should be between every update
-     *              cycle
+     * @param amt The number of frames that should be between every update
+     * cycle
      * @param level The difficulty level to change
      */
     public void setFrameSpeed(int amt, int level) {
@@ -283,6 +285,8 @@ public final class Grid extends squares implements Updateable, Loggable {
         this.extremeWarp = grid.extremeWarp;
         this.useSameSeedOnReset = grid.useSameSeedOnReset;
         this.seed = grid.seed;
+        this.toolPanel = grid.toolPanel;
+        this.deathCounter = grid.deathCounter;
         setApples();
     }
 
@@ -319,7 +323,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     /**
      *
      * @return The coordinates of the first portal without a pair reading left
-     *         to right top down on the grid
+     * to right top down on the grid
      */
     public Pair<Integer, Integer> findUnmatchedPortal() {
         if (containsUnmatchedPortal() > -1) {
@@ -369,7 +373,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     /**
      *
      * @return -1 if there are no unmatched portals, otherwise returns the
-     *         lowest unmatched portal number
+     * lowest unmatched portal number
      */
     public int containsUnmatchedPortal() {
         for (int y = 0; y < super.getLength(); y++) {
@@ -900,7 +904,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     public void attemptSetDirection(int dir) {
         if (Math.abs(this.direction - dir) != 2 && Math.abs(this.tempDir - dir) != 2) {
             this.tempDir = dir;
-
+            events += getDirectionName().charAt(0);
         }
     }
 
@@ -1242,12 +1246,17 @@ public final class Grid extends squares implements Updateable, Loggable {
         setPos(headPos2[0], headPos2[1]);
     }
 
+    public void addToolPanel(ToolPanel tp) {
+        toolPanel = tp;
+    }
+
     /**
      * Plays a pseudo-random death sound (using the time as a seed). Doesn't
-     * repeat sounds.
+     * repeat sounds until all but 4 have been played.
      */
     public void die() {
         events += " die at " + applesEaten + " | ";
+        GS.setToPostGame();
         random.setSeed(LocalDateTime.now().getNano());
         if (!won) {
             if (random.nextInt((int) (1.0 / RRPROB)) == random.nextInt((int) (1 / RRPROB))) {
@@ -1274,6 +1283,11 @@ public final class Grid extends squares implements Updateable, Loggable {
         } else {
             random.setSeed(LocalDateTime.now().getNano());
         }
+        if (toolPanel != null) {
+            toolPanel.updateControls();
+        } else {
+            events += "Hidden error - no toolpanel object";
+        }
     }
 
     /**
@@ -1286,7 +1300,6 @@ public final class Grid extends squares implements Updateable, Loggable {
                 newApple();
             }
             if (this.snakeSize < 1) {
-                GS.setToPostGame();
                 die();
                 return;
             }
@@ -1371,19 +1384,15 @@ public final class Grid extends squares implements Updateable, Loggable {
             } else {
                 // edge kills
                 if (nextX < 0) {
-                    GS.setToPostGame();
                     die();
                 }
                 if (nextX >= super.getWidth()) {
-                    GS.setToPostGame();
                     die();
                 }
                 if (nextY < 0) {
-                    GS.setToPostGame();
                     die();
                 }
                 if (nextY >= super.getLength()) {
-                    GS.setToPostGame();
                     die();
                 }
             }
@@ -1391,12 +1400,10 @@ public final class Grid extends squares implements Updateable, Loggable {
             if (GS.isGame() && (this.isRock(nextX, nextY) || this.edgeKills && (nextX >= super.getWidth() || nextY >= super.getLength() || nextX < 0 || nextY < 0))) {
                 // collision with wall or rock
                 events += " Wall or Rock";
-                GS.setToPostGame();
                 die();
             } else if (GS.isGame() && isSnake(nextX, nextY)) {
                 // collision with self
                 events += " Snake";
-                GS.setToPostGame();
                 die();
             } else if (GS.isGame() && this.isApple(nextX, nextY)) {
                 // ate an apple
@@ -1407,7 +1414,6 @@ public final class Grid extends squares implements Updateable, Loggable {
                 clearApples();
                 newApple();
                 if (this.snakeSize < 1) {
-                    GS.setToPostGame();
                     die();
                     return;
                 }
@@ -1448,7 +1454,6 @@ public final class Grid extends squares implements Updateable, Loggable {
                     clearApples();
                     newApple();
                     if (this.snakeSize < 1) {
-                        GS.setToPostGame();
                         die();
                         return;
                     }
