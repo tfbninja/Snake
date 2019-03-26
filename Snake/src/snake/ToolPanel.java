@@ -13,9 +13,8 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
- * V2.0 -
- * Separate AWT window that provides easy manipulation of the Grid class via a
- * GUI
+ * V2.0 - Separate AWT window that provides easy manipulation of the Grid class
+ * via a GUI
  *
  * @author Tim Barber
  */
@@ -29,6 +28,7 @@ public class ToolPanel extends javax.swing.JPanel implements Updateable {
     private GameState GS;
     private final MenuManager MM;
     private Board board;
+    private boolean dieUpdate = false;
 
     /**
      * Creates new form ToolPanel
@@ -92,8 +92,10 @@ public class ToolPanel extends javax.swing.JPanel implements Updateable {
     /**
      * Sets the grid to the proper values and repaints
      */
+    @Override
     public void update() {
         updateGridSettings();
+
         String[] names = {"RESET", "CLEAR"};
         if (GS.isGame()) {
             clearButton.setText(names[0]);

@@ -222,6 +222,7 @@ public class Board implements Loggable {
     public void createGrid() {
         grid = new Grid(GRIDSIZE, GRIDSIZE, 21, 20);
         grid.addGameState(GS);
+        grid.addToolPanel(toolPanel);
     }
 
     /**

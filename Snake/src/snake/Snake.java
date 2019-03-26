@@ -27,6 +27,7 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+//</editor-fold>
 
 /**
  * Runner class that initiates all high level tasks pertaining to the game
@@ -45,7 +46,7 @@ public class Snake extends Application implements Loggable {
     private static final Random random = new Random(System.currentTimeMillis());
 
     // secondary sandbox tool window
-    private ToolPanel toolPanel;
+    private static ToolPanel toolPanel;
     private JFrame toolboxFrame;
 
     private int frame = 0;
@@ -846,6 +847,7 @@ public class Snake extends Application implements Loggable {
                     s.nextLine();
                 }
                 pause = false;
+                tempGrid.addToolPanel(toolPanel);
                 return tempGrid;
             } catch (NumberFormatException e) {
             }
