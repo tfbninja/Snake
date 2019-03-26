@@ -3,16 +3,21 @@ Play by downloading this repository as a .zip file, extracting, navigating to th
 
 ## Keyboard shortcuts:
 
-| Key | Action |
-|:-----:|:------------------------------------------|
-| **1** | Selects easy mode if on home screen       |
-| **2** | Selects medium mode if on home screen     |
-| **3** | Selects hard mode if on home screen       |
-| **4** | Selects extreme mode if on home screen    |
-| **H** | Switches between menu and high scores     |
-| **M** | Toggles mute (background music *and* sfx) |
-| **N** | Toggles night mode                        |
-| **R** | 'Restarts' to menu if on lose screen      |
+| Shortcut     | Action                                    |
+|:------------:|-------------------------------------------|
+| **1**        | Selects easy mode if on home screen       |
+| **2**        | Selects medium mode if on home screen     |
+| **3**        | Selects hard mode if on home screen       |
+| **4**        | Selects extreme mode if on home screen    |
+| **SHFT + 0** | Selects sandbox mode if on home screen    |
+| **H**        | Toggles **H**igh score screen             |
+| **M**        | Toggles background **m**usic              |
+| **X**        | Toggles SF**X**                           |
+| **N**        | Toggles **n**ight mode                    |
+| **R**        | **R**estarts level if on lose screen      |
+| **BKSP**     | Exits to menu if on lose screen           |
+| **F11**      | Toggles fullscreen                        |
+| **ESC**      | Exits fullscreen                          |
 
 
 ## Game Modes
