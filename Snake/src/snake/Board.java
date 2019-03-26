@@ -24,6 +24,8 @@ import javax.swing.JFrame;
 public class Board implements Loggable {
 
     //<editor-fold defaultstate="collapsed" desc="instance vars">
+    private double screenW;
+    private double screenH;
     private int width;
     private int height;
     private Grid grid;
@@ -64,6 +66,14 @@ public class Board implements Loggable {
     private final int[] musicButton = {12, 18, 55, 37};
     private final int[] SFXButton = {83, 18, 28, 37};
     private final int[] helpButton = {13, 255, 47, 22};
+
+    private int[] easyButtonFS = {12, 292, 194, 51};
+    private int[] medButtonFS = {219, 292, 194, 51};
+    private int[] hardButtonFS = {12, 353, 194, 51};
+    private int[] impButtonFS = {219, 353, 194, 51};
+    private int[] musicButtonFS = {12, 18, 55, 37};
+    private int[] SFXButtonFS = {83, 18, 28, 37};
+    private int[] helpButtonFS = {13, 255, 47, 22};
 
     private boolean nightTheme = false;
 
@@ -165,6 +175,99 @@ public class Board implements Loggable {
         toolPanel.updateButtonColors(getColorScheme());
     }
 
+    public Canvas getFullScreenMenu(double size) {
+        Canvas c = new Canvas(size, size);
+        GraphicsContext gc = c.getGraphicsContext2D();
+        gc.setFill(Color.web("dcf9ff"));
+        gc.fillRect(0, 0, size, size);
+
+        // draw buttons
+        gc.setFill(Color.web("212121"));
+        double shadowOpacity = 0.1;
+
+//<editor-fold defaultstate="collapsed" desc="Easy">
+//<editor-fold defaultstate="collapsed" desc="shadow">
+        gc.setFill(Color.web("212121", shadowOpacity));
+        gc.fillRect(18 / 430.0 * size, 300 / 430.0 * size, 194 / 430.0 * size, 51 / 430.0 * size);
+//</editor-fold>
+        gc.setFill(Color.web("212121"));
+        gc.fillRect(12 / 430.0 * size, 293 / 430.0 * size, 194 / 430.0 * size, 49 / 430.0 * size);
+        gc.setFill(Color.web("495456"));
+        gc.fillRect(12 / 430.0 * size, 292 / 430.0 * size, 194 / 430.0 * size, 1 / 430.0 * size);
+        gc.fillRect(12 / 430.0 * size, 342 / 430.0 * size, 194 / 430.0 * size, 1 / 430.0 * size);
+
+        gc.setFill(Color.web("e2e2e2"));
+        gc.setFont(new Font("Impact", 45 / 430.0 * size));
+        gc.fillText("EASY", 62 / 430.0 * size, 335 / 430.0 * size);
+        easyButtonFS[0] = (int) (12 / 430.0 * size);
+        easyButtonFS[1] = (int) (292 / 430.0 * size);
+        easyButtonFS[2] = (int) (194 / 430.0 * size);
+        easyButtonFS[3] = (int) (51 / 430.0 * size);
+//</editor-fold>
+
+//<editor-fold defaultstate="collapsed" desc="Medium">
+//<editor-fold defaultstate="collapsed" desc="shadow">
+        gc.setFill(Color.web("212121", shadowOpacity));
+        gc.fillRect(225 / 430.0 * size, 300 / 430.0 * size, 194 / 430.0 * size, 51 / 430.0 * size);
+//</editor-fold>
+        gc.setFill(Color.web("212121"));
+        gc.fillRect(219 / 430.0 * size, 293 / 430.0 * size, 194 / 430.0 * size, 49 / 430.0 * size);
+        gc.setFill(Color.web("495456"));
+        gc.fillRect(219 / 430.0 * size, 292 / 430.0 * size, 194 / 430.0 * size, 1 / 430.0 * size);
+        gc.fillRect(219 / 430.0 * size, 342 / 430.0 * size, 194 / 430.0 * size, 1 / 430.0 * size);
+
+        gc.setFill(Color.web("e2e2e2"));
+        gc.setFont(new Font("Impact", 45 / 430.0 * size));
+        gc.fillText("MEDIUM", 244 / 430.0 * size, 335 / 430.0 * size);
+        medButtonFS[0] = (int) (219 / 430.0 * size);
+        medButtonFS[1] = (int) (292 / 430.0 * size);
+        medButtonFS[2] = (int) (194 / 430.0 * size);
+        medButtonFS[3] = (int) (51 / 430.0 * size);
+//</editor-fold>
+
+//<editor-fold defaultstate="collapsed" desc="Hard">
+//<editor-fold defaultstate="collapsed" desc="shadow">
+        gc.setFill(Color.web("212121", shadowOpacity));
+        gc.fillRect(18 / 430.0 * size, 361 / 430.0 * size, 194 / 430.0 * size, 51 / 430.0 * size);
+//</editor-fold>
+        gc.setFill(Color.web("212121"));
+        gc.fillRect(12 / 430.0 * size, 354 / 430.0 * size, 194 / 430.0 * size, 49 / 430.0 * size);
+        gc.setFill(Color.web("495456"));
+        gc.fillRect(12 / 430.0 * size, 353 / 430.0 * size, 194 / 430.0 * size, 1 / 430.0 * size);
+        gc.fillRect(12 / 430.0 * size, 403 / 430.0 * size, 194 / 430.0 * size, 1 / 430.0 * size);
+
+        gc.setFill(Color.web("e2e2e2"));
+        gc.setFont(new Font("Impact", 45 / 430.0 * size));
+        gc.fillText("HARD", 57 / 430.0 * size, 396 / 430.0 * size);
+        hardButtonFS[0] = (int) (12 / 430.0 * size);
+        hardButtonFS[1] = (int) (353 / 430.0 * size);
+        hardButtonFS[2] = (int) (194 / 430.0 * size);
+        hardButtonFS[3] = (int) (51 / 430.0 * size);
+//</editor-fold>
+
+//<editor-fold defaultstate="collapsed" desc="Extreme">
+//<editor-fold defaultstate="collapsed" desc="shadow">
+        gc.setFill(Color.web("212121", shadowOpacity));
+        gc.fillRect(225 / 430.0 * size, 361 / 430.0 * size, 194 / 430.0 * size, 51 / 430.0 * size);
+//</editor-fold>
+        gc.setFill(Color.web("212121"));
+        gc.fillRect(219 / 430.0 * size, 354 / 430.0 * size, 194 / 430.0 * size, 49 / 430.0 * size);
+        gc.setFill(Color.web("495456"));
+        gc.fillRect(219 / 430.0 * size, 353 / 430.0 * size, 194 / 430.0 * size, 1 / 430.0 * size);
+        gc.fillRect(219 / 430.0 * size, 403 / 430.0 * size, 194 / 430.0 * size, 1 / 430.0 * size);
+
+        gc.setFill(Color.web("e2e2e2"));
+        gc.setFont(new Font("Impact", 45 / 430.0 * size));
+        gc.fillText("EXTREME", 241 / 430.0 * size, 396 / 430.0 * size);
+        impButtonFS[0] = (int) (219 / 430.0 * size);
+        impButtonFS[1] = (int) (353 / 430.0 * size);
+        impButtonFS[2] = (int) (194 / 430.0 * size);
+        impButtonFS[3] = (int) (51 / 430.0 * size);
+//</editor-fold>
+
+        return c;
+    }
+
     /**
      *
      * @return A list of colors formatted like this: "rrggbb"
@@ -190,6 +293,8 @@ public class Board implements Loggable {
 
     public void setFullscreen(double screenWidth, double screenHeight) {
         fullscreen = true;
+        screenW = screenWidth;
+        screenH = screenHeight;
         width = (int) screenWidth - outsideMargin;
         height = (int) screenHeight - outsideMargin;
         borderSize = 5;
@@ -212,6 +317,8 @@ public class Board implements Loggable {
 
     public void turnOffFullscreen(int w, int h) {
         fullscreen = false;
+        screenW = w;
+        screenH = h;
         width = w;
         height = h;
         canvas = new Canvas(w, h);
@@ -438,8 +545,8 @@ public class Board implements Loggable {
             this.nightTheme = !this.nightTheme;
             this.setNightTheme(nightTheme);
         }
-        if (e.getCode() == KeyCode.ESCAPE) {
-            events += "ESC to menu | ";
+        if (e.getCode() == KeyCode.BACK_SPACE) {
+            events += "BKSPC to menu | ";
             MM.setCurrent(0);
             reset();
             toolFrame.setVisible(false);
@@ -817,6 +924,10 @@ public class Board implements Loggable {
         mouseX -= outsideMargin;
         int mX = (int) mouseX;
         int mY = (int) mouseY;
+        if (fullscreen) {
+            mX -= Math.max(screenW - screenH, 0) / 2 - 10;
+            mY -= Math.max(screenH - screenW, 0) / 2;
+        }
         // top right:
         // margin * x + xPos + (size * (x-1)) : += size
         //solve:
@@ -870,22 +981,26 @@ public class Board implements Loggable {
 
             // menu catching
             if (MM.getCurrent() == 0) {
-                if (mX >= easyButton[0] && mY >= easyButton[1] && mX <= easyButton[0] + easyButton[2] && mY <= easyButton[1] + easyButton[3]) {
+                if (mX >= easyButton[0] && mY >= easyButton[1] && mX <= easyButton[0] + easyButton[2] && mY <= easyButton[1] + easyButton[3] && !fullscreen
+                        || (fullscreen && mX >= easyButtonFS[0] && mY >= easyButtonFS[1] && mX <= easyButtonFS[0] + easyButtonFS[2] && mY <= easyButtonFS[1] + easyButtonFS[3])) {
                     // easy mode chosen
                     this.grid.setDiffLevel(1);
                     MM.setCurrent(4);
                     GS.setToPreGame();
-                } else if (mX >= medButton[0] && mY >= medButton[1] && mX <= medButton[0] + medButton[2] && mY <= medButton[1] + medButton[3]) {
+                } else if (mX >= medButton[0] && mY >= medButton[1] && mX <= medButton[0] + medButton[2] && mY <= medButton[1] + medButton[3] && !fullscreen
+                        || (fullscreen && mX >= medButtonFS[0] && mY >= medButtonFS[1] && mX <= medButtonFS[0] + medButtonFS[2] && mY <= medButtonFS[1] + medButtonFS[3])) {
                     // medium mode chosen
                     this.grid.setDiffLevel(2);
                     MM.setCurrent(4);
                     GS.setToPreGame();
-                } else if (mX >= hardButton[0] && mY >= hardButton[1] && mX <= hardButton[0] + hardButton[2] && mY <= hardButton[1] + hardButton[3]) {
+                } else if (mX >= hardButton[0] && mY >= hardButton[1] && mX <= hardButton[0] + hardButton[2] && mY <= hardButton[1] + hardButton[3] && !fullscreen
+                        || (fullscreen && mX >= hardButtonFS[0] && mY >= hardButtonFS[1] && mX <= hardButtonFS[0] + hardButtonFS[2] && mY <= hardButtonFS[1] + hardButtonFS[3])) {
                     // hard mode chosen
                     this.grid.setDiffLevel(3);
                     MM.setCurrent(4);
                     GS.setToPreGame();
-                } else if (mX >= impButton[0] && mY >= impButton[1] && mX <= impButton[0] + impButton[2] && mY <= impButton[1] + impButton[3]) {
+                } else if (mX >= impButton[0] && mY >= impButton[1] && mX <= impButton[0] + impButton[2] && mY <= impButton[1] + impButton[3] && !fullscreen
+                        || (fullscreen && mX >= impButtonFS[0] && mY >= impButtonFS[1] && mX <= impButtonFS[0] + impButtonFS[2] && mY <= impButtonFS[1] + impButtonFS[3])) {
                     // impossible mode chosen
                     this.grid.setDiffLevel(4);
                     MM.setCurrent(4);

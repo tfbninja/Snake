@@ -459,7 +459,7 @@ public class Snake extends Application implements Loggable {
                                 int yspace = (int) (Math.max(h - w, 0) / 2);
                                 int xspace = (int) (Math.max(w - h, 0) / 2);
                                 root.setPadding(new Insets(yspace, xspace, yspace, xspace));
-                                root.setTop(stretch(MENU.getMenu(), Math.min(w, h) / 430.0));
+                                root.setTop(board.getFullScreenMenu(Math.min(w, h)));
                             } else {
                                 root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
                                 root.setTop(MENU.getMenu());
