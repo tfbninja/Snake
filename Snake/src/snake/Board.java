@@ -97,15 +97,20 @@ public class Board implements Loggable {
     private int appleTextY;
     private Font appleFont = new Font("Impact", 22);
     private Font fullScreenAppleFont = Font.font("Terminal", FontWeight.BOLD, 50);
+
+    private int toolButtonX = 10;
+    private int toolButtonY = 50;
+    private int toolButtonSpace = 20;
+    private int toolButtonSize = 50;
 //</editor-fold>
 
     /**
      *
-     * @param w       the horizontal width
-     * @param h       the vertical height
-     * @param mm      the MenuManager object
-     * @param menu    the Menu object
-     * @param gs      the GameState object
+     * @param w the horizontal width
+     * @param h the vertical height
+     * @param mm the MenuManager object
+     * @param menu the Menu object
+     * @param gs the GameState object
      * @param primary the stage object holding the various graphical components
      */
     public Board(int w, int h, MenuManager mm, MainMenu menu, GameState gs, Stage primary) {
@@ -310,7 +315,7 @@ public class Board implements Loggable {
             appleTextY = (int) ((screenHeight / 2) - (fullScreenAppleFont.getSize() / 2));
         } else {
             appleTextX = width - (XMARGIN / 2) - 50;
-            appleTextY = (int) (screenHeight - YMARGIN / 2) - 25;
+            appleTextY = (int) (screenHeight - YMARGIN / 2) - 20;
         }
         drawBlocks();
     }
@@ -330,7 +335,7 @@ public class Board implements Loggable {
         borderSize = 2;
         edgeSize = 2;
         appleTextX = XMARGIN + width / 2 - 100;
-        appleTextY = h;
+        appleTextY = h - 5;
         drawBlocks();
     }
 
@@ -466,6 +471,32 @@ public class Board implements Loggable {
         if (!this.lost && GS.isPostGame()) {
             this.lost = true;
         }
+        if (fullscreen && grid.getDiffLevel() == 0) {
+            // we're gonna go ahead and assume a normal width > height monitor shape here
+            // draw toolbox
+            String[] names = {"BLANK", "HEAD", "APPLE", "ROCK", "PORTAL"};
+            for (int i = 0; i < 5; i++) {
+                gc.setFill(Color.web(getColorScheme()[i]));
+                gc.fillRect(toolButtonX, toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i), toolButtonSize, toolButtonSize);
+                gc.setFill(invert(Color.web(getColorScheme()[getColorScheme().length - 1])));
+                gc.setFont(new Font("Tahoma", 10));
+                gc.fillText(names[i], toolButtonX + 20, toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i) + (toolButtonSize / 2));
+            }
+            gc.setFill(Color.BLUEVIOLET);
+            gc.setLineWidth(1);
+            gc.strokeRect(toolButtonX - 1, toolButtonY + (toolButtonSpace * fullScreenToolNumber(toolPanel.getCurrentTool()) + (toolButtonSize * fullScreenToolNumber(toolPanel.getCurrentTool()))) - 1, toolButtonSize + 2, toolButtonSize + 2);
+        }
+    }
+
+    public int fullScreenToolNumber(int toolPanelNum) {
+        switch (toolPanelNum) {
+            case 1:
+                return 1;
+            case 4:
+                return 3;
+            default:
+                return toolPanelNum;
+        }
     }
 
     /**
@@ -482,6 +513,10 @@ public class Board implements Loggable {
         grid.clear();
         grid.safeSetCell(21, 20, 1);
         grid.setPos(21, 20);
+    }
+
+    public Color invert(Color c) {
+        return new Color(1 - c.getRed(), 1 - c.getGreen(), 1 - c.getBlue(), 1 - c.getOpacity());
     }
 
     /**
@@ -561,21 +596,20 @@ public class Board implements Loggable {
         if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0) {
             if (null != e.getCode()) {
                 switch (e.getCode()) {
-                    case DIGIT0:
+                    case DIGIT1:
                         toolPanel.setCurrentTool(0);
                         break;
-                    case DIGIT1:
+                    case DIGIT2:
                         toolPanel.setCurrentTool(1);
                         break;
-                    case DIGIT2:
+                    case DIGIT3:
                         toolPanel.setCurrentTool(2);
                         break;
-                    case DIGIT3:
+                    case DIGIT4:
                         toolPanel.setCurrentTool(3);
                         break;
-                    case DIGIT4:
+                    case DIGIT5:
                         toolPanel.setCurrentTool(4);
-                        break;
                     default:
                         break;
                 }
@@ -740,7 +774,7 @@ public class Board implements Loggable {
     /**
      *
      * @return the lowest int starting from ten that has no corresponding pair
-     *         in the grid
+     * in the grid
      */
     public int findUnusedPortalNum() {
         int num = 10;

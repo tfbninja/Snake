@@ -958,7 +958,7 @@ public final class Grid extends squares implements Updateable, Loggable {
 
     /**
      *
-     * @return
+     * @return the length of the snake
      */
     public int getSize() {
         return this.snakeSize;
