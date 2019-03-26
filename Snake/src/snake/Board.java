@@ -23,17 +23,17 @@ import javax.swing.JFrame;
 public class Board implements Loggable {
 
     //<editor-fold defaultstate="collapsed" desc="instance vars">
-    private final int width;
-    private final int height;
+    private int width;
+    private int height;
     private Grid grid;
-    private final Canvas canvas;
+    private Canvas canvas;
     private int outsideMargin = 10;
-    private final int margin = 1;
-    private final int XMARGIN = 15;
-    private final int YMARGIN = 5;
-    private final int size = 15;
-    private final int borderSize = 2;
-    private final int edgeSize = 2;
+    private int margin = 1;
+    private int XMARGIN = 15;
+    private int YMARGIN = 5;
+    private int size = 15;
+    private int borderSize = 2;
+    private int edgeSize = 2;
     private final int GRIDSIZE = 25;
 
     private int mouseClicks = 0;
@@ -180,6 +180,33 @@ public class Board implements Loggable {
         toolPanel.updateButtonColors(getColorScheme());
     }
 
+    public void setFullscreen(double screenWidth, double screenHeight) {
+        width = (int) screenWidth - outsideMargin;
+        height = (int) screenHeight - outsideMargin;
+        XMARGIN = Math.max((int) (screenWidth - screenHeight) / 2, 0);
+        YMARGIN = Math.max((int) (screenWidth - screenHeight) / 2, 0);
+        canvas = new Canvas(width, height);
+        margin = 3;
+        size = 20;
+        borderSize = 5;
+        edgeSize = 5;
+        drawBlocks();
+    }
+
+    public void turnOffFullscreen(int w, int h) {
+        width = w;
+        height = h;
+        canvas = new Canvas(w, h);
+        outsideMargin = 10;
+        margin = 1;
+        XMARGIN = 15;
+        YMARGIN = 5;
+        size = 15;
+        borderSize = 2;
+        edgeSize = 2;
+        drawBlocks();
+    }
+
     /**
      *
      * @param amt the pixel length of the black border around the game
@@ -315,7 +342,6 @@ public class Board implements Loggable {
     public void reset() {
         keyPresses = 0;
         this.lost = false;
-        MM.setCurrent(0);
         GS.setToPreGame();
         this.grid.setSoundOn(this.soundOn);
         //createGrid();
@@ -376,9 +402,11 @@ public class Board implements Loggable {
      * @param e KeyEvent holding the key press information
      */
     public void keyPressed(KeyEvent e) {
-        if (e.getCode() == KeyCode.R && MM.getCurrent() == 3) {
+        if ((e.getCode() == KeyCode.R || e.getCode() == KeyCode.SPACE) && MM.getCurrent() == 3) {
             events += "reset | ";
             reset();
+            grid.setDiffLevel(grid.getDiffLevel());
+            MM.setCurrent(4);
         }
         if (e.getCode() == KeyCode.N) {
             this.nightTheme = !this.nightTheme;
@@ -494,10 +522,6 @@ public class Board implements Loggable {
         if (e.getCode() == KeyCode.X) {
             toggleSFX();
             events += "SFX set to " + (MENU.getSFX() ? "on" : "off") + " | ";
-        }
-        if (this.lost && (MM.getCurrent() == 3 || MM.getCurrent() == 4) && (e.getCode() == KeyCode.R || e.getCode() == KeyCode.SPACE)) {
-            reset();
-            events += "reset | ";
         }
         if (GS.isGame() && keyPresses > 1) {
             if (null != e.getCode()) {

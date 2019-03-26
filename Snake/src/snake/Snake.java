@@ -18,6 +18,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -94,6 +95,8 @@ public class Snake extends Application implements Loggable {
 
     private Logger log = new Logger(this);
     private static String events = "";
+
+    private boolean fullscreen = false;
 //</editor-fold>
 
     public void setupBGMusic() {
@@ -654,7 +657,26 @@ public class Snake extends Application implements Loggable {
 
         scene.setOnKeyPressed(
                 (KeyEvent eventa) -> {
-                    board.keyPressed(eventa);
+                    if (eventa.getCode() == KeyCode.F11) {
+                        fullscreen = !fullscreen;
+                        primaryStage.setFullScreen(fullscreen);
+                        double w = primaryStage.getWidth();
+                        double h = primaryStage.getHeight();
+                        if (fullscreen) {
+                            board.setFullscreen(w, h);
+                        } else {
+                            board.turnOffFullscreen(canvasW, canvasH);
+                        }
+                    }
+                    if (eventa.getCode() == KeyCode.ESCAPE && fullscreen) {
+                        fullscreen = !fullscreen;
+                        primaryStage.setFullScreen(false);
+                        double w = primaryStage.getWidth();
+                        double h = primaryStage.getHeight();
+                        board.turnOffFullscreen(canvasW, canvasH);
+                    } else {
+                        board.keyPressed(eventa);
+                    }
                 }
         );
     }
