@@ -11,6 +11,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import javax.swing.JFrame;
@@ -80,6 +81,12 @@ public class Board implements Loggable {
     private boolean mouseIsBeingDragged = false;
     private int oldMouseX;
     private int oldMouseY;
+
+    private boolean fullscreen = false;
+    private int appleTextX;
+    private int appleTextY;
+    private Font appleFont = new Font("Impact", 22);
+    private Font fullScreenAppleFont = Font.font("Terminal", FontWeight.BOLD, 50);
 //</editor-fold>
 
     /**
@@ -101,6 +108,7 @@ public class Board implements Loggable {
         createGrid();
         grid.clearApples();
         primaryStage = primary;
+        turnOffFullscreen(w, h);
         events += "Initialized | ";
     }
 
@@ -181,29 +189,41 @@ public class Board implements Loggable {
     }
 
     public void setFullscreen(double screenWidth, double screenHeight) {
+        fullscreen = true;
         width = (int) screenWidth - outsideMargin;
         height = (int) screenHeight - outsideMargin;
-        XMARGIN = Math.max((int) (screenWidth - screenHeight) / 2, 0);
-        YMARGIN = Math.max((int) (screenWidth - screenHeight) / 2, 0);
-        canvas = new Canvas(width, height);
-        margin = 3;
-        size = 20;
         borderSize = 5;
+        XMARGIN = Math.max((int) (screenWidth - screenHeight) / 2, 0);
+        YMARGIN = Math.max((int) (screenHeight - screenWidth) / 2, 0) + 20;
+        canvas = new Canvas(width, height);
+        margin = (int) ((Math.min(screenWidth, screenHeight) - Math.min(XMARGIN, YMARGIN) - borderSize - edgeSize) / 16) / grid.getWidth();
+        size = (int) ((Math.min(screenWidth, screenHeight) - Math.min(XMARGIN, YMARGIN) - borderSize - edgeSize) / 16 * 15) / grid.getWidth();
+
         edgeSize = 5;
+        if (screenWidth > screenHeight) { // it better be...jeez
+            appleTextX = width - (XMARGIN / 2) - 50;
+            appleTextY = (int) ((screenHeight / 2) - (fullScreenAppleFont.getSize() / 2));
+        } else {
+            appleTextX = width - (XMARGIN / 2) - 50;
+            appleTextY = (int) (screenHeight - YMARGIN / 2) - 25;
+        }
         drawBlocks();
     }
 
     public void turnOffFullscreen(int w, int h) {
+        fullscreen = false;
         width = w;
         height = h;
         canvas = new Canvas(w, h);
         outsideMargin = 10;
-        margin = 1;
         XMARGIN = 15;
         YMARGIN = 5;
+        margin = 1;
         size = 15;
         borderSize = 2;
         edgeSize = 2;
+        appleTextX = XMARGIN + width / 2 - 100;
+        appleTextY = h;
         drawBlocks();
     }
 
@@ -328,8 +348,13 @@ public class Board implements Loggable {
 
         // update apples eaten
         gc.setFill(Color.web(applesEaten));
-        gc.setFont(Font.font("Impact", 22));
-        gc.fillText("Apples eaten: " + this.getGrid().getApplesEaten(), XMARGIN + width / 2 - 100, YMARGIN + getPixelDimensions()[1] + 22);
+        if (fullscreen) {
+            gc.setFont(fullScreenAppleFont);
+            gc.fillText("" + this.getGrid().getApplesEaten(), appleTextX, appleTextY);
+        } else {
+            gc.setFont(appleFont);
+            gc.fillText("Apples eaten: " + this.getGrid().getApplesEaten(), appleTextX, appleTextY);
+        }
 
         if (!this.lost && GS.isPostGame()) {
             this.lost = true;

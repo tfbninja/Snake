@@ -51,7 +51,21 @@ public class MainMenu extends Controller {
      * @return The ImageView object currently in use
      */
     public ImageView getMenu() {
-        return current;
+        OnOn = getImageView("resources/art/updatedMenus/ButtonShadows/menuMOnSOn.png");
+        OnOff = getImageView("resources/art/updatedMenus/ButtonShadows/menuMOnSOff.png");
+        OffOn = getImageView("resources/art/updatedMenus/ButtonShadows/menuMOffSOn.png");
+        OffOff = getImageView("resources/art/updatedMenus/ButtonShadows/menuMOffSOff.png");
+        if (music) {
+            if (sfx) {
+                return OnOn;
+            }
+            return OnOff;
+        }
+        if (sfx) {
+            return OffOn;
+        }
+        return OffOff;
+        // return current;
     }
 
     /*

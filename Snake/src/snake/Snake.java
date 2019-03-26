@@ -453,15 +453,44 @@ public class Snake extends Application implements Loggable {
                     switch (MM.getCurrent()) {
                         case 0:
                             // show main menu
-                            root.setTop(MENU.getMenu());
+                            if (fullscreen) {
+                                double w = primaryStage.getWidth();
+                                double h = primaryStage.getHeight();
+                                int yspace = (int) (Math.max(h - w, 0) / 2);
+                                int xspace = (int) (Math.max(w - h, 0) / 2);
+                                root.setPadding(new Insets(yspace, xspace, yspace, xspace));
+                                root.setTop(stretch(MENU.getMenu(), Math.min(w, h) / 430.0));
+                            } else {
+                                root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+                                root.setTop(MENU.getMenu());
+                            }
+
                             won = false;
                             break;
                         case 1:
                             // show high scores
+                            if (fullscreen) {
+                                double w = primaryStage.getWidth();
+                                double h = primaryStage.getHeight();
+                                int yspace = (int) (Math.max(h - w, 0) / 2);
+                                int xspace = (int) (Math.max(w - h, 0) / 2);
+                                root.setPadding(new Insets(yspace, xspace, yspace, xspace));
+                            } else {
+                                root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+                            }
                             root.setTop(HS_IV);
                             break;
                         case 2:
                             // show help
+                            if (fullscreen) {
+                                double w = primaryStage.getWidth();
+                                double h = primaryStage.getHeight();
+                                int yspace = (int) (Math.max(h - w, 0) / 2);
+                                int xspace = (int) (Math.max(w - h, 0) / 2);
+                                root.setPadding(new Insets(yspace, xspace, yspace, xspace));
+                            } else {
+                                root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+                            }
                             root.setTop(HELP_IV);
                             break;
                         case 3:
@@ -583,6 +612,15 @@ public class Snake extends Application implements Loggable {
                                 scoresOverwritten = true;
                                 ImageView LOSE_IV = getImageView("resources\\art\\loseScreen.png");
 
+                                if (fullscreen) {
+                                    double w = primaryStage.getWidth();
+                                    double h = primaryStage.getHeight();
+                                    int yspace = (int) (Math.max(h - w, 0) / 2);
+                                    int xspace = (int) (Math.max(w - h, 0) / 2);
+                                    root.setPadding(new Insets(yspace, xspace, yspace, xspace));
+                                } else {
+                                    root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+                                }
                                 root.setTop(LOSE_IV);
 
                                 loadHighScoreScreen(); // re-cache high score screen
@@ -590,6 +628,8 @@ public class Snake extends Application implements Loggable {
                             break;
 
                         case 4:
+                            root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+
                             // show the actual game
                             sandboxReset = false;
                             if (root.getTop() != board.getCanvas() && !GS.isPostGame()) {
@@ -665,8 +705,12 @@ public class Snake extends Application implements Loggable {
                         double h = primaryStage.getHeight();
                         if (fullscreen) {
                             board.setFullscreen(w, h);
+                            int yspace = (int) (Math.max(h - w, 0) / 2);
+                            int xspace = (int) (Math.max(w - h, 0) / 2);
+                            root.setPadding(new Insets(yspace, xspace, yspace, xspace));
                         } else {
                             board.turnOffFullscreen(canvasW, canvasH);
+                            root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
                         }
                     }
                     if (eventa.getCode() == KeyCode.ESCAPE && fullscreen) {
@@ -675,6 +719,7 @@ public class Snake extends Application implements Loggable {
                         double w = primaryStage.getWidth();
                         double h = primaryStage.getHeight();
                         board.turnOffFullscreen(canvasW, canvasH);
+                        root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
                     } else {
                         board.keyPressed(eventa);
                     }
@@ -687,6 +732,13 @@ public class Snake extends Application implements Loggable {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public static ImageView stretch(ImageView i, double ratio) {
+        i.setPreserveRatio(true);
+        i.setScaleX(ratio);
+        i.setScaleY(ratio);
+        return i;
     }
 
     /**
