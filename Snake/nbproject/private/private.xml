@@ -15,19 +15,6 @@
             </bookmark>
         </file>
         <file>
-            <url>src/snake/Snake.java</url>
-            <bookmark id="1">
-                <name/>
-                <line>270</line>
-                <key/>
-            </bookmark>
-            <bookmark id="5">
-                <name/>
-                <line>526</line>
-                <key/>
-            </bookmark>
-        </file>
-        <file>
             <url>src/snake/Board.java</url>
             <bookmark id="9">
                 <name/>
@@ -52,6 +39,19 @@
             <bookmark id="10">
                 <name/>
                 <line>478</line>
+                <key/>
+            </bookmark>
+        </file>
+        <file>
+            <url>src/snake/Snake.java</url>
+            <bookmark id="1">
+                <name/>
+                <line>270</line>
+                <key/>
+            </bookmark>
+            <bookmark id="5">
+                <name/>
+                <line>526</line>
                 <key/>
             </bookmark>
         </file>

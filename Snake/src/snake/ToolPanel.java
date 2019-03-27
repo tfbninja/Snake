@@ -533,13 +533,13 @@ public class ToolPanel extends javax.swing.JPanel implements Updateable {
                 toolNum = 1;
                 break;
             case 2:
-                toolNum = 3;
+                toolNum = 2;
                 break;
             case 3:
-                toolNum = 4;
+                toolNum = 3;
                 break;
             case 4:
-                toolNum = 5;
+                toolNum = 4;
                 break;
         }
         currentBox.setBackground(Color.decode("0x" + colorScheme[index]));

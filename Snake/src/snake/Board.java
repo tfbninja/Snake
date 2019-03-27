@@ -107,11 +107,11 @@ public class Board implements Loggable {
 
     /**
      *
-     * @param w       the horizontal width
-     * @param h       the vertical height
-     * @param mm      the MenuManager object
-     * @param menu    the Menu object
-     * @param gs      the GameState object
+     * @param w the horizontal width
+     * @param h the vertical height
+     * @param mm the MenuManager object
+     * @param menu the Menu object
+     * @param gs the GameState object
      * @param primary the stage object holding the various graphical components
      */
     public Board(int w, int h, MenuManager mm, MainMenu menu, GameState gs, Stage primary) {
@@ -640,10 +640,6 @@ public class Board implements Loggable {
 
     public int fullScreenToolNumber(int toolPanelNum) {
         switch (toolPanelNum) {
-            case 1:
-                return 1;
-            case 4:
-                return 3;
             default:
                 return toolPanelNum;
         }
@@ -924,7 +920,7 @@ public class Board implements Loggable {
     /**
      *
      * @return the lowest int starting from ten that has no corresponding pair
-     *         in the grid
+     * in the grid
      */
     public int findUnusedPortalNum() {
         int num = 10;
@@ -1025,7 +1021,21 @@ public class Board implements Loggable {
             if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0 && xVal >= 0 && xVal < grid.getWidth() && yVal >= 0 && yVal < grid.getLength()) {
 
                 int tool = toolPanel.getCurrentTool();
-
+                switch (tool) {
+                    case 2:
+                        // apple is second in list b/c no body tool
+                        tool = 3;
+                        break;
+                    case 3:
+                        // rock is third
+                        tool = 4;
+                        break;
+                    case 4: // portal is fourth
+                        tool = 5;
+                        break;
+                    default:
+                        break;
+                }
                 switch (tool) {
                     case 4:
                     case 3:
@@ -1108,7 +1118,7 @@ public class Board implements Loggable {
         mouseX -= outsideMargin;
         int mX = (int) mouseX;
         int mY = (int) mouseY;
-        if (fullscreen) {
+        if (fullscreen && MM.getCurrent() == 0) {
             mX -= Math.max(screenW - screenH, 0) / 2 - 10;
             mY -= Math.max(screenH - screenW, 0) / 2;
         }
@@ -1128,6 +1138,21 @@ public class Board implements Loggable {
             // sandbox mode editing
             if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0 && xVal >= 0 && xVal < grid.getWidth() && yVal >= 0 && yVal < grid.getLength()) {
                 int tool = toolPanel.getCurrentTool();
+                switch (tool) {
+                    case 2:
+                        // apple is second in list b/c no body tool
+                        tool = 3;
+                        break;
+                    case 3:
+                        // rock is third
+                        tool = 4;
+                        break;
+                    case 4: // portal is fourth
+                        tool = 5;
+                        break;
+                    default:
+                        break;
+                }
                 toolPanel.hideSaved();
                 switch (tool) {
                     case 1:
