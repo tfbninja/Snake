@@ -159,12 +159,12 @@ javafx.stage.Stage
 [Ljava.lang.String;
 java.awt.Dimension
 java.io.PrintWriter
-javafx.scene.image.ImageView
 java.lang.Thread
 java.lang.Throwable
 java.lang.Math
 snake.MainMenu
 javax.swing.WindowConstants
+java.lang.Boolean
 snake.Logger
 java.lang.System
 snake.Grid
@@ -404,6 +404,7 @@ java.awt.datatransfer.StringSelection
 java.lang.Math
 snake.MainMenu
 java.awt.Toolkit
+java.lang.Boolean
 java.util.Arrays
 javafx.scene.shape.ArcType
 snake.Block
@@ -416,8 +417,8 @@ java.io.PrintStream
 javafx.scene.paint.Paint
 snake.GameState
 snake.Loggable
-javafx.scene.input.KeyEvent
 snake.Board$1
+javafx.scene.input.KeyEvent
 snake.Snake
 [[I
 ||:snake.Enigma

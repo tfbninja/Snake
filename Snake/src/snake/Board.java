@@ -3,6 +3,7 @@ package snake;
 //<editor-fold defaultstate="collapsed" desc="imports">
 import java.awt.Toolkit;
 import java.awt.datatransfer.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -107,11 +108,11 @@ public class Board implements Loggable {
 
     /**
      *
-     * @param w the horizontal width
-     * @param h the vertical height
-     * @param mm the MenuManager object
-     * @param menu the Menu object
-     * @param gs the GameState object
+     * @param w       the horizontal width
+     * @param h       the vertical height
+     * @param mm      the MenuManager object
+     * @param menu    the Menu object
+     * @param gs      the GameState object
      * @param primary the stage object holding the various graphical components
      */
     public Board(int w, int h, MenuManager mm, MainMenu menu, GameState gs, Stage primary) {
@@ -420,6 +421,72 @@ public class Board implements Loggable {
             gc.fillRect((aX2 + aW2) / 430.0 * size, (aY2 + aH2) / 430.0 * size, 1, 1);
         }
 //</editor-fold>
+        return c;
+    }
+
+    public Canvas getFullScreenBigOof(double size, ArrayList<Integer> scores, ArrayList<Boolean> highs, ArrayList<String> names) {
+        Canvas c = new Canvas(size, size);
+        GraphicsContext gc = c.getGraphicsContext2D();
+
+        gc.setFont(new Font("Impact", 132 / 430.0 * size));
+        gc.setFill(Color.web("b1600f"));
+        gc.fillText("BIG OOF", 17 / 430.0 * size, 158 / 430.0 * size);
+
+        gc.setFont(new Font("Impact", 38 / 430.0 * size));
+        gc.setFill(Color.web("b1600f"));
+        gc.fillText("HIGH SCORES", 106 / 430.0 * size, 239 / 430.0 * size);
+
+        gc.setFont(new Font("Impact", 29 / 430.0 * size));
+        gc.setFill(Color.web("b1600f"));
+        gc.fillText("WORLD", 116 / 430.0 * size, 275 / 430.0 * size);
+        gc.fillText("LOCAL", 234 / 430.0 * size, 275 / 430.0 * size);
+
+        gc.setFont(new Font("Impact", 22 / 430.0 * size));
+        gc.setFill(Color.web("b1600f"));
+        gc.fillText("EASY", 33 / 430.0 * size, 320 / 430.0 * size);
+        gc.fillText("MEDIUM", 18 / 430.0 * size, 347 / 430.0 * size);
+        gc.fillText("HARD", 30 / 430.0 * size, 374 / 430.0 * size);
+        gc.fillText("EXTREME", 16 / 430.0 * size, 401 / 430.0 * size);
+
+        gc.setFill(Color.web("b1600f"));
+        gc.fillRect(104 / 430.0 * size, 244 / 430.0 * size, 221 / 430.0 * size, 2 / 430.0 * size);
+        gc.fillRect(213 / 430.0 * size, 246 / 430.0 * size, 2 / 430.0 * size, 184 / 430.0 * size);
+
+        if (highs.contains(true)) {
+            gc.setFill(Color.RED);
+            gc.setFont(new Font("Impact", 34 / 430.0 * size));
+            gc.fillText("NEW HIGHSCORE", 105 / 430.0 * size, 34 / 430.0 * size);
+        }
+        double y = 320 / 430.0 * size;
+        double x;
+        for (int i = 0; i < 8; i++) {
+            if (i % 2 == 0) {
+                if (i > 1) {
+                    y += 27 / 430.0 * size;
+                }
+                x = 234 / 430.0 * size;
+            } else {
+                x = 125 / 430.0 * size;
+            }
+            if (highs.get(i)) {
+                gc.setFill(Color.RED);
+                gc.setFont(new Font("Impact", 22 / 430.0 * size));
+                gc.fillText(String.valueOf(scores.get(i)) + " - " + names.get(i), x, y);
+            } else {
+                gc.setFill(Color.web("b1600f"));
+                gc.setFont(new Font("Impact", 22 / 430.0 * size));
+                gc.fillText(String.valueOf(scores.get(i)) + " - " + names.get(i), x, y);
+            }
+        }
+
+        gc.setFill(Color.web("b30e0e"));
+        gc.setFont(new Font("DejaVu Sans", 20 / 430.0 * size));
+        gc.fillText("Press r to restart", 240 / 430.0 * size, 424 / 430.0 * size);
+
+        gc.setFill(Color.web("b1600f"));
+        gc.setFont(new Font("Impact", 24 / 430.0 * size));
+        gc.fillText("Score: " + grid.getApplesEaten(), 173 / 430.0 * size, 194 / 430.0 * size);
+
         return c;
     }
 
@@ -920,7 +987,7 @@ public class Board implements Loggable {
     /**
      *
      * @return the lowest int starting from ten that has no corresponding pair
-     * in the grid
+     *         in the grid
      */
     public int findUnusedPortalNum() {
         int num = 10;

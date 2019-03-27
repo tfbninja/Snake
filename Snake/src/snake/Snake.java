@@ -582,47 +582,59 @@ public class Snake extends Application implements Loggable {
                                             // if there's no world file, it ain't legit                                        }
                                         }
                                     }
-                                } // re-grab scores
-
-                                getScores();
-
-                                // copy the master image
-                                overlayImage("resources\\art\\loseScreenMaster.png", "resources\\art\\loseScreen.png", String.valueOf(thisScore), 248, 194, new Font("Impact", 26), 177, 96, 15);
-                                int y = 320;
-                                int x;
-                                for (int i = 0; i < scores.size(); i++) {
-                                    if (i % 2 == 0) {
-                                        if (i > 1) {
-                                            y += 27;
-                                        }
-                                        x = 234;
-                                    } else {
-                                        x = 125;
-                                    }
-                                    if (i / 2 + 1 == thisDifficulty && highScore && thisScore > oldScores[i]) {
-                                        overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", String.valueOf(scores.get(i)) + " - " + names.get(i), x, y, new Font("Impact", 22), 255, 0, 0);
-                                    } else {
-                                        overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", String.valueOf(scores.get(i)) + " - " + names.get(i), x, y, new Font("Impact", 22), 177, 96, 15);
-                                    }
                                 }
-
-                                if (highScore) {
-                                    overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", "NEW HIGHSCORE", 105, 34, new Font("Impact", 34), 255, 0, 0);
-                                }
-                                scoresOverwritten = true;
-                                ImageView LOSE_IV = getImageView("resources\\art\\loseScreen.png");
-
                                 if (fullscreen) {
+                                    ArrayList<Boolean> highs = new ArrayList<>();
+                                    int index = 0;
+                                    for (int i : oldScores) {
+                                        if (i < scores.get(index)) {
+                                            highs.add(true);
+                                        } else {
+                                            highs.add(false);
+                                        }
+                                        index++;
+                                    }
                                     double w = primaryStage.getWidth();
                                     double h = primaryStage.getHeight();
                                     int yspace = (int) (Math.max(h - w, 0) / 2);
                                     int xspace = (int) (Math.max(w - h, 0) / 2);
                                     root.setPadding(new Insets(yspace, xspace, yspace, xspace));
+                                    root.setTop(board.getFullScreenBigOof(Math.min(primaryStage.getWidth(), primaryStage.getHeight()), scores, highs, names));
+                                    scoresOverwritten = true;
                                 } else {
-                                    root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
-                                }
-                                root.setTop(LOSE_IV);
+                                    // re-grab scores
+                                    getScores();
 
+                                    // copy the master image
+                                    overlayImage("resources\\art\\loseScreenMaster.png", "resources\\art\\loseScreen.png", String.valueOf(thisScore), 248, 194, new Font("Impact", 26), 177, 96, 15);
+                                    int y = 320;
+                                    int x;
+                                    for (int i = 0; i < scores.size(); i++) {
+                                        if (i % 2 == 0) {
+                                            if (i > 1) {
+                                                y += 27;
+                                            }
+                                            x = 234;
+                                        } else {
+                                            x = 125;
+                                        }
+                                        if (i / 2 + 1 == thisDifficulty && highScore && thisScore > oldScores[i]) {
+                                            overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", String.valueOf(scores.get(i)) + " - " + names.get(i), x, y, new Font("Impact", 22), 255, 0, 0);
+                                        } else {
+                                            overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", String.valueOf(scores.get(i)) + " - " + names.get(i), x, y, new Font("Impact", 22), 177, 96, 15);
+                                        }
+                                    }
+
+                                    if (highScore) {
+                                        overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", "NEW HIGHSCORE", 105, 34, new Font("Impact", 34), 255, 0, 0);
+                                    }
+
+                                    scoresOverwritten = true;
+                                    ImageView LOSE_IV = getImageView("resources\\art\\loseScreen.png");
+
+                                    root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+                                    root.setTop(LOSE_IV);
+                                }
                                 loadHighScoreScreen(); // re-cache high score screen
                             } //</editor-fold>
                             break;
