@@ -10,6 +10,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.ArcType;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
@@ -106,11 +107,11 @@ public class Board implements Loggable {
 
     /**
      *
-     * @param w the horizontal width
-     * @param h the vertical height
-     * @param mm the MenuManager object
-     * @param menu the Menu object
-     * @param gs the GameState object
+     * @param w       the horizontal width
+     * @param h       the vertical height
+     * @param mm      the MenuManager object
+     * @param menu    the Menu object
+     * @param gs      the GameState object
      * @param primary the stage object holding the various graphical components
      */
     public Board(int w, int h, MenuManager mm, MainMenu menu, GameState gs, Stage primary) {
@@ -270,6 +271,155 @@ public class Board implements Loggable {
         impButtonFS[3] = (int) (51 / 430.0 * size);
 //</editor-fold>
 
+//<editor-fold defaultstate="collapsed" desc="SNAKE">
+        gc.setFill(new Color(33 / 255.0, 33 / 255.0, 33 / 255.0, shadowOpacity));
+        gc.setFont(new Font("Impact", 85 / 430.0 * size));
+        gc.fillText("SNAKE", 197 / 430.0 * size, 274 / 430.0 * size);
+        gc.setFill(new Color(33 / 255.0, 33 / 255.0, 33 / 255.0, 1));
+        gc.fillText("SNAKE", 193 / 430.0 * size, 266 / 430.0 * size);
+
+//</editor-fold>
+//<editor-fold defaultstate="collapsed" desc="Help">
+        gc.setFill(new Color(0, 0, 0, shadowOpacity));
+        gc.setFont(new Font("Impact", 25 / 430.0 * size));
+        gc.fillText("Help", 17 / 430.0 * size, 282 / 430.0 * size);
+        gc.setFill(Color.BLACK);
+        gc.fillText("Help", 13 / 430.0 * size, 275 / 430.0 * size);
+
+//</editor-fold>
+//<editor-fold defaultstate="collapsed" desc="Snake pic">
+        double body2xTrans = 54;
+        double body2yTrans = -27;
+        for (int i = 6; i >= 2; i--) {
+            //body front
+            gc.setFill(Color.web("87b201"));
+            double[] body1FX = {(38 + body2xTrans * i) / 430.0 * size, (83 + body2xTrans * i) / 430.0 * size, (83 + body2xTrans * i) / 430.0 * size, (38 + body2xTrans * i) / 430.0 * size};
+            double[] body1FY = {(162 + body2yTrans * (i + 2)) / 430.0 * size, (185 + body2yTrans * (i + 2)) / 430.0 * size, (231 + body2yTrans * (i + 2)) / 430.0 * size, (208 + body2yTrans * (i + 2)) / 430.0 * size};
+            gc.fillPolygon(body1FX, body1FY, 4);
+            gc.setStroke(Color.web("393f3f"));
+            gc.setLineWidth(2 / 430.0 * size);
+            gc.strokePolygon(body1FX, body1FY, 4);
+
+            // body side
+            gc.setFill(Color.web("a6d43d"));
+            double[] body1SX = {(84 + body2xTrans * i) / 430.0 * size, (131 + body2xTrans * i) / 430.0 * size, (131 + body2xTrans * i) / 430.0 * size, (84 + body2xTrans * i) / 430.0 * size};
+            double[] body1SY = {(185 + body2yTrans * (i + 2)) / 430.0 * size, (161.8 + body2yTrans * (i + 2)) / 430.0 * size, (209 + body2yTrans * (i + 2)) / 430.0 * size, (231 + body2yTrans * (i + 2)) / 430.0 * size};
+            gc.fillPolygon(body1SX, body1SY, 4);
+            gc.setStroke(Color.web("393f3f"));
+            gc.setLineWidth(2 / 430.0 * size);
+            double[] outlSX1 = {body1SX[1], body1SX[2], body1SX[3]}; // the name is OUTLine Side X body 1
+            double[] outlSY1 = {body1SY[1], body1SY[2], body1SY[3]};
+            gc.strokePolyline(outlSX1, outlSY1, 3);
+
+            //body top
+            gc.setFill(Color.web("a6d43d"));
+            double[] body1TX = {(38.5 + body2xTrans * i) / 430.0 * size, (85 + body2xTrans * i) / 430.0 * size, (130 + body2xTrans * i) / 430.0 * size, (84 + body2xTrans * i) / 430.0 * size};
+            double[] body1TY = {(161 + body2yTrans * (i + 2)) / 430.0 * size, (138 + body2yTrans * (i + 2)) / 430.0 * size, (161 + body2yTrans * (i + 2)) / 430.0 * size, (184.5 + body2yTrans * (i + 2)) / 430.0 * size};
+            gc.fillPolygon(body1TX, body1TY, 4);
+            gc.setStroke(Color.web("393f3f"));
+            gc.setLineWidth(2 / 430.0 * size);
+            gc.strokePolyline(body1TX, body1TY, 4);
+        }
+
+        double body1xTrans = 54;
+        double body1yTrans = -27;
+        for (int i = 3; i >= 1; i--) {
+            //body front
+            gc.setFill(Color.web("87b201"));
+            double[] body1FX = {(38 + body1xTrans * i) / 430.0 * size, (83 + body1xTrans * i) / 430.0 * size, (83 + body1xTrans * i) / 430.0 * size, (38 + body1xTrans * i) / 430.0 * size};
+            double[] body1FY = {(162 + body1yTrans * i) / 430.0 * size, (185 + body1yTrans * i) / 430.0 * size, (231 + body1yTrans * i) / 430.0 * size, (208 + body1yTrans * i) / 430.0 * size};
+            gc.fillPolygon(body1FX, body1FY, 4);
+            gc.setStroke(Color.web("393f3f"));
+            gc.setLineWidth(2 / 430.0 * size);
+            gc.strokePolygon(body1FX, body1FY, 4);
+
+            // body side
+            gc.setFill(Color.web("a6d43d"));
+            double[] body1SX = {(84 + body1xTrans * i) / 430.0 * size, (131 + body1xTrans * i) / 430.0 * size, (131 + body1xTrans * i) / 430.0 * size, (84 + body1xTrans * i) / 430.0 * size};
+            double[] body1SY = {(185 + body1yTrans * i) / 430.0 * size, (161.8 + body1yTrans * i) / 430.0 * size, (209 + body1yTrans * i) / 430.0 * size, (231 + body1yTrans * i) / 430.0 * size};
+            gc.fillPolygon(body1SX, body1SY, 4);
+            gc.setStroke(Color.web("393f3f"));
+            gc.setLineWidth(2 / 430.0 * size);
+            double[] outlSX1 = {body1SX[1], body1SX[2], body1SX[3]}; // the name is OUTLine Side X body 1
+            double[] outlSY1 = {body1SY[1], body1SY[2], body1SY[3]};
+            gc.strokePolyline(outlSX1, outlSY1, 3);
+
+            //body top
+            gc.setFill(Color.web("a6d43d"));
+            double[] body1TX = {(38.5 + body1xTrans * i) / 430.0 * size, (85 + body1xTrans * i) / 430.0 * size, (130 + body1xTrans * i) / 430.0 * size, (84 + body1xTrans * i) / 430.0 * size};
+            double[] body1TY = {(161 + body1yTrans * i) / 430.0 * size, (138 + body1yTrans * i) / 430.0 * size, (161 + body1yTrans * i) / 430.0 * size, (184.5 + body1yTrans * i) / 430.0 * size};
+            gc.fillPolygon(body1TX, body1TY, 4);
+            gc.setStroke(Color.web("393f3f"));
+            gc.setLineWidth(2 / 430.0 * size);
+            gc.strokePolyline(body1TX, body1TY, 4);
+        }
+
+        //head front
+        gc.setFill(Color.web("ff8e02"));
+        double[] headFX = {38 / 430.0 * size, 83 / 430.0 * size, 83 / 430.0 * size, 38 / 430.0 * size};
+        double[] headFY = {162 / 430.0 * size, 185 / 430.0 * size, 231 / 430.0 * size, 208 / 430.0 * size};
+        gc.fillPolygon(headFX, headFY, 4);
+        gc.setStroke(Color.web("393f3f"));
+        gc.setLineWidth(2 / 430.0 * size);
+        gc.strokePolygon(headFX, headFY, 4);
+
+        // head side
+        gc.setFill(Color.web("ffb94d"));
+        double[] headSX = {84 / 430.0 * size, 131 / 430.0 * size, 131 / 430.0 * size, 84 / 430.0 * size};
+        double[] headSY = {185 / 430.0 * size, 161.8 / 430.0 * size, 209 / 430.0 * size, 231 / 430.0 * size};
+        gc.fillPolygon(headSX, headSY, 4);
+        gc.setStroke(Color.web("393f3f"));
+        gc.setLineWidth(2 / 430.0 * size);
+        double[] outlSX = {headSX[1], headSX[2], headSX[3]};
+        double[] outlSY = {headSY[1], headSY[2], headSY[3]};
+        gc.strokePolyline(outlSX, outlSY, 3);
+
+        //head top
+        gc.setFill(Color.web("ffb94d"));
+        double[] headTX = {38.5 / 430.0 * size, 85 / 430.0 * size, 130 / 430.0 * size, 84 / 430.0 * size};
+        double[] headTY = {161 / 430.0 * size, 138 / 430.0 * size, 161 / 430.0 * size, 184.5 / 430.0 * size};
+        gc.fillPolygon(headTX, headTY, 4);
+        gc.setStroke(Color.web("393f3f"));
+        gc.setLineWidth(2 / 430.0 * size);
+        gc.strokePolyline(headTX, headTY, 4);
+//</editor-fold>
+
+//<editor-fold defaultstate="collapsed" desc="Music/SFX">
+        gc.setFill(MENU.getMusic() ? Color.web("40ac4a") : Color.web("7f7f7f"));
+        gc.fillRoundRect(16 / 430.0 * size, 26 / 430.0 * size, 20 / 430.0 * size, 13 / 430.0 * size, 3 / 430.0 * size, 3 / 430.0 * size);
+        double[] speakerX = {23 / 430.0 * size, 39 / 430.0 * size, 43 / 430.0 * size, 45 / 430.0 * size, 45 / 430.0 * size, 43 / 430.0 * size, 38 / 430.0 * size, 24 / 430.0 * size};
+        double[] speakerY = {27 / 430.0 * size, 18 / 430.0 * size, 18 / 430.0 * size, 20 / 430.0 * size, 45 / 430.0 * size, 47 / 430.0 * size, 47 / 430.0 * size, 39 / 430.0 * size};
+        gc.fillPolygon(speakerX, speakerY, 8);
+        double scalar = 0.4;
+        for (int i = 2; i >= 0; i--) {
+            gc.setFill(MENU.getMusic() ? Color.web("40ac4a") : Color.web("7f7f7f"));
+
+            // outer
+            double aW = 14 + scalar * i * 14;
+            double aX = 40 + scalar * i * aW;
+            double aY = 24 - scalar * i * aW / 2;
+            double aH = 16 + scalar * i * 16;
+            gc.fillArc(aX / 430.0 * size, aY / 430.0 * size, aW / 430.0 * size, aH / 430.0 * size, 60, -120, ArcType.CHORD);
+            gc.setFill(Color.RED);
+            gc.fillRect(aX / 430.0 * size, aY / 430.0 * size, 1, 1);
+            gc.fillRect((aX + aW) / 430.0 * size, aY / 430.0 * size, 1, 1);
+            gc.fillRect(aX / 430.0 * size, (aY + aH) / 430.0 * size, 1, 1);
+            gc.fillRect((aX + aW) / 430.0 * size, (aY + aH) / 430.0 * size, 1, 1);
+
+            // cover-up
+            double aW2 = 10.3 + scalar * i * 10.3;
+            double aX2 = 42 + scalar * i * aW2;
+            double aY2 = 26.5 - scalar * i * aW2 / 2;
+            double aH2 = 11 + scalar * i * 11;
+            gc.setFill(Color.web("dcf9ff"));
+            gc.fillArc(aX2 / 430.0 * size, aY2 / 430.0 * size, aW2 / 430.0 * size, aH2 / 430.0 * size, 60, -120, ArcType.CHORD);
+            gc.setFill(Color.BLUE);
+            gc.fillRect(aX2 / 430.0 * size, aY2 / 430.0 * size, 1, 1);
+            gc.fillRect((aX2 + aW2) / 430.0 * size, aY2 / 430.0 * size, 1, 1);
+            gc.fillRect(aX2 / 430.0 * size, (aY2 + aH2) / 430.0 * size, 1, 1);
+            gc.fillRect((aX2 + aW2) / 430.0 * size, (aY2 + aH2) / 430.0 * size, 1, 1);
+        }
+//</editor-fold>
         return c;
     }
 
@@ -774,7 +924,7 @@ public class Board implements Loggable {
     /**
      *
      * @return the lowest int starting from ten that has no corresponding pair
-     * in the grid
+     *         in the grid
      */
     public int findUnusedPortalNum() {
         int num = 10;
