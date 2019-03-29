@@ -78,6 +78,9 @@ public class MainMenu extends Controller {
         current = OffOff;
     }
 
+    /**
+     * Sets all vars to true
+     */
     public void turnOn() {
         music = true;
         sfx = true;

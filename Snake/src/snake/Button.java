@@ -12,6 +12,9 @@ public class Button {
     private double w;
     private double h;
 
+    /**
+     * Default, sets everything to 0
+     */
     public Button() {
         this.x = 0;
         this.y = 0;
@@ -19,6 +22,13 @@ public class Button {
         this.h = 0;
     }
 
+    /**
+     *
+     * @param x top left x coordinate
+     * @param y top left y coordinate
+     * @param w width
+     * @param height
+     */
     public Button(double x, double y, double w, double h) {
         this.x = x;
         this.y = y;
@@ -26,38 +36,76 @@ public class Button {
         this.h = h;
     }
 
+    /**
+     *
+     * @return height
+     */
     public double getH() {
         return h;
     }
 
+    /**
+     *
+     * @param height
+     */
     public void setH(double h) {
         this.h = h;
     }
 
+    /**
+     *
+     * @return width
+     */
     public double getW() {
         return w;
     }
 
+    /**
+     *
+     * @param w width
+     */
     public void setW(double w) {
         this.w = w;
     }
 
+    /**
+     *
+     * @return top left x-coordinate
+     */
     public double getX() {
         return x;
     }
 
+    /**
+     *
+     * @param x top left x-coordinate
+     */
     public void setX(double x) {
         this.x = x;
     }
 
+    /**
+     *
+     * @return top left y-coordinate
+     */
     public double getY() {
         return y;
     }
 
+    /**
+     *
+     * @param y top left y-coordinate
+     */
     public void setY(double y) {
         this.y = y;
     }
 
+    /**
+     *
+     * @param mX mouse X
+     * @param mY mouse Y
+     * @return whether the mouse clicked over the button
+     */
     public boolean inBounds(double mX, double mY) {
         return mX >= x && mY >= y && mX <= x + w && mY <= y + h;
     }

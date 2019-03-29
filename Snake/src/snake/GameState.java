@@ -15,7 +15,7 @@ public class GameState extends Controller {
      * Only constructor
      *
      * @param state The value of which state the game is currently in: pre,
-     *              during, or post
+     * during, or post
      */
     public GameState(int state) {
         switch (state) {

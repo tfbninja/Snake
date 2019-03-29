@@ -143,6 +143,10 @@ public class HighScore extends javax.swing.JPanel {
         Snake.setUserName(nameField.getText());
     }//GEN-LAST:event_okButtonActionPerformed
 
+    /**
+     *
+     * @param i the number to set the time display to
+     */
     public void setCounter(int i) {
         counter.setText(String.valueOf(i));
     }
@@ -169,10 +173,18 @@ public class HighScore extends javax.swing.JPanel {
 
         }    }//GEN-LAST:event_nameFieldKeyPressed
 
+    /**
+     *
+     * @return x-coordinate of the top left corner of the "name" text field
+     */
     public int getFieldX() {
         return nameField.getX();
     }
 
+    /**
+     *
+     * @return y-coordinate of the top left corner of the "name" text field
+     */
     public int getFieldY() {
         return nameField.getY();
     }
@@ -201,6 +213,9 @@ public class HighScore extends javax.swing.JPanel {
 
     }//GEN-LAST:event_nameFieldMouseClicked
 
+    /*
+     * Requests focus
+     */
     public void setFocusOnField() {
         nameField.requestFocus();
     }

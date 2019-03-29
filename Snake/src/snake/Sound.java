@@ -67,6 +67,12 @@ public class Sound implements Comparable { // Holds one audio file
         }
     }
 
+    /**
+     * Sets up object using the method that I have found to work for mp3 files
+     *
+     * @param filename file path
+     * @param asMP3 which method to use
+     */
     public Sound(String filename, boolean asMP3) {
         this.filename = filename;
         // this block of code can deal with at least .mp3 and .wav, possibly more
@@ -161,6 +167,10 @@ public class Sound implements Comparable { // Holds one audio file
         clip.loop(999);
     }
 
+    /**
+     *
+     * @return Whether this sound object is playing or not
+     */
     public boolean isPlaying() {
         return mediaPlayer.currentRateProperty().get() != 0;
     }

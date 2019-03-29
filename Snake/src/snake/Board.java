@@ -36,7 +36,7 @@ public class Board implements Loggable {
     private int margin = 1;
     private int XMARGIN = 15;
     private int YMARGIN = 5;
-    private int size = 15;
+    private int blockSize = 15;
     private int borderSize = 2;
     private int edgeSize = 2;
     private final int GRIDSIZE = 25;
@@ -101,9 +101,6 @@ public class Board implements Loggable {
     private JFrame toolFrame;
 
     private String events = "";
-    private boolean mouseIsBeingDragged = false;
-    private int oldMouseX;
-    private int oldMouseY;
 
     private boolean fullscreen = false;
     private int appleTextX;
@@ -133,13 +130,14 @@ public class Board implements Loggable {
         primaryStage = primary;
         turnOffFullscreen(w, h);
 
-        easyButtonFS = new Button(12 / 430.0 * size, 292 / 430.0 * size, 194 / 430.0 * size, 51 / 430.0 * size);
-        medButtonFS = new Button(219 / 430.0 * size, 292 / 430.0 * size, 194 / 430.0 * size, 51 / 430.0 * size);
-        hardButtonFS = new Button(12 / 430.0 * size, 353 / 430.0 * size, 194 / 430.0 * size, 51 / 430.0 * size);
-        impButtonFS = new Button(219 / 430.0 * size, 353 / 430.0 * size, 194 / 430.0 * size, 51 / 430.0 * size);
-        musicButtonFS = new Button(12 / 430.0 * size, 18 / 430.0 * size, 55 / 430.0 * size, 37 / 430.0 * size);
-        SFXButtonFS = new Button(83 / 430.0 * size, 18 / 430.0 * size, 28 / 430.0 * size, 37 / 430.0 * size);
-        helpButtonFS = new Button(13 / 430.0 * size, 255 / 430.0 * size, 47 / 430.0 * size, 22 / 430.0 * size);
+        double scalar = Math.min(w, h);
+        easyButtonFS = new Button(12 / 430.0 * scalar, 292 / 430.0 * scalar, 194 / 430.0 * scalar, 51 / 430.0 * scalar);
+        medButtonFS = new Button(219 / 430.0 * scalar, 292 / 430.0 * scalar, 194 / 430.0 * scalar, 51 / 430.0 * scalar);
+        hardButtonFS = new Button(12 / 430.0 * scalar, 353 / 430.0 * scalar, 194 / 430.0 * scalar, 51 / 430.0 * scalar);
+        impButtonFS = new Button(219 / 430.0 * scalar, 353 / 430.0 * scalar, 194 / 430.0 * scalar, 51 / 430.0 * scalar);
+        musicButtonFS = new Button(12 / 430.0 * scalar, 18 / 430.0 * scalar, 55 / 430.0 * scalar, 37 / 430.0 * scalar);
+        SFXButtonFS = new Button(83 / 430.0 * scalar, 18 / 430.0 * scalar, 28 / 430.0 * scalar, 37 / 430.0 * scalar);
+        helpButtonFS = new Button(13 / 430.0 * scalar, 255 / 430.0 * scalar, 47 / 430.0 * scalar, 22 / 430.0 * scalar);
 
         events += "Initialized | ";
     }
@@ -197,6 +195,12 @@ public class Board implements Loggable {
         toolPanel.updateButtonColors(getColorScheme());
     }
 
+    /**
+     *
+     * @param size the dimension defining the side length of the imaginary
+     * square around the menu screen
+     * @return A Canvas object with graphics displaying the menu
+     */
     public Canvas getFullScreenMenu(double size) {
         Canvas c = new Canvas(size, size);
         GraphicsContext gc = c.getGraphicsContext2D();
@@ -423,6 +427,14 @@ public class Board implements Loggable {
         return c;
     }
 
+    /**
+     *
+     * @param size
+     * @param scores
+     * @param highs
+     * @param names
+     * @return
+     */
     public Canvas getFullScreenBigOof(double size, ArrayList<Integer> scores, ArrayList<Boolean> highs, ArrayList<String> names) {
         Canvas c = new Canvas(size, size);
         GraphicsContext gc = c.getGraphicsContext2D();
@@ -512,6 +524,13 @@ public class Board implements Loggable {
         toolPanel.updateButtonColors(getColorScheme());
     }
 
+    /*
+     * Either this or turnOffFullscreen(w,h) MUST be called during
+     * initialization of Board for it to properly initialize graphics variables
+     *
+     * @param screenWidth Width of the screen
+     * @param screenHeight Height of the screen
+     */
     public void setFullscreen(double screenWidth, double screenHeight) {
         fullscreen = true;
         screenW = screenWidth;
@@ -523,7 +542,7 @@ public class Board implements Loggable {
         YMARGIN = Math.max((int) (screenHeight - screenWidth) / 2, 0) + 20;
         canvas = new Canvas(width, height);
         margin = (int) ((Math.min(screenWidth, screenHeight) - Math.min(XMARGIN, YMARGIN) - borderSize - edgeSize) / 16) / grid.getWidth();
-        size = (int) ((Math.min(screenWidth, screenHeight) - Math.min(XMARGIN, YMARGIN) - borderSize - edgeSize) / 16 * 15) / grid.getWidth();
+        blockSize = (int) ((Math.min(screenWidth, screenHeight) - Math.min(XMARGIN, YMARGIN) - borderSize - edgeSize) / 16 * 15) / grid.getWidth();
 
         edgeSize = 5;
         if (screenWidth > screenHeight) { // it better be...jeez
@@ -536,6 +555,13 @@ public class Board implements Loggable {
         drawBlocks();
     }
 
+    /*
+     * Either this or setFullscreen(w, h) MUST be called during initialization
+     * of Board for it to properly initialize graphics variables
+     *
+     * @param w Width of the window
+     * @param h Height of the window
+     */
     public void turnOffFullscreen(int w, int h) {
         fullscreen = false;
         screenW = w;
@@ -547,10 +573,10 @@ public class Board implements Loggable {
         XMARGIN = 15;
         YMARGIN = 5;
         margin = 1;
-        size = 15;
+        blockSize = 15;
         borderSize = 2;
         edgeSize = 2;
-        appleTextX = XMARGIN + width / 2 - 100;
+        appleTextX = XMARGIN + width / 2 - 20;
         appleTextY = h - 5;
         drawBlocks();
     }
@@ -590,7 +616,7 @@ public class Board implements Loggable {
     }
 
     private int[] getPixelDimensions() {
-        int[] dimensions = {margin * (GRIDSIZE - 1) + size * GRIDSIZE, margin * (GRIDSIZE - 1) + size * GRIDSIZE};
+        int[] dimensions = {margin * (GRIDSIZE - 1) + blockSize * GRIDSIZE, margin * (GRIDSIZE - 1) + blockSize * GRIDSIZE};
         return dimensions;
     }
 
@@ -640,7 +666,7 @@ public class Board implements Loggable {
             gc.setStroke(Color.CHARTREUSE);
         }
         gc.setLineWidth(edgeSize);
-        int pixelSize = GRIDSIZE * size + GRIDSIZE * margin;
+        int pixelSize = GRIDSIZE * blockSize + GRIDSIZE * margin;
         gc.strokeRect(XMARGIN - edgeSize / 2, YMARGIN - edgeSize / 2, pixelSize + edgeSize - 1, pixelSize + edgeSize - 1);
 
         //draw squares
@@ -666,12 +692,12 @@ public class Board implements Loggable {
                 }
                 temp.setX(xPixel);
                 temp.setY(yPixel);
-                temp.setWidth(size);
-                temp.setHeight(size);
+                temp.setWidth(blockSize);
+                temp.setHeight(blockSize);
                 temp.update(canvas);
-                yPixel += margin + size;
+                yPixel += margin + blockSize;
             }
-            xPixel += margin + size;
+            xPixel += margin + blockSize;
         }
 
         // update apples eaten
@@ -681,7 +707,7 @@ public class Board implements Loggable {
             gc.fillText("" + this.getGrid().getApplesEaten(), appleTextX, appleTextY);
         } else {
             gc.setFont(appleFont);
-            gc.fillText("Apples eaten: " + this.getGrid().getApplesEaten(), appleTextX, appleTextY);
+            gc.fillText("" + this.getGrid().getApplesEaten(), appleTextX, appleTextY);
         }
 
         if (!this.lost && GS.isPostGame()) {
@@ -704,6 +730,11 @@ public class Board implements Loggable {
         }
     }
 
+    /**
+     *
+     * @param toolPanelNum
+     * @return
+     */
     public int fullScreenToolNumber(int toolPanelNum) {
         switch (toolPanelNum) {
             default:
@@ -727,6 +758,11 @@ public class Board implements Loggable {
         grid.setPos(21, 20);
     }
 
+    /**
+     *
+     * @param c
+     * @return
+     */
     public Color invert(Color c) {
         return new Color(1 - c.getRed(), 1 - c.getGreen(), 1 - c.getBlue(), 1 - c.getOpacity());
     }
@@ -1040,12 +1076,6 @@ public class Board implements Loggable {
      * @param e MouseEvent holding information of the mouse drag
      */
     public void mouseDragged(MouseEvent e) {
-        // interpolate drags
-        boolean interpolate = false;
-        if (!mouseIsBeingDragged) {
-            interpolate = true;
-        }
-        mouseIsBeingDragged = true;
         double mouseX = e.getX();
         double mouseY = e.getY();
         // account for border outside of canvas
@@ -1054,19 +1084,11 @@ public class Board implements Loggable {
         int mX = (int) mouseX;
         int mY = (int) mouseY;
         // top right:
-        // margin * x + xPos + (size * (x-1)) : += size
+        // margin * x + xPos + (blockSize * (x-1)) : += blockSize
         //solve:
-        //margin * (x+1)) + (size * (x-1)) = z, z = margin * x + xPos + margin + size * x - size, z = x(margin + size) + xPos + margin - size, (z + size - margin)/(margin + size) = x
-        int xVal = (mX + size - XMARGIN) / (margin + size) - 1;
-        int yVal = (mY + size - YMARGIN) / (margin + size) - 1;
-        int oldXVal = 0;
-        int oldYVal = 0;
-        if (interpolate) {
-            oldXVal = (oldMouseX + size - XMARGIN) / (margin + size) - 1;
-            oldYVal = (oldMouseY + size - YMARGIN) / (margin + size) - 1;
-        }
-        //xVal %= this.gridSize;
-        //yVal %= this.gridSize;
+        //margin * (x+1)) + (blockSize * (x-1)) = z, z = margin * x + xPos + margin + blockSize * x - blockSize, z = x(margin + blockSize) + xPos + margin - blockSize, (z + blockSize - margin)/(margin + blockSize) = x
+        int xVal = (mX + blockSize - XMARGIN) / (margin + blockSize) - 1;
+        int yVal = (mY + blockSize - YMARGIN) / (margin + blockSize) - 1;
 
         boolean leftClick = e.isPrimaryButtonDown();
         boolean rightClick = e.isSecondaryButtonDown();
@@ -1080,8 +1102,6 @@ public class Board implements Loggable {
         }
 
         if (leftClick) {
-            // left click
-
             // sandbox mode editing
             if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0 && xVal >= 0 && xVal < grid.getWidth() && yVal >= 0 && yVal < grid.getLength()) {
 
@@ -1106,65 +1126,16 @@ public class Board implements Loggable {
                     case 3:
                     case 0:
                         grid.setCell(xVal, yVal, tool);
-                        if (interpolate) {
-
-                            //int step = size / 2;
-                            /*
-                             * int xfactor = (xVal - oldXVal) / (Math.abs(xVal -
-                             * oldXVal));
-                             * int yStep = (yVal - oldYVal) / (xVal - oldXVal);
-                             * int tempY = oldYVal;
-                             * for (int x = oldXVal; x > x; x += xfactor) {
-                             * grid.setCell(x, tempY, tool);
-                             * tempY += yStep;
-                             * if (xfactor > 0) {
-                             * if (x >= xVal) {
-                             * break;
-                             * }
-                             * } else {
-                             * if (x <= xVal) {
-                             * break;
-                             * }
-                             * }
-                             * }
-                             *
-                             * int yfactor = (yVal - oldYVal) / (Math.abs(yVal -
-                             * oldYVal));
-                             * int tempX = oldXVal;
-                             * int xStep = (xVal - oldXVal) / (yVal - oldYVal);
-                             * for (int y = oldYVal; y > y; y += yfactor) {
-                             * grid.setCell(tempX, y, tool);
-                             * tempX += xStep;
-                             * if (yfactor > 0) {
-                             * if (y >= yVal) {
-                             * break;
-                             * }
-                             * } else {
-                             * if (y <= yVal) {
-                             * break;
-                             * }
-                             * }
-                             * }
-                             * }
-                             *
-                             * break;
-                             *
-                             *
-                             *
-                             *
-                             * default:
-                             * break;
-                             */
-                        }
                 }
             }
-            oldMouseX = (int) mouseX;
-            oldMouseY = (int) mouseY;
         }
     }
 
+    /**
+     *
+     * @param e
+     */
     public void mouseReleased(MouseEvent e) {
-        mouseIsBeingDragged = false;
         double mouseX = e.getX();
         double mouseY = e.getY();
         // account for border outside of canvas
@@ -1173,11 +1144,10 @@ public class Board implements Loggable {
         int mX = (int) mouseX;
         int mY = (int) mouseY;
         // top right:
-        // margin * x + xPos + (size * (x-1)) : += size
-        //solve:
-        //margin * (x+1)) + (size * (x-1)) = z, z = margin * x + xPos + margin + size * x - size, z = x(margin + size) + xPos + margin - size, (z + size - margin)/(margin + size) = x
-        int xVal = (mX + size - XMARGIN) / (margin + size) - 1;
-        int yVal = (mY + size - YMARGIN) / (margin + size) - 1;
+        // margin * x + xPos + (blockSize * (x-1)) : += blockSize
+        //solve: margin * (x+1)) + (blockSize * (x-1)) = z, z = margin * x + xPos + margin + blockSize * x - blockSize, z = x(margin + blockSize) + xPos + margin - blockSize, (z + blockSize - margin)/(margin + blockSize) = x
+        int xVal = (mX + blockSize - XMARGIN) / (margin + blockSize) - 1;
+        int yVal = (mY + blockSize - YMARGIN) / (margin + blockSize) - 1;
     }
 
     /**
@@ -1199,11 +1169,11 @@ public class Board implements Loggable {
             mY -= Math.max(screenH - screenW, 0) / 2;
         }
         // top right:
-        // margin * x + xPos + (size * (x-1)) : += size
+        // margin * x + xPos + (blockSize * (x-1)) : += blockSize
         //solve:
-        //margin * (x+1)) + (size * (x-1)) = z, z = margin * x + xPos + margin + size * x - size, z = x(margin + size) + xPos + margin - size, (z + size - margin)/(margin + size) = x
-        int xVal = (mX + size - XMARGIN) / (margin + size) - 1;
-        int yVal = (mY + size - YMARGIN) / (margin + size) - 1;
+        //margin * (x+1)) + (blockSize * (x-1)) = z, z = margin * x + xPos + margin + blockSize * x - blockSize, z = x(margin + blockSize) + xPos + margin - blockSize, (z + blockSize - margin)/(margin + blockSize) = x
+        int xVal = (mX + blockSize - XMARGIN) / (margin + blockSize) - 1;
+        int yVal = (mY + blockSize - YMARGIN) / (margin + blockSize) - 1;
         //xVal %= this.gridSize;
         //yVal %= this.gridSize;
 
@@ -1248,11 +1218,11 @@ public class Board implements Loggable {
                         } else {
                             // get an unused number for a new portal
                             int newPortalNum = grid.safeCheck(grid.findUnmatchedPortal());
+
                             // get the location of an unmatched portal
                             Pair<Integer, Integer> tempPos = grid.findUnmatchedPortal();
-                            // set that old unmatched portal to... it's current value...hmmm
-                            //grid.setCell(tempPos, newPortalNum);
                             //System.out.println("open portal at " + tempPos);
+
                             // set the clicked square to the value of the unmatched portal
                             grid.setCell(xVal, yVal, newPortalNum);
                         }
@@ -1264,12 +1234,14 @@ public class Board implements Loggable {
                 }
             }
 
-            int i = 0;
-            for (Button b : sandboxButtonsFS) {
-                if (b.inBounds(mX, mY)) {
-                    toolPanel.setCurrentTool(i);
+            if (fullscreen) {
+                int i = 0;
+                for (Button b : sandboxButtonsFS) {
+                    if (b.inBounds(mX, mY)) {
+                        toolPanel.setCurrentTool(i);
+                    }
+                    i++;
                 }
-                i++;
             }
 
             // menu catching

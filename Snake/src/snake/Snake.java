@@ -65,6 +65,7 @@ public class Snake extends Application implements Loggable {
     private static String[] funnyDefaultNames = {"ERR", "OOF", "RIP", "NAN", "LCS", "NMN"};
 
     private boolean scoresOverwritten = false;
+
     public static String tempName = "";
     private static int tempFrame = 900;
 
@@ -100,93 +101,6 @@ public class Snake extends Application implements Loggable {
 
     private boolean fullscreen = false;
 //</editor-fold>
-
-    public void setupBGMusic() {
-        // addes all files in resources/sounds/death to the list of sounds to play when game is lost
-        File bgMusicFolder = new File("resources/sounds/bg");
-        File[] directoryListing = bgMusicFolder.listFiles();
-        if (directoryListing != null) {
-            for (File child : directoryListing) {
-                this.bgMusic.add(new Sound(Grid.formatFilePath(child.getPath())));
-            }
-        } else {
-            events += "Can not find resources/sounds/bg folder | ";
-            System.out.println("Cannot find the resources/sounds/bg folder... try setting the working directory to the folder that Snake.java or Snake.jar is contained in.");
-        }
-    }
-
-    /**
-     * Returns the major events that happened while this class was initialized
-     *
-     * @return String of events
-     */
-    @Override
-    public String getEvents() {
-        return events + "end]";
-    }
-
-    public void muteBG() {
-        for (Sound s : bgMusic) {
-            s.mute();
-        }
-    }
-
-    public void unmuteBG() {
-        for (Sound s : bgMusic) {
-            s.unmute();
-        }
-    }
-
-    public void playBG() {
-        bgMusic.get(0).play();
-        bgMusic.add(bgMusic.get(0));
-        bgMusic.remove(0);
-    }
-
-    public void loopBG() {
-        for (Sound s : bgMusic) {
-            if (s.isPlaying()) {
-                return;
-            }
-        }
-        playBG();
-    }
-
-    /**
-     * Returns the state of the important variables in this class
-     *
-     * @return String of all variables
-     */
-    @Override
-    public String getState() {
-        return "[Frame: " + frame + ", "
-                + "AI: " + AI + ", "
-                + "Board is not null: " + (board != null) + ", "
-                + "Grid is not null: " + (board.getGrid() != null) + ", "
-                + "Won: " + won + ", "
-                + "Scores overwritten: " + scoresOverwritten + ", "
-                + "sfxOn: " + sfxOn + ", "
-                + "musicOn: " + musicOn + ", "
-                + "night mode: " + nightMode + ", "
-                + "sandboxReset: " + sandboxReset + ", "
-                + "Apple map is not null: " + (appleMap != null) + ", "
-                + "Menu Manager: " + MM + ", "
-                + "Main Menu: " + MENU + ", "
-                + "Game State: " + GS + ", "
-                + "pause: " + pause + ", "
-                + "]";
-    }
-
-    public static String randomStr(int len) {
-        String out = "";
-        for (int i = 0; i < len; i++) {
-            out += (char) (65 + (random.nextInt(26)));
-        }
-        if (random.nextInt(7) == random.nextInt(7)) {
-            out = funnyDefaultNames[random.nextInt(funnyDefaultNames.length - 1)];
-        }
-        return out;
-    }
 
     @Override
     public void start(Stage primaryStage) {
@@ -743,11 +657,111 @@ public class Snake extends Application implements Loggable {
         launch(args);
     }
 
-    public static ImageView stretch(ImageView i, double ratio) {
-        i.setPreserveRatio(true);
-        i.setScaleX(ratio);
-        i.setScaleY(ratio);
-        return i;
+    /**
+     * Adds all files in resources/sounds/death to the list of sounds to play
+     * when game is lost
+     */
+    public void setupBGMusic() {
+        File bgMusicFolder = new File("resources/sounds/bg");
+        File[] directoryListing = bgMusicFolder.listFiles();
+        if (directoryListing != null) {
+            for (File child : directoryListing) {
+                this.bgMusic.add(new Sound(Grid.formatFilePath(child.getPath())));
+            }
+        } else {
+            events += "Can not find resources/sounds/bg folder | ";
+            System.out.println("Cannot find the resources/sounds/bg folder... try setting the working directory to the folder that Snake.java or Snake.jar is contained in.");
+        }
+    }
+
+    /**
+     * Returns the major events that happened while this class was initialized
+     *
+     * @return String of events
+     */
+    @Override
+    public String getEvents() {
+        return events + "end]";
+    }
+
+    /**
+     * Mutes the background music
+     */
+    public void muteBG() {
+        for (Sound s : bgMusic) {
+            s.mute();
+        }
+    }
+
+    /**
+     * Unmutes the background music
+     */
+    public void unmuteBG() {
+        for (Sound s : bgMusic) {
+            s.unmute();
+        }
+    }
+
+    /**
+     * Plays the background music
+     */
+    public void playBG() {
+        bgMusic.get(0).play();
+        bgMusic.add(bgMusic.get(0));
+        bgMusic.remove(0);
+    }
+
+    /**
+     * Checks all of the songs and if none are playing it plays the next one
+     */
+    public void loopBG() {
+        for (Sound s : bgMusic) {
+            if (s.isPlaying()) {
+                return;
+            }
+        }
+        playBG();
+    }
+
+    /**
+     * Returns the state of the important variables in this class
+     *
+     * @return String of all variables
+     */
+    @Override
+    public String getState() {
+        return "[Frame: " + frame + ", "
+                + "AI: " + AI + ", "
+                + "Board is not null: " + (board != null) + ", "
+                + "Grid is not null: " + (board.getGrid() != null) + ", "
+                + "Won: " + won + ", "
+                + "Scores overwritten: " + scoresOverwritten + ", "
+                + "sfxOn: " + sfxOn + ", "
+                + "musicOn: " + musicOn + ", "
+                + "night mode: " + nightMode + ", "
+                + "sandboxReset: " + sandboxReset + ", "
+                + "Apple map is not null: " + (appleMap != null) + ", "
+                + "Menu Manager: " + MM + ", "
+                + "Main Menu: " + MENU + ", "
+                + "Game State: " + GS + ", "
+                + "pause: " + pause + ", "
+                + "]";
+    }
+
+    /**
+     *
+     * @param len Length of the random string
+     * @return random len-character string
+     */
+    public static String randomStr(int len) {
+        String out = "";
+        for (int i = 0; i < len; i++) {
+            out += (char) (65 + (random.nextInt(26)));
+        }
+        if (random.nextInt(7) == random.nextInt(7)) {
+            out = funnyDefaultNames[random.nextInt(funnyDefaultNames.length - 1)];
+        }
+        return out;
     }
 
     /**
@@ -765,6 +779,12 @@ public class Snake extends Application implements Loggable {
         return list;
     }
 
+    /**
+     * Used for communication between HighScore and this class for what name the
+     * high-scorer is using
+     *
+     * @param s username
+     */
     public static void setUserName(String s) {
         tempName = s;
     }
@@ -1074,6 +1094,12 @@ public class Snake extends Application implements Loggable {
         }
     }
 
+    /**
+     *
+     * @param size side length of the imaginary square bounding the high score
+     * screen
+     * @return Canvas with high scores drawn on
+     */
     public static Canvas drawHighScoreScreen(double size) {
         Canvas c = new Canvas(size, size);
         GraphicsContext gc = c.getGraphicsContext2D();
@@ -1252,8 +1278,9 @@ public class Snake extends Application implements Loggable {
 
     /**
      *
-     * @param filename
-     * @param score
+     * @param filename destination file path
+     * @param score raw score
+     * @param username name of scorer
      */
     public static void writeEncodedScore(String filename, int score, String username) {
         try {

@@ -6,11 +6,15 @@ package snake;
  */
 public class Tester {
 
+    /**
+     * Test method
+     *
+     * @param args Command line arguments
+     */
     public static void main(String[] args) {
         System.out.println(Enigma.encode(0));
     }
 }
-
 
 /*
  * The MIT License

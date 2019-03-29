@@ -96,7 +96,7 @@ public final class Grid extends squares implements Updateable, Loggable {
      */
     /**
      *
-     * @param width  The horizontal number of squares
+     * @param width The horizontal number of squares
      * @param length The vertical number of squares
      * @param startX The x-coordinate of the snake's starting position
      * @param startY The y-coordinate of the snake's starting position
@@ -120,6 +120,10 @@ public final class Grid extends squares implements Updateable, Loggable {
         events += "Initialized. | ";
     }
 
+    /**
+     *
+     * @param amt Number of bite sounds to have available
+     */
     public void initBites(int amt) {
         bites.clear();
         for (int i = 0; i < amt; i++) {
@@ -127,6 +131,10 @@ public final class Grid extends squares implements Updateable, Loggable {
         }
     }
 
+    /**
+     * Plays the first bite sound, removes it from the list, and adds another
+     * bite sound
+     */
     public void playBite() {
         bites.get(0).play();
         bites.add(new Sound(biteLocation));
@@ -244,8 +252,8 @@ public final class Grid extends squares implements Updateable, Loggable {
 
     /**
      *
-     * @param amt   The number of frames that should be between every update
-     *              cycle
+     * @param amt The number of frames that should be between every update
+     * cycle
      * @param level The difficulty level to change
      */
     public void setFrameSpeed(int amt, int level) {
@@ -323,7 +331,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     /**
      *
      * @return The coordinates of the first portal without a pair reading left
-     *         to right top down on the grid
+     * to right top down on the grid
      */
     public Pair<Integer, Integer> findUnmatchedPortal() {
         if (containsUnmatchedPortal() > -1) {
@@ -373,7 +381,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     /**
      *
      * @return -1 if there are no unmatched portals, otherwise returns the
-     *         lowest unmatched portal number
+     * lowest unmatched portal number
      */
     public int containsUnmatchedPortal() {
         for (int y = 0; y < super.getLength(); y++) {
@@ -461,8 +469,13 @@ public final class Grid extends squares implements Updateable, Loggable {
         return count;
     }
 
+    /*
+     * Replaces all "\" or "\\" characters with a "/"
+     * @param badlyFormattedPath Bad file path string
+     * @return properly formatted file path string
+     */
     public static String formatFilePath(String badlyFormattedPath) {
-        // replaces all "\" or "\\" characters with a "/"
+        // 
         return badlyFormattedPath.replaceAll("\\\\", "/").replaceAll("//", "/");
     }
 
@@ -1229,6 +1242,10 @@ public final class Grid extends squares implements Updateable, Loggable {
         setPos(headPos2[0], headPos2[1]);
     }
 
+    /**
+     *
+     * @param tp Toolpanel object
+     */
     public void addToolPanel(ToolPanel tp) {
         toolPanel = tp;
     }
