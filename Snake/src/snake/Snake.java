@@ -16,18 +16,20 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
-//</editor-fold>
 
 /**
  * Runner class that initiates all high level tasks pertaining to the game
@@ -61,7 +63,6 @@ public class Snake extends Application implements Loggable {
     private static ArrayList<Integer> scores = new ArrayList<>();
     private static ArrayList<String> names = new ArrayList<>();
     private static String[] funnyDefaultNames = {"ERR", "OOF", "RIP", "NAN", "LCS", "NMN"};
-    private static ImageView HS_IV; // High Score screen stored in an 'ImageView' class
 
     private boolean scoresOverwritten = false;
     public static String tempName = "";
@@ -294,9 +295,6 @@ public class Snake extends Application implements Loggable {
             }
         }
 
-        // Initializes ImageView object for viewing the high scores (viewed by pressing 'h' on the menu screen)
-        loadHighScoreScreen();
-
         // Initialize help screen (Accessed from menu)
         ImageView HELP_IV = getImageView("resources\\art\\help.jpg");
 
@@ -476,9 +474,9 @@ public class Snake extends Application implements Loggable {
                                 int xspace = (int) (Math.max(w - h, 0) / 2);
                                 root.setPadding(new Insets(yspace, xspace, yspace, xspace));
                             } else {
-                                root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+                                root.setPadding(new Insets(0, 0, 0, 0));
                             }
-                            root.setTop(HS_IV);
+                            root.setTop(drawHighScoreScreen(Math.min(primaryStage.getWidth(), primaryStage.getHeight())));
                             break;
                         case 2:
                             // show help
@@ -635,7 +633,6 @@ public class Snake extends Application implements Loggable {
                                     root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
                                     root.setTop(LOSE_IV);
                                 }
-                                loadHighScoreScreen(); // re-cache high score screen
                             } //</editor-fold>
                             break;
 
@@ -1077,27 +1074,44 @@ public class Snake extends Application implements Loggable {
         }
     }
 
-    public static void loadHighScoreScreen() {
+    public static Canvas drawHighScoreScreen(double size) {
+        Canvas c = new Canvas(size, size);
+        GraphicsContext gc = c.getGraphicsContext2D();
+        gc.setFill(Color.web("b1600f"));
+
+        gc.setFont(new Font("Impact", 78 / 430.0 * size));
+        gc.fillText("HIGHSCORES", 15 / 430.0 * size, 113 / 430.0 * size);
+
+        gc.setFont(new Font("Impact", 28 / 430.0 * size));
+        gc.fillText("EASY", 28 / 430.0 * size, 236 / 430.0 * size);
+        gc.fillText("MEDIUM", 11 / 430.0 * size, 271 / 430.0 * size);
+        gc.fillText("HARD", 26 / 430.0 * size, 306 / 430.0 * size);
+        gc.fillText("EXTREME", 6 / 430.0 * size, 341 / 430.0 * size);
+
+        gc.setFont(new Font("Impact", 36 / 430.0 * size));
+        gc.fillText("WORLD", 151 / 430.0 * size, 180 / 430.0 * size);
+        gc.fillText("LOCAL", 286 / 430.0 * size, 180 / 430.0 * size);
+
+        gc.fillRect(133 / 430.0 * size, 188 / 430.0 * size, 253 / 430.0 * size, 2 / 430.0 * size);
+        gc.fillRect(267 / 430.0 * size, 190 / 430.0 * size, 2 / 430.0 * size, 151 / 430.0 * size);
         // re-grab scores
         getScores();
-        // copy the master image
-        overlayImage("resources\\art\\HighScoreScreen.png", "resources\\art\\HighScoreScreen.png", "resources\\art\\HighScoreScreenMaster.png", 0, 0);
-        int y = 236;
-        int x;
+
+        double y = 236 / 430.0 * size;
+        double x;
         for (int i = 0; i < scores.size(); i++) {
             if (i % 2 == 0) {
                 if (i > 1) {
-                    y += 35;
+                    y += 35 / 430.0 * size;
                 }
-                x = 284;
+                x = 284 / 430.0 * size;
             } else {
-                x = 156;
+                x = 156 / 430.0 * size;
             }
-            overlayImage("resources\\art\\HighScoreScreen.png", "resources\\art\\HighScoreScreen.png", String.valueOf(scores.get(i)) + " - " + names.get(i), x, y, new Font("Impact", 28), 177, 96, 15);
+            gc.setFont(new Font("Impact", 28 / 430.0 * size));
+            gc.fillText(String.valueOf(scores.get(i)) + " - " + names.get(i), x, y);
         }
-        // set up lose screen
-        ImageView iv = getImageView("resources\\art\\HighScoreScreen.png");
-        HS_IV = iv;
+        return c;
     }
 
     /**

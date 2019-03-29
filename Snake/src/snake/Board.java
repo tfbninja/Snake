@@ -60,22 +60,33 @@ public class Board implements Loggable {
     //menu variables
     private boolean soundOn = true;
 
-    // in order, xPos, yPos, Width, Height
-    private final int[] easyButton = {12, 292, 194, 51};
-    private final int[] medButton = {219, 292, 194, 51};
-    private final int[] hardButton = {12, 353, 194, 51};
-    private final int[] impButton = {219, 353, 194, 51};
-    private final int[] musicButton = {12, 18, 55, 37};
-    private final int[] SFXButton = {83, 18, 28, 37};
-    private final int[] helpButton = {13, 255, 47, 22};
+    private int toolButtonX = 10;
+    private int toolButtonY = 50;
+    private int toolButtonSpace = 20;
+    private int toolButtonSize = 50;
 
-    private int[] easyButtonFS = {12, 292, 194, 51};
-    private int[] medButtonFS = {219, 292, 194, 51};
-    private int[] hardButtonFS = {12, 353, 194, 51};
-    private int[] impButtonFS = {219, 353, 194, 51};
-    private int[] musicButtonFS = {12, 18, 55, 37};
-    private int[] SFXButtonFS = {83, 18, 28, 37};
-    private int[] helpButtonFS = {13, 255, 47, 22};
+    // in order, xPos, yPos, Width, Height
+    private final Button easyButton = new Button(12, 292, 194, 51);
+    private final Button medButton = new Button(219, 292, 194, 51);
+    private final Button hardButton = new Button(12, 353, 194, 51);
+    private final Button impButton = new Button(219, 353, 194, 51);
+    private final Button musicButton = new Button(12, 18, 55, 37);
+    private final Button SFXButton = new Button(83, 18, 28, 37);
+    private final Button helpButton = new Button(13, 255, 47, 22);
+
+    private Button easyButtonFS = new Button(12 / 430.0 * size, 292 / 430.0 * size, 194 / 430.0 * size, 51 / 430.0 * size);
+    private Button medButtonFS = new Button(219 / 430.0 * size, 292 / 430.0 * size, 194 / 430.0 * size, 51 / 430.0 * size);
+    private Button hardButtonFS = new Button(12 / 430.0 * size, 353 / 430.0 * size, 194 / 430.0 * size, 51 / 430.0 * size);
+    private Button impButtonFS = new Button(219 / 430.0 * size, 353 / 430.0 * size, 194 / 430.0 * size, 51 / 430.0 * size);
+    private Button musicButtonFS = new Button(12 / 430.0 * size, 18 / 430.0 * size, 55 / 430.0 * size, 37 / 430.0 * size);
+    private Button SFXButtonFS = new Button(83 / 430.0 * size, 18 / 430.0 * size, 28 / 430.0 * size, 37 / 430.0 * size);
+    private Button helpButtonFS = new Button(13 / 430.0 * size, 255 / 430.0 * size, 47 / 430.0 * size, 22 / 430.0 * size);
+
+    private Button[] sandboxButtonsFS = {new Button(toolButtonX, toolButtonY, toolButtonSize, toolButtonSize),
+        new Button(toolButtonX, toolButtonY + toolButtonSize + toolButtonSpace, toolButtonSize, toolButtonSize),
+        new Button(toolButtonX, toolButtonY + (toolButtonSize + toolButtonSpace) * 2, toolButtonSize, toolButtonSize),
+        new Button(toolButtonX, toolButtonY + (toolButtonSize + toolButtonSpace) * 3, toolButtonSize, toolButtonSize),
+        new Button(toolButtonX, toolButtonY + (toolButtonSize + toolButtonSpace) * 4, toolButtonSize, toolButtonSize)};
 
     private boolean nightTheme = false;
 
@@ -100,12 +111,7 @@ public class Board implements Loggable {
     private Font appleFont = new Font("Impact", 22);
     private Font fullScreenAppleFont = Font.font("Terminal", FontWeight.BOLD, 50);
 
-    private int toolButtonX = 10;
-    private int toolButtonY = 50;
-    private int toolButtonSpace = 20;
-    private int toolButtonSize = 50;
 //</editor-fold>
-
     /**
      *
      * @param w       the horizontal width
@@ -206,10 +212,6 @@ public class Board implements Loggable {
         gc.setFill(Color.web("e2e2e2"));
         gc.setFont(new Font("Impact", 45 / 430.0 * size));
         gc.fillText("EASY", 62 / 430.0 * size, 335 / 430.0 * size);
-        easyButtonFS[0] = (int) (12 / 430.0 * size);
-        easyButtonFS[1] = (int) (292 / 430.0 * size);
-        easyButtonFS[2] = (int) (194 / 430.0 * size);
-        easyButtonFS[3] = (int) (51 / 430.0 * size);
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Medium">
@@ -226,10 +228,6 @@ public class Board implements Loggable {
         gc.setFill(Color.web("e2e2e2"));
         gc.setFont(new Font("Impact", 45 / 430.0 * size));
         gc.fillText("MEDIUM", 244 / 430.0 * size, 335 / 430.0 * size);
-        medButtonFS[0] = (int) (219 / 430.0 * size);
-        medButtonFS[1] = (int) (292 / 430.0 * size);
-        medButtonFS[2] = (int) (194 / 430.0 * size);
-        medButtonFS[3] = (int) (51 / 430.0 * size);
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Hard">
@@ -246,10 +244,6 @@ public class Board implements Loggable {
         gc.setFill(Color.web("e2e2e2"));
         gc.setFont(new Font("Impact", 45 / 430.0 * size));
         gc.fillText("HARD", 57 / 430.0 * size, 396 / 430.0 * size);
-        hardButtonFS[0] = (int) (12 / 430.0 * size);
-        hardButtonFS[1] = (int) (353 / 430.0 * size);
-        hardButtonFS[2] = (int) (194 / 430.0 * size);
-        hardButtonFS[3] = (int) (51 / 430.0 * size);
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Extreme">
@@ -266,10 +260,6 @@ public class Board implements Loggable {
         gc.setFill(Color.web("e2e2e2"));
         gc.setFont(new Font("Impact", 45 / 430.0 * size));
         gc.fillText("EXTREME", 241 / 430.0 * size, 396 / 430.0 * size);
-        impButtonFS[0] = (int) (219 / 430.0 * size);
-        impButtonFS[1] = (int) (353 / 430.0 * size);
-        impButtonFS[2] = (int) (194 / 430.0 * size);
-        impButtonFS[3] = (int) (51 / 430.0 * size);
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="SNAKE">
@@ -798,7 +788,6 @@ public class Board implements Loggable {
             MM.setCurrent(0);
             reset();
             toolFrame.setVisible(false);
-            Snake.loadHighScoreScreen();
         }
 
         if (e.getCode() == KeyCode.EQUALS && e.isShiftDown()) {
@@ -1109,49 +1098,60 @@ public class Board implements Loggable {
                     case 0:
                         grid.setCell(xVal, yVal, tool);
                         if (interpolate) {
-                            //int step = size / 2;
-                            int xfactor = (xVal - oldXVal) / (Math.abs(xVal - oldXVal));
-                            int yStep = (yVal - oldYVal) / (xVal - oldXVal);
-                            int tempY = oldYVal;
-                            for (int x = oldXVal; x > x; x += xfactor) {
-                                grid.setCell(x, tempY, tool);
-                                tempY += yStep;
-                                if (xfactor > 0) {
-                                    if (x >= xVal) {
-                                        break;
-                                    }
-                                } else {
-                                    if (x <= xVal) {
-                                        break;
-                                    }
-                                }
-                            }
 
-                            int yfactor = (yVal - oldYVal) / (Math.abs(yVal - oldYVal));
-                            int tempX = oldXVal;
-                            int xStep = (xVal - oldXVal) / (yVal - oldYVal);
-                            for (int y = oldYVal; y > y; y += yfactor) {
-                                grid.setCell(tempX, y, tool);
-                                tempX += xStep;
-                                if (yfactor > 0) {
-                                    if (y >= yVal) {
-                                        break;
-                                    }
-                                } else {
-                                    if (y <= yVal) {
-                                        break;
-                                    }
-                                }
-                            }
+                            //int step = size / 2;
+                            /*
+                             * int xfactor = (xVal - oldXVal) / (Math.abs(xVal -
+                             * oldXVal));
+                             * int yStep = (yVal - oldYVal) / (xVal - oldXVal);
+                             * int tempY = oldYVal;
+                             * for (int x = oldXVal; x > x; x += xfactor) {
+                             * grid.setCell(x, tempY, tool);
+                             * tempY += yStep;
+                             * if (xfactor > 0) {
+                             * if (x >= xVal) {
+                             * break;
+                             * }
+                             * } else {
+                             * if (x <= xVal) {
+                             * break;
+                             * }
+                             * }
+                             * }
+                             *
+                             * int yfactor = (yVal - oldYVal) / (Math.abs(yVal -
+                             * oldYVal));
+                             * int tempX = oldXVal;
+                             * int xStep = (xVal - oldXVal) / (yVal - oldYVal);
+                             * for (int y = oldYVal; y > y; y += yfactor) {
+                             * grid.setCell(tempX, y, tool);
+                             * tempX += xStep;
+                             * if (yfactor > 0) {
+                             * if (y >= yVal) {
+                             * break;
+                             * }
+                             * } else {
+                             * if (y <= yVal) {
+                             * break;
+                             * }
+                             * }
+                             * }
+                             * }
+                             *
+                             * break;
+                             *
+                             *
+                             *
+                             *
+                             * default:
+                             * break;
+                             */
                         }
-                        break;
-                    default:
-                        break;
                 }
             }
+            oldMouseX = (int) mouseX;
+            oldMouseY = (int) mouseY;
         }
-        oldMouseX = (int) mouseX;
-        oldMouseY = (int) mouseY;
     }
 
     public void mouseReleased(MouseEvent e) {
@@ -1255,47 +1255,51 @@ public class Board implements Loggable {
                 }
             }
 
+            int i = 0;
+            for (Button b : sandboxButtonsFS) {
+                if (b.inBounds(mX, mY)) {
+                    toolPanel.setCurrentTool(i);
+                }
+                i++;
+            }
+
             // menu catching
             if (MM.getCurrent() == 0) {
-                if (mX >= easyButton[0] && mY >= easyButton[1] && mX <= easyButton[0] + easyButton[2] && mY <= easyButton[1] + easyButton[3] && !fullscreen
-                        || (fullscreen && mX >= easyButtonFS[0] && mY >= easyButtonFS[1] && mX <= easyButtonFS[0] + easyButtonFS[2] && mY <= easyButtonFS[1] + easyButtonFS[3])) {
+                if (easyButton.inBounds(mX, mY) && !fullscreen || (fullscreen && easyButtonFS.inBounds(mX, mY))) {
                     // easy mode chosen
                     this.grid.setDiffLevel(1);
                     MM.setCurrent(4);
                     GS.setToPreGame();
-                } else if (mX >= medButton[0] && mY >= medButton[1] && mX <= medButton[0] + medButton[2] && mY <= medButton[1] + medButton[3] && !fullscreen
-                        || (fullscreen && mX >= medButtonFS[0] && mY >= medButtonFS[1] && mX <= medButtonFS[0] + medButtonFS[2] && mY <= medButtonFS[1] + medButtonFS[3])) {
+                } else if (medButton.inBounds(mX, mY) && !fullscreen || (fullscreen && medButtonFS.inBounds(mX, mY))) {
                     // medium mode chosen
                     this.grid.setDiffLevel(2);
                     MM.setCurrent(4);
                     GS.setToPreGame();
-                } else if (mX >= hardButton[0] && mY >= hardButton[1] && mX <= hardButton[0] + hardButton[2] && mY <= hardButton[1] + hardButton[3] && !fullscreen
-                        || (fullscreen && mX >= hardButtonFS[0] && mY >= hardButtonFS[1] && mX <= hardButtonFS[0] + hardButtonFS[2] && mY <= hardButtonFS[1] + hardButtonFS[3])) {
+                } else if (hardButton.inBounds(mX, mY) && !fullscreen || (fullscreen && hardButtonFS.inBounds(mX, mY))) {
                     // hard mode chosen
                     this.grid.setDiffLevel(3);
                     MM.setCurrent(4);
                     GS.setToPreGame();
-                } else if (mX >= impButton[0] && mY >= impButton[1] && mX <= impButton[0] + impButton[2] && mY <= impButton[1] + impButton[3] && !fullscreen
-                        || (fullscreen && mX >= impButtonFS[0] && mY >= impButtonFS[1] && mX <= impButtonFS[0] + impButtonFS[2] && mY <= impButtonFS[1] + impButtonFS[3])) {
+                } else if (impButton.inBounds(mX, mY) && !fullscreen || (fullscreen && impButtonFS.inBounds(mX, mY))) {
                     // impossible mode chosen
                     this.grid.setDiffLevel(4);
                     MM.setCurrent(4);
                     GS.setToPreGame();
-                } else if (mX >= musicButton[0] && mY >= musicButton[1] && mX <= musicButton[0] + musicButton[2] && mY <= musicButton[1] + musicButton[3]) {
+                } else if (musicButton.inBounds(mX, mY) && !fullscreen || (fullscreen && musicButtonFS.inBounds(mX, mY))) {
                     // toggle music
                     if (MENU.getMusic()) {
                         MENU.turnOffMusic();
                     } else {
                         MENU.turnOnMusic();
                     }
-                } else if (mX >= SFXButton[0] && mY >= SFXButton[1] && mX <= SFXButton[0] + SFXButton[2] && mY <= SFXButton[1] + SFXButton[3]) {
+                } else if (SFXButton.inBounds(mX, mY) && !fullscreen || (fullscreen && SFXButtonFS.inBounds(mX, mY))) {
                     // toggle sfx
                     if (MENU.getSFX()) {
                         MENU.turnOffSFX();
                     } else {
                         MENU.turnOnSFX();
                     }
-                } else if (mX >= helpButton[0] && mY >= helpButton[1] && mX <= helpButton[0] + helpButton[2] && mY <= helpButton[1] + helpButton[3]) {
+                } else if (helpButton.inBounds(mX, mY) && !fullscreen || (fullscreen && helpButtonFS.inBounds(mX, mY))) {
                     // help screen
                     MM.setCurrent(2);
                     StringSelection tmpSel = new StringSelection("github.com/tfbninja/snake");

@@ -227,6 +227,10 @@ java.lang.Object
 snake.ToolPanel$7
 snake.ToolPanel
 java.awt.event.ActionListener
+||:snake.Button
+java.lang.Object
+java.lang.StringBuilder
+snake.Button
 ||:snake.ToolPanel$6
 java.lang.Object
 snake.ToolPanel$6
@@ -388,6 +392,7 @@ java.lang.String
 javax.swing.JFrame
 java.lang.ArrayIndexOutOfBoundsException
 java.awt.datatransfer.Clipboard
+[Lsnake.Button;
 javafx.scene.input.KeyCode
 javafx.scene.canvas.Canvas
 java.lang.StringBuilder
@@ -395,6 +400,7 @@ javafx.scene.canvas.GraphicsContext
 snake.ToolPanel
 javafx.scene.paint.Color
 javafx.scene.text.Font
+snake.Button
 javafx.stage.Stage
 [D
 javafx.scene.input.MouseEvent
@@ -479,6 +485,7 @@ java.lang.invoke.MethodHandles$Lookup
 java.io.FileInputStream
 javafx.scene.input.KeyCode
 javafx.scene.layout.BorderPane
+javafx.scene.canvas.Canvas
 java.lang.invoke.MethodHandles
 java.lang.NumberFormatException
 java.nio.file.Files
@@ -486,12 +493,14 @@ java.lang.Integer
 java.lang.StringBuilder
 java.util.Iterator
 java.lang.invoke.LambdaMetafactory
+javafx.scene.canvas.GraphicsContext
 snake.ToolPanel
 javafx.scene.image.Image
 snake.Snake$2
 java.util.Random
 java.awt.image.BufferedImage
 snake.Snake$1
+javafx.scene.paint.Color
 javafx.scene.text.Font
 java.awt.Container
 [I
@@ -508,8 +517,8 @@ java.lang.Throwable
 java.lang.Math
 snake.MainMenu
 java.util.InputMismatchException
-java.awt.Font
 snake.Logger
+java.awt.Font
 java.lang.System
 javax.imageio.ImageIO
 snake.Board

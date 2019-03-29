@@ -34,7 +34,7 @@ public class ToolPanel extends javax.swing.JPanel implements Updateable {
      * Creates new form ToolPanel
      *
      * @param colorScheme The button colors
-     * @param grid The grid to control
+     * @param grid        The grid to control
      * @param mm
      * @param b
      * @param gs
@@ -715,7 +715,7 @@ public class ToolPanel extends javax.swing.JPanel implements Updateable {
         clearButton.setContentAreaFilled(false);
         hideSaved();
         grid.reset();
-        GS.setToPostGame();
+        GS.setToPreGame();
         grid.clear();
         board.drawBlocks();
         clearButton.setContentAreaFilled(true);

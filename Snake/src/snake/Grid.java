@@ -34,8 +34,8 @@ public final class Grid extends squares implements Updateable, Loggable {
 
     private boolean edgeKills = false;
 
-    private Random random = new Random(LocalDateTime.now().getNano());
-    private long seed = random.nextLong();
+    private long seed = LocalDateTime.now().getNano() * LocalDateTime.now().getSecond();
+    private Random random = new Random(seed);
     private boolean useSameSeedOnReset = false;
     private int diffLevel = 1;
     private int minDiffLevel = 0;
@@ -96,7 +96,7 @@ public final class Grid extends squares implements Updateable, Loggable {
      */
     /**
      *
-     * @param width The horizontal number of squares
+     * @param width  The horizontal number of squares
      * @param length The vertical number of squares
      * @param startX The x-coordinate of the snake's starting position
      * @param startY The y-coordinate of the snake's starting position
@@ -244,8 +244,8 @@ public final class Grid extends squares implements Updateable, Loggable {
 
     /**
      *
-     * @param amt The number of frames that should be between every update
-     * cycle
+     * @param amt   The number of frames that should be between every update
+     *              cycle
      * @param level The difficulty level to change
      */
     public void setFrameSpeed(int amt, int level) {
@@ -323,7 +323,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     /**
      *
      * @return The coordinates of the first portal without a pair reading left
-     * to right top down on the grid
+     *         to right top down on the grid
      */
     public Pair<Integer, Integer> findUnmatchedPortal() {
         if (containsUnmatchedPortal() > -1) {
@@ -373,7 +373,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     /**
      *
      * @return -1 if there are no unmatched portals, otherwise returns the
-     * lowest unmatched portal number
+     *         lowest unmatched portal number
      */
     public int containsUnmatchedPortal() {
         for (int y = 0; y < super.getLength(); y++) {
@@ -513,10 +513,14 @@ public final class Grid extends squares implements Updateable, Loggable {
             for (int c = 0; c < playArea[r].length; c++) {
                 if (appleMap[r][c] == 3) {
                     // if the map of apples contains an apple at the current spot, add it
-                    playArea[r][c] = 3;
+                    if (playArea[r][c] == 0 || playArea[r][c] == 2) {
+                        playArea[r][c] = 3;
+                    }
                 } else if (playArea[r][c] == 3) {
-                    // if the map of apples does not contain an apple at the current spot, set the spot on the main grid to blank
-                    setCell(c, r, 0);
+                    // if the map of apples does not contain an apple at the current spot, set the spot on the main grid to blank if it's an apple
+                    if (playArea[r][c] == 3) {
+                        setCell(c, r, 0);
+                    }
                 }
             }
         }
@@ -561,29 +565,10 @@ public final class Grid extends squares implements Updateable, Loggable {
         if (diffLevel != 0) {
             this.setGrowBy(1);
             this.clear();
+            this.initialSize = 5;
         }
         switch (this.diffLevel) {
             case 0:
-                /*
-                 * this.extremeWarp = false;
-                 * this.edgeKills = sandboxEdge;
-                 * this.playArea = this.sandboxPlayArea;
-                 * this.setGrowBy(sandboxGrow);
-                 * this.snakeSize = sandboxLen;
-                 * this.pos.clear();
-                 * if (sandboxPos != null) {
-                 * this.pos.add(sandboxPos);
-                 * startx = pos.get(0).getKey();
-                 * starty = pos.get(0).getValue();
-                 * } else {
-                 * startx = 0;
-                 * starty = 0;
-                 * this.pos.add(new Pair<>(0, 0));
-                 * }
-                 * setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); //
-                 * init head
-                 * clear();
-                 */
                 break;
             case 1:
                 this.extremeWarp = false;
@@ -598,10 +583,8 @@ public final class Grid extends squares implements Updateable, Loggable {
                 this.extremeWarp = false;
                 this.edgeKills = true;
                 this.growBy = 3;
-                // set middle square as rock
                 clearObstacles();
                 clearApples();
-                //setCell(super.getWidth() / 2, super.getLength() / 2, 4);
                 setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
                 newApple(); // add an apple
                 break;
@@ -610,20 +593,20 @@ public final class Grid extends squares implements Updateable, Loggable {
                 this.growBy = 4;
                 this.edgeKills = false;
                 clearObstacles();
+                clearApples();
 
+                setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
                 //add 5 random rocks
                 for (int i = 0; i < 5; i++) {
                     int x = (int) (random.nextDouble() * super.getWidth());
                     int y = (int) (random.nextDouble() * super.getLength());
-                    while (getCell(x, y) != 0 || x == this.pos.get(0).getValue() || getNeighbors(x, y, 4, 2) > 0) {
+                    while (getCell(x, y) != 0 || x == this.pos.get(0).getKey() || getNeighbors(x, y, 4, 2) > 0) {
                         // while the rock is about to be placed over a non-blank spot, or it is the same x value as the snake, or it has neighbors in a 2 cell radius, recalculate the position
                         x = (int) (random.nextDouble() * super.getWidth());
                         y = (int) (random.nextDouble() * super.getLength());
                     }
                     setCell(x, y, 4);
                 }
-                clearApples();
-                setCell(pos.get(0).getKey(), pos.get(0).getValue(), 1); // init head
                 newApple(); // add an apple
                 break;
             case 4:
