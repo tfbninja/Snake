@@ -74,13 +74,13 @@ public class Board implements Loggable {
     private final Button SFXButton = new Button(83, 18, 28, 37);
     private final Button helpButton = new Button(13, 255, 47, 22);
 
-    private Button easyButtonFS = new Button(12 / 430.0 * size, 292 / 430.0 * size, 194 / 430.0 * size, 51 / 430.0 * size);
-    private Button medButtonFS = new Button(219 / 430.0 * size, 292 / 430.0 * size, 194 / 430.0 * size, 51 / 430.0 * size);
-    private Button hardButtonFS = new Button(12 / 430.0 * size, 353 / 430.0 * size, 194 / 430.0 * size, 51 / 430.0 * size);
-    private Button impButtonFS = new Button(219 / 430.0 * size, 353 / 430.0 * size, 194 / 430.0 * size, 51 / 430.0 * size);
-    private Button musicButtonFS = new Button(12 / 430.0 * size, 18 / 430.0 * size, 55 / 430.0 * size, 37 / 430.0 * size);
-    private Button SFXButtonFS = new Button(83 / 430.0 * size, 18 / 430.0 * size, 28 / 430.0 * size, 37 / 430.0 * size);
-    private Button helpButtonFS = new Button(13 / 430.0 * size, 255 / 430.0 * size, 47 / 430.0 * size, 22 / 430.0 * size);
+    private Button easyButtonFS;
+    private Button medButtonFS;
+    private Button hardButtonFS;
+    private Button impButtonFS;
+    private Button musicButtonFS;
+    private Button SFXButtonFS;
+    private Button helpButtonFS;
 
     private Button[] sandboxButtonsFS = {new Button(toolButtonX, toolButtonY, toolButtonSize, toolButtonSize),
         new Button(toolButtonX, toolButtonY + toolButtonSize + toolButtonSpace, toolButtonSize, toolButtonSize),
@@ -114,11 +114,11 @@ public class Board implements Loggable {
 //</editor-fold>
     /**
      *
-     * @param w       the horizontal width
-     * @param h       the vertical height
-     * @param mm      the MenuManager object
-     * @param menu    the Menu object
-     * @param gs      the GameState object
+     * @param w the horizontal width
+     * @param h the vertical height
+     * @param mm the MenuManager object
+     * @param menu the Menu object
+     * @param gs the GameState object
      * @param primary the stage object holding the various graphical components
      */
     public Board(int w, int h, MenuManager mm, MainMenu menu, GameState gs, Stage primary) {
@@ -132,6 +132,15 @@ public class Board implements Loggable {
         grid.clearApples();
         primaryStage = primary;
         turnOffFullscreen(w, h);
+
+        easyButtonFS = new Button(12 / 430.0 * size, 292 / 430.0 * size, 194 / 430.0 * size, 51 / 430.0 * size);
+        medButtonFS = new Button(219 / 430.0 * size, 292 / 430.0 * size, 194 / 430.0 * size, 51 / 430.0 * size);
+        hardButtonFS = new Button(12 / 430.0 * size, 353 / 430.0 * size, 194 / 430.0 * size, 51 / 430.0 * size);
+        impButtonFS = new Button(219 / 430.0 * size, 353 / 430.0 * size, 194 / 430.0 * size, 51 / 430.0 * size);
+        musicButtonFS = new Button(12 / 430.0 * size, 18 / 430.0 * size, 55 / 430.0 * size, 37 / 430.0 * size);
+        SFXButtonFS = new Button(83 / 430.0 * size, 18 / 430.0 * size, 28 / 430.0 * size, 37 / 430.0 * size);
+        helpButtonFS = new Button(13 / 430.0 * size, 255 / 430.0 * size, 47 / 430.0 * size, 22 / 430.0 * size);
+
         events += "Initialized | ";
     }
 
@@ -976,7 +985,7 @@ public class Board implements Loggable {
     /**
      *
      * @return the lowest int starting from ten that has no corresponding pair
-     *         in the grid
+     * in the grid
      */
     public int findUnusedPortalNum() {
         int num = 10;
