@@ -1,6 +1,5 @@
 package snake;
 
-//<editor-fold defaultstate="collapsed" desc="imports">
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Robot;
@@ -61,13 +60,13 @@ public class Snake extends Application implements Loggable {
     private final Sound DAWON = new Sound("resources/sounds/DAWON.mp3");
     private boolean won = false;
     private static ArrayList<Integer> scores = new ArrayList<>();
+    private int[] oldScores;
     private static ArrayList<String> names = new ArrayList<>();
-    private static String[] funnyDefaultNames = {"ERR", "OOF", "RIP", "NAN", "LCS", "NMN"};
+    private static String[] funnyDefaultNames = {"ERR", "OOF", "RIP"};
 
     private boolean scoresOverwritten = false;
 
     public static String tempName = "";
-    private static int tempFrame = 900;
 
     private File settings;
     private final String settingsLocation = "resources/settings.snk";
@@ -91,7 +90,7 @@ public class Snake extends Application implements Loggable {
         }
     };
     private final MenuManager MM = new MenuManager(MENUNAMES);
-    private final MainMenu MENU = new MainMenu();
+    private static final MainMenu MENU = new MainMenu();
     private static final GameState GS = new GameState(1);
 
     private static boolean pause = false;
@@ -195,6 +194,7 @@ public class Snake extends Application implements Loggable {
 
         // Helper method that retrieves the high scores from the resources folder
         getScores();
+        oldScores = toList(scores);
 
         /*
          * If the local files are unreadable (most likely they just haven't been
@@ -225,6 +225,7 @@ public class Snake extends Application implements Loggable {
 
         // Get the Canvas used by Board ready to display when the user selects a difficulty level
         board.drawBlocks();
+        board.getGrid().addMainMenu(MENU);
 
         // This is the class that actually displays a 'physical' window on the screen
         primaryStage.setTitle("JSnake");
@@ -342,258 +343,7 @@ public class Snake extends Application implements Loggable {
                      * we grab it from the Board object here
                      */
                     nightMode = board.getNightTheme();
-
-                    /*
-                     * This switch statement is the main controller of what is
-                     * going on at any given point in time, dictated by the
-                     * MenuManager class. More info on MenuManager in
-                     * MenuManager.java Essentially, the game can be showing one
-                     * of any four different screens at any point. They are: 0 -
-                     * the main menu,
-                     * 1 - the high score screen accessed from * the main menu,
-                     * 2 - the help screen,
-                     * 3 - the 'lose' or game over screen (which also displays
-                     * high scores but is not related to the high scores screen
-                     * at all), and
-                     * 4 - the game itself with the squares and such
-                     *
-                     * Whatever number the MenuManager currently has set
-                     * internally as the current screen, the switch statement
-                     * sets the appropriate object to the root variable (class
-                     * BorderPane)
-                     */
-                    switch (MM.getCurrent()) {
-                        case 0:
-                            // show main menu
-                            if (fullscreen) {
-                                double w = primaryStage.getWidth();
-                                double h = primaryStage.getHeight();
-                                int yspace = (int) (Math.max(h - w, 0) / 2);
-                                int xspace = (int) (Math.max(w - h, 0) / 2);
-                                root.setPadding(new Insets(yspace, xspace, yspace, xspace));
-                                root.setTop(board.getFullScreenMenu(Math.min(w, h)));
-                            } else {
-                                root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
-                                root.setTop(MENU.getMenu());
-                            }
-
-                            won = false;
-                            break;
-                        case 1:
-                            // show high scores
-                            if (fullscreen) {
-                                double w = primaryStage.getWidth();
-                                double h = primaryStage.getHeight();
-                                int yspace = (int) (Math.max(h - w, 0) / 2);
-                                int xspace = (int) (Math.max(w - h, 0) / 2);
-                                root.setPadding(new Insets(yspace, xspace, yspace, xspace));
-                            } else {
-                                root.setPadding(new Insets(0, 0, 0, 0));
-                            }
-                            root.setTop(drawHighScoreScreen(Math.min(primaryStage.getWidth(), primaryStage.getHeight())));
-                            break;
-                        case 2:
-                            // show help
-                            if (fullscreen) {
-                                double w = primaryStage.getWidth();
-                                double h = primaryStage.getHeight();
-                                int yspace = (int) (Math.max(h - w, 0) / 2);
-                                int xspace = (int) (Math.max(w - h, 0) / 2);
-                                root.setPadding(new Insets(yspace, xspace, yspace, xspace));
-                            } else {
-                                root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
-                            }
-                            root.setTop(HELP_IV);
-                            break;
-                        case 3:
-                            // game over - show lose screen and deal with high scores
-                            GS.setToPostGame();
-                            board.drawBlocks();
-                            won = false;
-                            // reset sandbox
-                            if (board.getGrid().getDiffLevel() == 0 && !sandboxReset) {
-                                sandboxReset = true;
-
-                                board.resetKeepGrid(); // reverts apples to initial
-                                int[] headPos2 = board.getGrid().getStartPos();
-                                board.getGrid().removeAll(1);
-                                board.getGrid().removeAll(2);
-                                board.getGrid().setPos(headPos2[0], headPos2[1]);
-                                board.getGrid().setGrowBy(toolPanel.getGrowBy());
-                                board.getGrid().setEdgeKills(toolPanel.getEdgeKills());
-                                board.setToSandboxPlayArea();
-                                board.getGrid().setApples(appleMap);
-                                board.drawBlocks();
-                                MM.setCurrent(4);
-                                GS.setToPreGame();
-                            } else if (!scoresOverwritten && board.getGrid().getDiffLevel() != 0) {
-                                //<editor-fold defaultstate="collapsed" desc="save high scores">
-                                int thisDifficulty = board.getGrid().getDiffLevel();
-                                int thisScore = board.getGrid().getApplesEaten();
-                                boolean highScore = thisScore > scores.get((thisDifficulty - 1) * 2) || thisScore > scores.get((thisDifficulty - 1) * 2 + 1);
-                                int[] oldScores = toList(scores);
-
-                                if (highScore) {
-                                    //  (if score is higher than local or world)
-                                    JFrame window = new JFrame();
-                                    HighScore tempWindow = new HighScore();
-
-                                    window.setLocation((int) primaryStage.getX() + 50, (int) primaryStage.getY() + 50);
-                                    window.setTitle("HIGHSCORE");
-                                    window.add(tempWindow);
-                                    window.setSize(new Dimension(tempWindow.getPreferredSize().width + 5, tempWindow.getPreferredSize().height + 25));
-                                    window.setResizable(false);
-                                    window.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-                                    window.setType(java.awt.Window.Type.UTILITY);
-                                    window.setAutoRequestFocus(true);
-                                    window.setVisible(true);
-                                    window.setAlwaysOnTop(true);
-                                    window.requestFocus();
-                                    window.requestFocusInWindow();
-                                    tempWindow.setFocusOnField();
-                                    Robot bot;
-                                    //int oldX = ; // get old position so it can be moved back
-                                    //int oldY = ;
-                                    try {
-                                        bot = new Robot();
-                                        int mask = InputEvent.BUTTON1_DOWN_MASK;
-                                        bot.mouseMove(window.getX() + tempWindow.getFieldX() + 5, window.getY() + tempWindow.getFieldY() + 5);
-                                        bot.mousePress(mask);
-                                        bot.mouseRelease(mask);
-                                    } catch (Exception e) {
-
-                                    }
-
-                                    for (int i = 120; i >= 0; i--) {
-                                        if (tempName.isEmpty()) {
-                                            try {
-                                                if (i % 4 == 0) {
-                                                    tempWindow.setCounter(i / 4);
-                                                }
-                                                Thread.sleep(250);
-                                            } catch (InterruptedException ex) {
-                                                //System.out.println("interuppted");
-                                            }
-                                        } else {
-                                            break;
-                                        }
-                                    }
-
-                                    window.setVisible(false);
-                                    window.dispose();
-                                    String name = tempName;
-                                    tempName = "";
-
-                                    // write scores to files
-                                    writeEncodedScore("resources\\scores\\local\\localHighScore" + thisDifficulty + ".local", thisScore, name);
-
-                                    if (thisScore > scores.get((thisDifficulty - 1) * 2 + 1)) {
-                                        if (checkFileExists("resources\\scores\\world\\worldHighScore" + thisDifficulty + ".world")) {
-                                            writeEncodedScore("resources\\scores\\world\\worldHighScore" + thisDifficulty + ".world", thisScore, name);
-                                        } else {
-                                            // if there's no world file, it ain't legit                                        }
-                                        }
-                                    }
-                                }
-                                if (fullscreen) {
-                                    ArrayList<Boolean> highs = new ArrayList<>();
-                                    int index = 0;
-                                    for (int i : oldScores) {
-                                        if (i < scores.get(index)) {
-                                            highs.add(true);
-                                        } else {
-                                            highs.add(false);
-                                        }
-                                        index++;
-                                    }
-                                    double w = primaryStage.getWidth();
-                                    double h = primaryStage.getHeight();
-                                    int yspace = (int) (Math.max(h - w, 0) / 2);
-                                    int xspace = (int) (Math.max(w - h, 0) / 2);
-                                    root.setPadding(new Insets(yspace, xspace, yspace, xspace));
-                                    root.setTop(board.getFullScreenBigOof(Math.min(primaryStage.getWidth(), primaryStage.getHeight()), scores, highs, names));
-                                    scoresOverwritten = true;
-                                } else {
-                                    // re-grab scores
-                                    getScores();
-
-                                    // copy the master image
-                                    overlayImage("resources\\art\\loseScreenMaster.png", "resources\\art\\loseScreen.png", String.valueOf(thisScore), 248, 194, new Font("Impact", 26), 177, 96, 15);
-                                    int y = 320;
-                                    int x;
-                                    for (int i = 0; i < scores.size(); i++) {
-                                        if (i % 2 == 0) {
-                                            if (i > 1) {
-                                                y += 27;
-                                            }
-                                            x = 234;
-                                        } else {
-                                            x = 125;
-                                        }
-                                        if (i / 2 + 1 == thisDifficulty && highScore && thisScore > oldScores[i]) {
-                                            overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", String.valueOf(scores.get(i)) + " - " + names.get(i), x, y, new Font("Impact", 22), 255, 0, 0);
-                                        } else {
-                                            overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", String.valueOf(scores.get(i)) + " - " + names.get(i), x, y, new Font("Impact", 22), 177, 96, 15);
-                                        }
-                                    }
-
-                                    if (highScore) {
-                                        overlayImage("resources\\art\\loseScreen.png", "resources\\art\\loseScreen.png", "NEW HIGHSCORE", 105, 34, new Font("Impact", 34), 255, 0, 0);
-                                    }
-
-                                    scoresOverwritten = true;
-                                    ImageView LOSE_IV = getImageView("resources\\art\\loseScreen.png");
-
-                                    root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
-                                    root.setTop(LOSE_IV);
-                                }
-                            } //</editor-fold>
-                            break;
-
-                        case 4:
-                            root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
-
-                            // show the actual game
-                            sandboxReset = false;
-                            if (root.getTop() != board.getCanvas() && !GS.isPostGame()) {
-                                root.setTop(board.getCanvas());
-                            }
-                            if (GS.isPreGame()) {
-                                int tempSize = board.getGrid().getLength();
-                                appleMap = new int[tempSize][tempSize];
-                                for (int r = 0; r < tempSize; r++) {
-                                    for (int c = 0; c < tempSize; c++) {
-                                        appleMap[r][c] = board.getGrid().getPlayArea()[r][c];
-                                    }
-                                }
-                            }
-                            if (!GS.isPostGame()) {
-                                if (AI) {
-                                    AI();
-                                }
-                                board.drawBlocks();
-                                scoresOverwritten = false;
-                                if (frame % board.getGrid().getFrameSpeed() == 0) {
-                                    for (int i = 0; i < board.getGrid().getGensPerFrame(); i++) {
-                                        board.getGrid().update();
-                                    }
-                                }
-                                if (board.getGrid().countVal(0) == 0 && !won && GS.isGame()) {
-                                    won = true;
-                                    if (MENU.getSFX()) {
-                                        DAWON.play();
-                                        events += "Won. | ";
-                                        board.getGrid().won();
-                                    }
-                                }
-                            } else {
-                                MM.setCurrent(3);
-                                if (board.getGrid().getDiffLevel() == 0) {
-                                    GS.setToPreGame();
-                                }
-                            }
-                            break;
-                    }
+                    updateScreen(primaryStage, root, HELP_IV);
                 }
             }
         }.
@@ -635,6 +385,7 @@ public class Snake extends Application implements Loggable {
                             board.turnOffFullscreen(canvasW, canvasH);
                             root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
                         }
+                        updateScreen(primaryStage, root, HELP_IV);
                     }
                     if (eventa.getCode() == KeyCode.ESCAPE && fullscreen) {
                         fullscreen = !fullscreen;
@@ -643,6 +394,7 @@ public class Snake extends Application implements Loggable {
                         double h = primaryStage.getHeight();
                         board.turnOffFullscreen(canvasW, canvasH);
                         root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+                        updateScreen(primaryStage, root, HELP_IV);
                     } else {
                         board.keyPressed(eventa);
                     }
@@ -655,6 +407,274 @@ public class Snake extends Application implements Loggable {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public void updateScreen(Stage primaryStage, BorderPane root, ImageView HELP_IV) {
+        /*
+         * This switch statement is the main controller of what is
+         * going on at any given point in time, dictated by the
+         * MenuManager class. More info on MenuManager in
+         * MenuManager.java Essentially, the game can be showing one
+         * of any four different screens at any point. They are: 0 -
+         * the main menu,
+         * 1 - the high score screen accessed from * the main menu,
+         * 2 - the help screen,
+         * 3 - the 'lose' or game over screen (which also displays
+         * high scores but is not related to the high scores screen
+         * at all), and
+         * 4 - the game itself with the squares and such
+         *
+         * Whatever number the MenuManager currently has set
+         * internally as the current screen, the switch statement
+         * sets the appropriate object to the root variable (class
+         * BorderPane)
+         */
+        switch (MM.getCurrent()) {
+            case 0:
+                // show main menu
+                if (fullscreen) {
+                    double w = primaryStage.getWidth();
+                    double h = primaryStage.getHeight();
+                    int yspace = (int) (Math.max(h - w, 0) / 2);
+                    int xspace = (int) (Math.max(w - h, 0) / 2);
+                    root.setPadding(new Insets(yspace, xspace, yspace, xspace));
+                    root.setTop(board.getFullScreenMenu(Math.min(w, h)));
+                } else {
+                    root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+                    //root.setTop(MENU.getMenu());
+                    root.setTop(board.getFullScreenMenu(430));
+                }
+
+                won = false;
+                break;
+            case 1:
+                // show high scores
+                if (fullscreen) {
+                    double w = primaryStage.getWidth();
+                    double h = primaryStage.getHeight();
+                    int yspace = (int) (Math.max(h - w, 0) / 2);
+                    int xspace = (int) (Math.max(w - h, 0) / 2);
+                    root.setPadding(new Insets(yspace, xspace, yspace, xspace));
+                } else {
+                    root.setPadding(new Insets(0, 0, 0, 0));
+                }
+                root.setTop(drawHighScoreScreen(Math.min(primaryStage.getWidth(), primaryStage.getHeight())));
+                break;
+            case 2:
+                // show help
+                if (fullscreen) {
+                    double w = primaryStage.getWidth();
+                    double h = primaryStage.getHeight();
+                    int yspace = (int) (Math.max(h - w, 0) / 2);
+                    int xspace = (int) (Math.max(w - h, 0) / 2);
+                    root.setPadding(new Insets(yspace, xspace, yspace, xspace));
+                } else {
+                    root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+                }
+                root.setTop(HELP_IV);
+                break;
+            case 3:
+                // game over - show lose screen and deal with high scores
+                GS.setToPostGame();
+                board.drawBlocks();
+                won = false;
+                // reset sandbox
+                if (board.getGrid().getDiffLevel() == 0 && !sandboxReset) {
+                    sandboxReset = true;
+
+                    board.resetKeepGrid(); // reverts apples to initial
+                    int[] headPos2 = board.getGrid().getStartPos();
+                    board.getGrid().removeAll(1);
+                    board.getGrid().removeAll(2);
+                    board.getGrid().setPos(headPos2[0], headPos2[1]);
+                    board.getGrid().setGrowBy(toolPanel.getGrowBy());
+                    board.getGrid().setEdgeKills(toolPanel.getEdgeKills());
+                    board.setToSandboxPlayArea();
+                    board.getGrid().setApples(appleMap);
+                    board.drawBlocks();
+                    MM.setCurrent(4);
+                    GS.setToPreGame();
+                } else if (!scoresOverwritten && board.getGrid().getDiffLevel() != 0) {
+                    //<editor-fold defaultstate="collapsed" desc="save high scores">
+                    int thisDifficulty = board.getGrid().getDiffLevel();
+                    int thisScore = board.getGrid().getApplesEaten();
+                    boolean highScore = thisScore > scores.get((thisDifficulty - 1) * 2) || thisScore > scores.get((thisDifficulty - 1) * 2 + 1);
+
+                    //<editor-fold defaultstate="collapsed" desc="if highscore">
+                    if (highScore) {
+                        //  (if score is higher than local or world)
+                        JFrame window = new JFrame();
+                        HighScore tempWindow = new HighScore();
+
+                        window.setLocation((int) primaryStage.getX() + 50, (int) primaryStage.getY() + 50);
+                        window.setTitle("HIGHSCORE");
+                        window.add(tempWindow);
+                        window.setSize(new Dimension(tempWindow.getPreferredSize().width + 5, tempWindow.getPreferredSize().height + 25));
+                        window.setResizable(false);
+                        window.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+                        window.setType(java.awt.Window.Type.UTILITY);
+                        window.setAutoRequestFocus(true);
+                        window.setVisible(true);
+                        window.setAlwaysOnTop(true);
+                        window.requestFocus();
+                        window.requestFocusInWindow();
+                        tempWindow.setFocusOnField();
+                        Robot bot;
+                        //int oldX = ; // get old position so it can be moved back
+                        //int oldY = ;
+                        try {
+                            bot = new Robot();
+                            int mask = InputEvent.BUTTON1_DOWN_MASK;
+                            bot.mouseMove(window.getX() + tempWindow.getFieldX() + 5, window.getY() + tempWindow.getFieldY() + 5);
+                            bot.mousePress(mask);
+                            bot.mouseRelease(mask);
+                        } catch (Exception e) {
+
+                        }
+
+                        for (int i = 120; i >= 0; i--) {
+                            if (tempName.isEmpty()) {
+                                try {
+                                    if (i % 4 == 0) {
+                                        tempWindow.setCounter(i / 4);
+                                    }
+                                    Thread.sleep(250);
+                                } catch (InterruptedException ex) {
+                                    //System.out.println("interuppted");
+                                }
+                            } else {
+                                break;
+                            }
+                        }
+
+                        window.setVisible(false);
+                        window.dispose();
+                        String name = tempName;
+                        tempName = "";
+
+                        // write scores to files
+                        writeEncodedScore("resources\\scores\\local\\localHighScore" + thisDifficulty + ".local", thisScore, name);
+
+                        if (thisScore > scores.get((thisDifficulty - 1) * 2 + 1)) {
+                            if (checkFileExists("resources\\scores\\world\\worldHighScore" + thisDifficulty + ".world")) {
+                                writeEncodedScore("resources\\scores\\world\\worldHighScore" + thisDifficulty + ".world", thisScore, name);
+                            } else {
+                                // if there's no world file, it ain't legit                                        }
+                            }
+                        }
+                        getScores();
+                    }
+//</editor-fold>
+
+                    //<editor-fold defaultstate="collapsed" desc="if fullscreen">
+                    if (fullscreen) {
+                        ArrayList<Boolean> highs = new ArrayList<>();
+                        int index = 0;
+                        for (int i : oldScores) {
+                            if (i < scores.get(index)) {
+                                highs.add(true);
+                            } else {
+                                highs.add(false);
+                            }
+                            index++;
+                        }
+                        double w = primaryStage.getWidth();
+                        double h = primaryStage.getHeight();
+                        int yspace = (int) (Math.max(h - w, 0) / 2);
+                        int xspace = (int) (Math.max(w - h, 0) / 2);
+                        root.setPadding(new Insets(yspace, xspace, yspace, xspace));
+                        root.setTop(board.getFullScreenBigOof(Math.min(primaryStage.getWidth(), primaryStage.getHeight()), scores, highs, names));
+                        scoresOverwritten = true;
+                    } else {
+                        ArrayList<Boolean> highs = new ArrayList<>();
+                        int index = 0;
+                        for (int i : oldScores) {
+                            if (i < scores.get(index)) {
+                                highs.add(true);
+                            } else {
+                                highs.add(false);
+                            }
+                            index++;
+                        }
+                        root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+                        root.setTop(board.getFullScreenBigOof(430, scores, highs, names));
+                        scoresOverwritten = true;
+                    }
+//</editor-fold>
+
+                } else {
+                    ArrayList<Boolean> highs = new ArrayList<>();
+                    int index = 0;
+                    for (int i : oldScores) {
+                        if (i < scores.get(index)) {
+                            highs.add(true);
+                        } else {
+                            highs.add(false);
+                        }
+                        index++;
+                    }
+                    if (fullscreen) {
+                        double w = primaryStage.getWidth();
+                        double h = primaryStage.getHeight();
+                        int yspace = (int) (Math.max(h - w, 0) / 2);
+                        int xspace = (int) (Math.max(w - h, 0) / 2);
+                        root.setPadding(new Insets(yspace, xspace, yspace, xspace));
+                        root.setTop(board.getFullScreenBigOof(Math.min(primaryStage.getWidth(), primaryStage.getHeight()), scores, highs, names));
+                        scoresOverwritten = true;
+                    } else {
+                        root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+                        root.setTop(board.getFullScreenBigOof(430, scores, highs, names));
+                        scoresOverwritten = true;
+                    }
+                }
+                //</editor-fold>
+                break;
+
+            case 4:
+                root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+
+                // show the actual game
+                sandboxReset = false;
+                if (root.getTop() != board.getCanvas() && !GS.isPostGame()) {
+                    root.setTop(board.getCanvas());
+                }
+                if (GS.isPreGame()) {
+                    oldScores = toList(scores);
+                    int tempSize = board.getGrid().getLength();
+                    appleMap = new int[tempSize][tempSize];
+                    for (int r = 0; r < tempSize; r++) {
+                        for (int c = 0; c < tempSize; c++) {
+                            appleMap[r][c] = board.getGrid().getPlayArea()[r][c];
+                        }
+                    }
+                }
+                if (!GS.isPostGame()) {
+                    if (AI) {
+                        AI();
+                    }
+                    board.drawBlocks();
+                    scoresOverwritten = false;
+                    if (frame % board.getGrid().getFrameSpeed() == 0) {
+                        for (int i = 0; i < board.getGrid().getGensPerFrame(); i++) {
+                            board.getGrid().update();
+                        }
+                    }
+                    if (board.getGrid().countVal(0) == 0 && !won && GS.isGame()) {
+                        won = true;
+                        if (MENU.getSFX()) {
+                            DAWON.play();
+                            events += "Won. | ";
+                            board.getGrid().won();
+                        }
+                    }
+                } else {
+                    MM.setCurrent(3);
+                    if (board.getGrid().getDiffLevel() == 0) {
+                        GS.setToPreGame();
+                    }
+                }
+                break;
+        }
     }
 
     /**
@@ -858,6 +878,8 @@ public class Snake extends Application implements Loggable {
                 Grid tempGrid = new Grid(25, 25, 0, 0);
                 tempGrid.setDiffLevel(0);
                 tempGrid.addGameState(GS);
+                tempGrid.addMainMenu(MENU);
+                tempGrid.addToolPanel(toolPanel);
 
                 Scanner s = new Scanner(content);
 
@@ -939,6 +961,8 @@ public class Snake extends Application implements Loggable {
         Grid errorGrid = new Grid(25, 25, 0, 0);
         //<editor-fold defaultstate="collapsed" desc="Set up">
         errorGrid.addGameState(GS);
+        errorGrid.addMainMenu(MENU);
+        errorGrid.addToolPanel(toolPanel);
         errorGrid.setFrameSpeed(3);
         errorGrid.setEdgeKills(true);
         errorGrid.setExtremeStyleWarp(false);
@@ -1097,7 +1121,7 @@ public class Snake extends Application implements Loggable {
     /**
      *
      * @param size side length of the imaginary square bounding the high score
-     * screen
+     *             screen
      * @return Canvas with high scores drawn on
      */
     public static Canvas drawHighScoreScreen(double size) {
@@ -1279,7 +1303,7 @@ public class Snake extends Application implements Loggable {
     /**
      *
      * @param filename destination file path
-     * @param score raw score
+     * @param score    raw score
      * @param username name of scorer
      */
     public static void writeEncodedScore(String filename, int score, String username) {

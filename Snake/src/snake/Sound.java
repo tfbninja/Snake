@@ -16,7 +16,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  *
  * @author Tim Barber
  */
-public class Sound implements Comparable { // Holds one audio file
+public class Sound { // Holds one audio file
 
     private String filename;
     private URL resource;
@@ -71,7 +71,7 @@ public class Sound implements Comparable { // Holds one audio file
      * Sets up object using the method that I have found to work for mp3 files
      *
      * @param filename file path
-     * @param asMP3 which method to use
+     * @param asMP3    which method to use
      */
     public Sound(String filename, boolean asMP3) {
         this.filename = filename;
@@ -105,9 +105,8 @@ public class Sound implements Comparable { // Holds one audio file
         }
     }
 
-    @Override
-    public int compareTo(Object o) {
-        return filename.compareTo(((Sound) o).filename);
+    public String getFilename() {
+        return filename;
     }
 
     /**
@@ -204,8 +203,12 @@ public class Sound implements Comparable { // Holds one audio file
         mediaPlayer.pause();
         clip.stop();
     }
-}
 
+    @Override
+    public String toString() {
+        return filename;
+    }
+}
 
 /*
  * The MIT License

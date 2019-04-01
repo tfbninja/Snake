@@ -43,7 +43,7 @@ public final class Grid extends squares implements Updateable, Loggable {
 
     // snake vars
     private int direction = 0;
-    private int tempDir = 0;
+    private ArrayList<Integer> tempDirs = new ArrayList<>();
     private ArrayList<Pair<Integer, Integer>> pos = new ArrayList<>();
     private int initialSize = 5;
     private int snakeSize = initialSize;
@@ -51,7 +51,6 @@ public final class Grid extends squares implements Updateable, Loggable {
     private int applesEaten = 0;
 
     // sounds
-    private boolean soundOn = true;
     private Sound warp;
     private ArrayList<Sound> loseSounds = new ArrayList<>();
 
@@ -76,6 +75,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     private int[] frameSpeeds = {3, 5, 4, 3, 2};
     private Pair<Integer, Integer> sandboxPos;
     private GameState GS;
+    private MainMenu MENU;
     private final double RRPROB = 0.01;
     private final Sound RR = new Sound("resources/sounds/RR.mp3");
 
@@ -96,7 +96,7 @@ public final class Grid extends squares implements Updateable, Loggable {
      */
     /**
      *
-     * @param width The horizontal number of squares
+     * @param width  The horizontal number of squares
      * @param length The vertical number of squares
      * @param startX The x-coordinate of the snake's starting position
      * @param startY The y-coordinate of the snake's starting position
@@ -118,6 +118,10 @@ public final class Grid extends squares implements Updateable, Loggable {
         addDeathSounds();
         initBites(30);
         events += "Initialized. | ";
+    }
+
+    public void addMainMenu(MainMenu M) {
+        MENU = M;
     }
 
     /**
@@ -252,8 +256,8 @@ public final class Grid extends squares implements Updateable, Loggable {
 
     /**
      *
-     * @param amt The number of frames that should be between every update
-     * cycle
+     * @param amt   The number of frames that should be between every update
+     *              cycle
      * @param level The difficulty level to change
      */
     public void setFrameSpeed(int amt, int level) {
@@ -289,12 +293,14 @@ public final class Grid extends squares implements Updateable, Loggable {
         this.startx = grid.startx;
         this.starty = grid.starty;
         this.frameSpeeds = grid.frameSpeeds;
-        this.tempDir = grid.tempDir;
+        this.tempDirs = grid.tempDirs;
         this.extremeWarp = grid.extremeWarp;
         this.useSameSeedOnReset = grid.useSameSeedOnReset;
         this.seed = grid.seed;
         this.toolPanel = grid.toolPanel;
         this.deathCounter = grid.deathCounter;
+        this.GS = grid.GS;
+        this.MENU = grid.MENU;
         setApples();
     }
 
@@ -331,7 +337,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     /**
      *
      * @return The coordinates of the first portal without a pair reading left
-     * to right top down on the grid
+     *         to right top down on the grid
      */
     public Pair<Integer, Integer> findUnmatchedPortal() {
         if (containsUnmatchedPortal() > -1) {
@@ -381,7 +387,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     /**
      *
      * @return -1 if there are no unmatched portals, otherwise returns the
-     * lowest unmatched portal number
+     *         lowest unmatched portal number
      */
     public int containsUnmatchedPortal() {
         for (int y = 0; y < super.getLength(); y++) {
@@ -475,7 +481,7 @@ public final class Grid extends squares implements Updateable, Loggable {
      * @return properly formatted file path string
      */
     public static String formatFilePath(String badlyFormattedPath) {
-        // 
+        //
         return badlyFormattedPath.replaceAll("\\\\", "/").replaceAll("//", "/");
     }
 
@@ -491,14 +497,6 @@ public final class Grid extends squares implements Updateable, Loggable {
         } else {
             System.out.println("Cannot find the resources/sounds/death folder... try setting the working directory to the folder that Snake.java or Snake.jar is contained in.");
         }
-    }
-
-    /**
-     *
-     * @param sound
-     */
-    public void setSoundOn(boolean sound) {
-        this.soundOn = sound;
     }
 
     /**
@@ -543,8 +541,6 @@ public final class Grid extends squares implements Updateable, Loggable {
      * Resets game-by-game variables to prepare for next round
      */
     public void reset() {
-        boolean temp = soundOn;
-        this.soundOn = false;
         won = false;
         if (this.useSameSeedOnReset) {
             random.setSeed(seed);
@@ -554,9 +550,8 @@ public final class Grid extends squares implements Updateable, Loggable {
         resetSnake();
         resetSize();
         revertToInitial();
-        tempDir = 0;
+        tempDirs.clear();
         direction = 0;
-        this.soundOn = temp;
     }
 
     /**
@@ -894,13 +889,44 @@ public final class Grid extends squares implements Updateable, Loggable {
     }
 
     /**
+     * Returns the compass rose name corresponding to the direction variable
+     *
+     * @param dir int between 1 & 4 inclusive
+     * @return North, South, East, or West (On weird case returns direction)
+     */
+    public String getDirectionName(int dir) {
+        switch (dir) {
+            case 1:
+                return "North";
+            case 2:
+                return "East";
+            case 3:
+                return "South";
+            case 4:
+                return "West";
+        }
+        return "" + dir;
+    }
+
+    /**
      *
      * @param dir
      */
     public void attemptSetDirection(int dir) {
-        if (Math.abs(this.direction - dir) != 2 && Math.abs(this.tempDir - dir) != 2) {
-            this.tempDir = dir;
+        events += getDirectionName(dir).charAt(0);
+        if (Math.abs(this.direction - dir) != 2 && tempDirs.isEmpty() && dir != direction) {
+            // user has not pressed any direction keys this generation, turn snake next gen
+            tempDirs.add(dir);
             events += getDirectionName().charAt(0);
+        } else if (tempDirs.size() == 1 && Math.abs(tempDirs.get(0) - dir) == 2) {
+            // user pressed opposite keys in one generation, use most recent instruction
+            if (Math.abs(this.direction - dir) != 2 && dir != direction) {
+                // if they're not turning 180 degrees that is
+                tempDirs.set(0, dir);
+            }
+        } else if (tempDirs.size() == 1 && Math.abs(tempDirs.get(0) - dir) != 2) {
+            // user gave two instructions, likely intending to give the last one after the gen update, we'll be nice and do it right after this gen instead of simply only doing this one
+            tempDirs.add(dir);
         }
     }
 
@@ -940,16 +966,14 @@ public final class Grid extends squares implements Updateable, Loggable {
      * Literally turns right
      */
     public void turnRight() {
-        this.tempDir++;
-        tempDir = tempDir % 4;
+        attemptSetDirection((direction + 1) % 4);
     }
 
     /**
      * Literally turns left
      */
     public void turnLeft() {
-        this.tempDir--;
-        tempDir = tempDir % 4;
+        attemptSetDirection((direction - 1) % 4);
     }
 
     /**
@@ -1000,7 +1024,7 @@ public final class Grid extends squares implements Updateable, Loggable {
      */
     public void setDirection(int dir) {
         this.direction = dir;
-        this.tempDir = dir;
+        this.tempDirs.clear();
     }
 
     /**
@@ -1259,24 +1283,26 @@ public final class Grid extends squares implements Updateable, Loggable {
         GS.setToPostGame();
         random.setSeed(LocalDateTime.now().getNano());
         if (!won) {
-            if (random.nextInt((int) (1.0 / RRPROB)) == random.nextInt((int) (1 / RRPROB))) {
-                if (soundOn) {
+            if (random.nextInt((int) (1.0 / RRPROB)) == random.nextInt((int) (1.0 / RRPROB))) {
+                if (MENU.getSFX()) {
                     RR.play();
+                    events += "Successfully rickrolled | ";
                 }
-            }
-            if (deathCounter > 0) {
-                Sound temp = loseSounds.get(deathCounter - 1);
-                loseSounds.remove(deathCounter - 1);
+            } else {
+                Sound temp = loseSounds.get(deathCounter);
+                loseSounds.remove(deathCounter);
                 if (deathCounter >= loseSounds.size() - 4) { // we don't need to play EVERY sound before we use the other ones, but definitely not two in a row, that gets annoying
                     Collections.shuffle(loseSounds);
-                    loseSounds.add(temp);
                     deathCounter = 0;
                 }
+                loseSounds.add(temp);
+
+                if (MENU.getSFX()) {
+                    loseSounds.get(deathCounter).play();
+                    events += "played " + temp.toString().substring(23) + " | ";
+                }
+                deathCounter++;
             }
-            if (soundOn) {
-                loseSounds.get(deathCounter).play();
-            }
-            deathCounter++;
         }
         if (this.useSameSeedOnReset) {
             random.setSeed(seed);
@@ -1286,7 +1312,7 @@ public final class Grid extends squares implements Updateable, Loggable {
         if (toolPanel != null) {
             toolPanel.updateControls();
         } else {
-            events += "Hidden error - no toolpanel object";
+            events += "Hidden error - no toolpanel object | ";
         }
     }
 
@@ -1304,13 +1330,12 @@ public final class Grid extends squares implements Updateable, Loggable {
                 return;
             }
 
-            boolean trigger = false;
-            if (this.direction != tempDir) {
-                trigger = true;
-            }
-            this.direction = this.tempDir;
-            if (trigger) {
+            if (tempDirs.size() > 0 && this.direction != tempDirs.get(0)) {
+                this.direction = this.tempDirs.get(0);
+                this.tempDirs.remove(0);
                 events += getDirectionName().charAt(0);
+            } else if (tempDirs.size() > 0 && this.direction == tempDirs.get(0)) {
+                tempDirs.remove(0);
             }
             int nextX = nextPos()[0];
             int nextY = nextPos()[1];
@@ -1332,14 +1357,14 @@ public final class Grid extends squares implements Updateable, Loggable {
                             nextX = super.getWidth() - nextY - 1;
                             nextY = 0;
                             this.direction = 3;
-                            this.tempDir = 3;
+                            this.tempDirs.clear();
                             playWarpSound2 = true;
                         }
                         if (nextX >= super.getWidth()) {
                             nextX = super.getWidth() - nextY - 1;
                             nextY = super.getLength() - 1;
                             this.direction = 1;
-                            this.tempDir = 1;
+                            this.tempDirs.clear();
                             playWarpSound2 = true;
                         }
 
@@ -1347,17 +1372,17 @@ public final class Grid extends squares implements Updateable, Loggable {
                             nextY = nextX;
                             nextX = super.getWidth() - 1;
                             this.direction = 4;
-                            this.tempDir = 4;
+                            this.tempDirs.clear();
                             playWarpSound2 = true;
                         }
                         if (nextY >= super.getLength()) {
                             nextY = nextX;
                             nextX = 0;
                             this.direction = 2;
-                            this.tempDir = 2;
+                            this.tempDirs.clear();
                             playWarpSound2 = true;
                         }
-                        if (playWarpSound2 && soundOn) {
+                        if (playWarpSound2 && MENU.getSFX()) {
                             warp.play();
                             events += "!";
                         }
@@ -1377,7 +1402,7 @@ public final class Grid extends squares implements Updateable, Loggable {
                         nextY = 0;
                         playWarpSound = true;
                     }
-                    if (playWarpSound && soundOn) {
+                    if (playWarpSound && MENU.getSFX()) {
                         warp.play();
                     }
                 }
@@ -1426,7 +1451,7 @@ public final class Grid extends squares implements Updateable, Loggable {
                 } else {
                     this.setCell(headX, headY, 0);
                 }
-                if (soundOn) {
+                if (MENU.getSFX()) {
                     playBite();
                 }
             } else if (GS.isGame() && this.isPortal(nextX, nextY)) {
@@ -1447,7 +1472,7 @@ public final class Grid extends squares implements Updateable, Loggable {
                 } else if (this.isApple(nextX, nextY)) {
                     // ate an apple
                     this.applesEaten++;
-                    if (soundOn) {
+                    if (MENU.getSFX()) {
                         playBite();
                     }
                     grow();
@@ -1499,7 +1524,7 @@ public final class Grid extends squares implements Updateable, Loggable {
 
     /**
      *
-     * @return
+     * @return The savedPlayArea
      */
     public int[][] getSavedPlayArea() {
         return Grid.savedPlayArea;
@@ -1517,6 +1542,13 @@ public final class Grid extends squares implements Updateable, Loggable {
      */
     public void clear() {
         this.playArea = new int[super.getLength()][super.getWidth()];
+    }
+
+    /*
+     * Resets score counter to 0
+     */
+    public void resetApplesEaten() {
+        this.applesEaten = 0;
     }
 
     /**

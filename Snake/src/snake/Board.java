@@ -11,9 +11,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.ArcType;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import javax.swing.JFrame;
@@ -86,7 +84,9 @@ public class Board implements Loggable {
         new Button(toolButtonX, toolButtonY + toolButtonSize + toolButtonSpace, toolButtonSize, toolButtonSize),
         new Button(toolButtonX, toolButtonY + (toolButtonSize + toolButtonSpace) * 2, toolButtonSize, toolButtonSize),
         new Button(toolButtonX, toolButtonY + (toolButtonSize + toolButtonSpace) * 3, toolButtonSize, toolButtonSize),
-        new Button(toolButtonX, toolButtonY + (toolButtonSize + toolButtonSpace) * 4, toolButtonSize, toolButtonSize)};
+        new Button(toolButtonX, toolButtonY + (toolButtonSize + toolButtonSpace) * 4, toolButtonSize, toolButtonSize),
+        new Button(toolButtonX, toolButtonY + (toolButtonSize + toolButtonSpace) * 5, toolButtonSize, 0.5 * toolButtonSize)};
+    private String[] sandboxButtonsFSNames = {"BLANK", "HEAD", "APPLE", "ROCK", "PORTAL", "CLEAR"};
 
     private boolean nightTheme = false;
 
@@ -106,16 +106,16 @@ public class Board implements Loggable {
     private int appleTextX;
     private int appleTextY;
     private Font appleFont = new Font("Impact", 22);
-    private Font fullScreenAppleFont = Font.font("Terminal", FontWeight.BOLD, 50);
+    private Font fullScreenAppleFont = new Font("Courier", 50);
 
 //</editor-fold>
     /**
      *
-     * @param w the horizontal width
-     * @param h the vertical height
-     * @param mm the MenuManager object
-     * @param menu the Menu object
-     * @param gs the GameState object
+     * @param w       the horizontal width
+     * @param h       the vertical height
+     * @param mm      the MenuManager object
+     * @param menu    the Menu object
+     * @param gs      the GameState object
      * @param primary the stage object holding the various graphical components
      */
     public Board(int w, int h, MenuManager mm, MainMenu menu, GameState gs, Stage primary) {
@@ -198,7 +198,7 @@ public class Board implements Loggable {
     /**
      *
      * @param size the dimension defining the side length of the imaginary
-     * square around the menu screen
+     *             square around the menu screen
      * @return A Canvas object with graphics displaying the menu
      */
     public Canvas getFullScreenMenu(double size) {
@@ -389,40 +389,32 @@ public class Board implements Loggable {
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Music/SFX">
+        gc.setFont(new Font("Impact", 22));
         gc.setFill(MENU.getMusic() ? Color.web("40ac4a") : Color.web("7f7f7f"));
-        gc.fillRoundRect(16 / 430.0 * size, 26 / 430.0 * size, 20 / 430.0 * size, 13 / 430.0 * size, 3 / 430.0 * size, 3 / 430.0 * size);
-        double[] speakerX = {23 / 430.0 * size, 39 / 430.0 * size, 43 / 430.0 * size, 45 / 430.0 * size, 45 / 430.0 * size, 43 / 430.0 * size, 38 / 430.0 * size, 24 / 430.0 * size};
-        double[] speakerY = {27 / 430.0 * size, 18 / 430.0 * size, 18 / 430.0 * size, 20 / 430.0 * size, 45 / 430.0 * size, 47 / 430.0 * size, 47 / 430.0 * size, 39 / 430.0 * size};
-        gc.fillPolygon(speakerX, speakerY, 8);
-        double scalar = 0.4;
-        for (int i = 2; i >= 0; i--) {
-            gc.setFill(MENU.getMusic() ? Color.web("40ac4a") : Color.web("7f7f7f"));
+        gc.fillText("MUSIC", 16 / 430.0 * size, 26 / 430.0 * size);
+        if (fullscreen) {
+            musicButtonFS.setX(15 / 430.0 * size);
+            musicButtonFS.setY(25 / 430.0 * size);
+            musicButtonFS.setW(59 / 430.0 * size);
+            musicButtonFS.setH(24 / 430.0 * size);
 
-            // outer
-            double aW = 14 + scalar * i * 14;
-            double aX = 40 + scalar * i * aW;
-            double aY = 24 - scalar * i * aW / 2;
-            double aH = 16 + scalar * i * 16;
-            gc.fillArc(aX / 430.0 * size, aY / 430.0 * size, aW / 430.0 * size, aH / 430.0 * size, 60, -120, ArcType.CHORD);
-            gc.setFill(Color.RED);
-            gc.fillRect(aX / 430.0 * size, aY / 430.0 * size, 1, 1);
-            gc.fillRect((aX + aW) / 430.0 * size, aY / 430.0 * size, 1, 1);
-            gc.fillRect(aX / 430.0 * size, (aY + aH) / 430.0 * size, 1, 1);
-            gc.fillRect((aX + aW) / 430.0 * size, (aY + aH) / 430.0 * size, 1, 1);
+            SFXButtonFS.setX(85 / 430.0 * size);
+            SFXButtonFS.setY(25 / 430.0 * size);
+            SFXButtonFS.setW(40 / 430.0 * size);
+            SFXButtonFS.setH(24 / 430.0 * size);
+        } else {
+            musicButton.setX(11 / 430.0 * size);
+            musicButton.setY(8 / 430.0 * size);
+            musicButton.setW(59 / 430.0 * size);
+            musicButton.setH(24 / 430.0 * size);
 
-            // cover-up
-            double aW2 = 10.3 + scalar * i * 10.3;
-            double aX2 = 42 + scalar * i * aW2;
-            double aY2 = 26.5 - scalar * i * aW2 / 2;
-            double aH2 = 11 + scalar * i * 11;
-            gc.setFill(Color.web("dcf9ff"));
-            gc.fillArc(aX2 / 430.0 * size, aY2 / 430.0 * size, aW2 / 430.0 * size, aH2 / 430.0 * size, 60, -120, ArcType.CHORD);
-            gc.setFill(Color.BLUE);
-            gc.fillRect(aX2 / 430.0 * size, aY2 / 430.0 * size, 1, 1);
-            gc.fillRect((aX2 + aW2) / 430.0 * size, aY2 / 430.0 * size, 1, 1);
-            gc.fillRect(aX2 / 430.0 * size, (aY2 + aH2) / 430.0 * size, 1, 1);
-            gc.fillRect((aX2 + aW2) / 430.0 * size, (aY2 + aH2) / 430.0 * size, 1, 1);
+            SFXButton.setX(81 / 430.0 * size);
+            SFXButton.setY(8 / 430.0 * size);
+            SFXButton.setW(38 / 430.0 * size);
+            SFXButton.setH(22 / 430.0 * size);
         }
+        gc.setFill(MENU.getSFX() ? Color.web("40ac4a") : Color.web("7f7f7f"));
+        gc.fillText("SFX", 85 / 430.0 * size, 26 / 430.0 * size);
 //</editor-fold>
         return c;
     }
@@ -597,6 +589,7 @@ public class Board implements Loggable {
         grid = new Grid(GRIDSIZE, GRIDSIZE, 21, 20);
         grid.addGameState(GS);
         grid.addToolPanel(toolPanel);
+        grid.addMainMenu(MENU);
     }
 
     /**
@@ -716,13 +709,29 @@ public class Board implements Loggable {
         if (fullscreen && grid.getDiffLevel() == 0) {
             // we're gonna go ahead and assume a normal width > height monitor shape here
             // draw toolbox
-            String[] names = {"BLANK", "HEAD", "APPLE", "ROCK", "PORTAL"};
-            for (int i = 0; i < 5; i++) {
-                gc.setFill(Color.web(getColorScheme()[i]));
-                gc.fillRect(toolButtonX, toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i), toolButtonSize, toolButtonSize);
-                gc.setFill(invert(Color.web(getColorScheme()[getColorScheme().length - 1])));
-                gc.setFont(new Font("Tahoma", 10));
-                gc.fillText(names[i], toolButtonX + 20, toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i) + (toolButtonSize / 2));
+            Color bgColor = Color.web(getColorScheme()[getColorScheme().length - 1]);
+            for (int i = 0; i < sandboxButtonsFS.length; i++) {
+                if (i == 5) { // clear button
+                    if (GS.isGame()) {
+                        gc.setFill(dim(Color.web("d7d7c3"), 0.5));
+                        gc.fillRect(toolButtonX, toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i), toolButtonSize, toolButtonSize);
+                        gc.setFill(dim(invert(bgColor), 0.5));
+                        gc.setFont(new Font("Tahoma", 10));
+                        gc.fillText(sandboxButtonsFSNames[i], toolButtonX + 20, toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i) + (toolButtonSize / 2));
+                    } else {
+                        gc.setFill(Color.web("d7d7c3"));
+                        gc.fillRect(toolButtonX, toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i), toolButtonSize, toolButtonSize);
+                        gc.setFill(invert(bgColor));
+                        gc.setFont(new Font("Tahoma", 10));
+                        gc.fillText(sandboxButtonsFSNames[i], toolButtonX + 20, toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i) + (toolButtonSize / 2));
+                    }
+                } else {
+                    gc.setFill(Color.web(getColorScheme()[i]));
+                    gc.fillRect(toolButtonX, toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i), toolButtonSize, toolButtonSize);
+                    gc.setFill(invert(bgColor));
+                    gc.setFont(new Font("Tahoma", 10));
+                    gc.fillText(sandboxButtonsFSNames[i], toolButtonX + 20, toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i) + (toolButtonSize / 2));
+                }
             }
             gc.setFill(Color.BLUEVIOLET);
             gc.setLineWidth(1);
@@ -742,6 +751,10 @@ public class Board implements Loggable {
         }
     }
 
+    public Color dim(Color c, double opacity) {
+        return new Color(c.getRed(), c.getGreen(), c.getBlue(), opacity);
+    }
+
     /**
      * Resets game-by-game variables and prepares for next round - used for the
      * standard difficulty levels, 1-4
@@ -750,7 +763,6 @@ public class Board implements Loggable {
         keyPresses = 0;
         this.lost = false;
         GS.setToPreGame();
-        this.grid.setSoundOn(this.soundOn);
         //createGrid();
         grid.reset();
         grid.clear();
@@ -764,7 +776,8 @@ public class Board implements Loggable {
      * @return
      */
     public Color invert(Color c) {
-        return new Color(1 - c.getRed(), 1 - c.getGreen(), 1 - c.getBlue(), 1 - c.getOpacity());
+        //System.out.println("r:" + c.getRed() + ", b:" + c.getBlue() + ", g:" + c.getGreen() + ", o:" + c.getOpacity());
+        return new Color(1 - c.getRed(), 1 - c.getGreen(), 1 - c.getBlue(), c.getOpacity());
     }
 
     /**
@@ -785,7 +798,6 @@ public class Board implements Loggable {
         this.lost = false;
         MM.setCurrent(4);
         GS.setToPreGame();
-        this.grid.setSoundOn(this.soundOn);
     }
 
     /**
@@ -802,7 +814,6 @@ public class Board implements Loggable {
      */
     public void setSFX(boolean val) {
         this.soundOn = val;
-        this.grid.setSoundOn(val);
     }
 
     private boolean isDirectional(KeyEvent i) {
@@ -822,6 +833,9 @@ public class Board implements Loggable {
             events += "reset | ";
             reset();
             grid.setDiffLevel(grid.getDiffLevel());
+            if (grid.getDiffLevel() > 0) {
+                grid.resetApplesEaten();
+            }
             MM.setCurrent(4);
         }
         if (e.getCode() == KeyCode.N) {
@@ -1015,13 +1029,12 @@ public class Board implements Loggable {
         } else {
             MENU.turnOnSFX();
         }
-        this.grid.setSoundOn(MENU.getSFX());
     }
 
     /**
      *
      * @return the lowest int starting from ten that has no corresponding pair
-     * in the grid
+     *         in the grid
      */
     public int findUnusedPortalNum() {
         int num = 10;
@@ -1238,7 +1251,13 @@ public class Board implements Loggable {
                 int i = 0;
                 for (Button b : sandboxButtonsFS) {
                     if (b.inBounds(mX, mY)) {
-                        toolPanel.setCurrentTool(i);
+                        if (i == 5) { // clear button
+                            if (!GS.isGame()) {
+                                grid.clear();
+                            }
+                        } else {
+                            toolPanel.setCurrentTool(i);
+                        }
                     }
                     i++;
                 }
