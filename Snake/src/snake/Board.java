@@ -389,21 +389,21 @@ public class Board implements Loggable {
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Music/SFX">
-        gc.setFont(new Font("Impact", 22));
+        gc.setFont(new Font("Impact", 22 / 430.0 * size));
         gc.setFill(MENU.getMusic() ? Color.web("40ac4a") : Color.web("7f7f7f"));
         gc.fillText("MUSIC", 16 / 430.0 * size, 26 / 430.0 * size);
         if (fullscreen) {
-            musicButtonFS.setX(15 / 430.0 * size);
-            musicButtonFS.setY(25 / 430.0 * size);
+            musicButtonFS.setX(16 / 430.0 * size);
+            musicButtonFS.setY(3 / 430.0 * size);
             musicButtonFS.setW(59 / 430.0 * size);
             musicButtonFS.setH(24 / 430.0 * size);
 
-            SFXButtonFS.setX(85 / 430.0 * size);
-            SFXButtonFS.setY(25 / 430.0 * size);
-            SFXButtonFS.setW(40 / 430.0 * size);
-            SFXButtonFS.setH(24 / 430.0 * size);
+            SFXButtonFS.setX(81 / 430.0 * size);
+            SFXButtonFS.setY(3 / 430.0 * size);
+            SFXButtonFS.setW(38 / 430.0 * size);
+            SFXButtonFS.setH(22 / 430.0 * size);
         } else {
-            musicButton.setX(11 / 430.0 * size);
+            musicButton.setX(16 / 430.0 * size);
             musicButton.setY(8 / 430.0 * size);
             musicButton.setW(59 / 430.0 * size);
             musicButton.setH(24 / 430.0 * size);
