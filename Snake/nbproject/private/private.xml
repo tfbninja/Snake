@@ -2,6 +2,19 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="10">
         <file>
+            <url>src/snake/Grid.java</url>
+            <bookmark id="2">
+                <name/>
+                <line>473</line>
+                <key/>
+            </bookmark>
+            <bookmark id="3">
+                <name/>
+                <line>631</line>
+                <key/>
+            </bookmark>
+        </file>
+        <file>
             <url>src/snake/Board.java</url>
             <bookmark id="9">
                 <name/>
@@ -26,19 +39,6 @@
             <bookmark id="10">
                 <name/>
                 <line>490</line>
-                <key/>
-            </bookmark>
-        </file>
-        <file>
-            <url>src/snake/Grid.java</url>
-            <bookmark id="2">
-                <name/>
-                <line>473</line>
-                <key/>
-            </bookmark>
-            <bookmark id="3">
-                <name/>
-                <line>631</line>
                 <key/>
             </bookmark>
         </file>
