@@ -16,9 +16,9 @@ public class Enigma {
 
     /*
      * So the old method doesn't work, new method:
-     * Unicode(num + 63)
+     * Unicode(num % 40 + 63)
      * num * 2 + 3
-     * Unicode(num + 67)
+     * Unicode(num % 40 + 67)
      */
     /**
      *
@@ -26,9 +26,9 @@ public class Enigma {
      * @return the encoded version of num
      */
     public static String encode(int num) {
-        String first = String.valueOf((char) (num + 63));
+        String first = String.valueOf((char) (num % 40 + 63));
         String mid = String.valueOf(num * 2 + 3);
-        String last = String.valueOf((char) (num + 67));
+        String last = String.valueOf((char) (num % 40 + 67));
         return first + "" + mid + "" + last;
     }
 
@@ -45,8 +45,8 @@ public class Enigma {
         char last = encoded.charAt(encoded.length() - 1);
         mid -= 3;
         mid /= 2; // now we have the real value
-        boolean firstCharCheck = Integer.valueOf(first) - 63 == mid;
-        boolean lastCharCheck = Integer.valueOf(last) - 67 == mid;
+        boolean firstCharCheck = Integer.valueOf(first) - 63 == mid % 40;
+        boolean lastCharCheck = Integer.valueOf(last) - 67 == mid % 40;
         if (!(longShotLengthCheck && firstCharCheck && lastCharCheck)) {
             throw new InvalidObjectException("first char: " + firstCharCheck + " last char: " + lastCharCheck + " length check: " + longShotLengthCheck);
         }
