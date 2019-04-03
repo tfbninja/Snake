@@ -205,10 +205,12 @@ public class ToolPanel extends javax.swing.JPanel implements Updateable {
         jList1.setModel(new javax.swing.AbstractListModel() {
             String[] strings = {"Item 1", "Item 2", "Item 3", "Item 4", "Item 5"};
 
+            @Override
             public int getSize() {
                 return strings.length;
             }
 
+            @Override
             public Object getElementAt(int i) {
                 return strings[i];
             }
@@ -234,11 +236,7 @@ public class ToolPanel extends javax.swing.JPanel implements Updateable {
         blankButton.setMaximumSize(new java.awt.Dimension(100, 50));
         blankButton.setMinimumSize(new java.awt.Dimension(100, 50));
         blankButton.setPreferredSize(new java.awt.Dimension(100, 50));
-        blankButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                blankButtonActionPerformed(evt);
-            }
-        });
+        blankButton.addActionListener(this::blankButtonActionPerformed);
 
         headButton.setText("Head");
         headButton.setActionCommand("");
@@ -246,11 +244,7 @@ public class ToolPanel extends javax.swing.JPanel implements Updateable {
         headButton.setMaximumSize(new java.awt.Dimension(100, 50));
         headButton.setMinimumSize(new java.awt.Dimension(100, 50));
         headButton.setPreferredSize(new java.awt.Dimension(100, 50));
-        headButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                headButtonActionPerformed(evt);
-            }
-        });
+        headButton.addActionListener(this::headButtonActionPerformed);
 
         appleButton.setText("Apple");
         appleButton.setActionCommand("");
@@ -258,11 +252,7 @@ public class ToolPanel extends javax.swing.JPanel implements Updateable {
         appleButton.setMaximumSize(new java.awt.Dimension(100, 50));
         appleButton.setMinimumSize(new java.awt.Dimension(100, 50));
         appleButton.setPreferredSize(new java.awt.Dimension(100, 50));
-        appleButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                appleButtonActionPerformed(evt);
-            }
-        });
+        appleButton.addActionListener(this::appleButtonActionPerformed);
 
         rockButton.setText("Rock");
         rockButton.setActionCommand("");
@@ -270,11 +260,7 @@ public class ToolPanel extends javax.swing.JPanel implements Updateable {
         rockButton.setMaximumSize(new java.awt.Dimension(100, 50));
         rockButton.setMinimumSize(new java.awt.Dimension(100, 50));
         rockButton.setPreferredSize(new java.awt.Dimension(100, 50));
-        rockButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rockButtonActionPerformed(evt);
-            }
-        });
+        rockButton.addActionListener(this::rockButtonActionPerformed);
 
         portalButton.setText("Portal");
         portalButton.setActionCommand("");
@@ -282,50 +268,26 @@ public class ToolPanel extends javax.swing.JPanel implements Updateable {
         portalButton.setMaximumSize(new java.awt.Dimension(100, 50));
         portalButton.setMinimumSize(new java.awt.Dimension(100, 50));
         portalButton.setPreferredSize(new java.awt.Dimension(100, 50));
-        portalButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                portalButtonActionPerformed(evt);
-            }
-        });
+        portalButton.addActionListener(this::portalButtonActionPerformed);
 
         saveButton.setText("SAVE");
         saveButton.setToolTipText("Save the current sandbox file");
-        saveButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveButtonActionPerformed(evt);
-            }
-        });
+        saveButton.addActionListener(this::saveButtonActionPerformed);
 
         loadButton.setText("LOAD");
         loadButton.setToolTipText("Load a new sandbox file");
-        loadButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loadButtonActionPerformed(evt);
-            }
-        });
+        loadButton.addActionListener(this::loadButtonActionPerformed);
 
         clearButton.setText("CLEAR");
         clearButton.setToolTipText("Clear the grid");
-        clearButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                clearButtonActionPerformed(evt);
-            }
-        });
+        clearButton.addActionListener(this::clearButtonActionPerformed);
 
         keepSeedBox.setText("Keep seed");
         keepSeedBox.setSelected(grid.getUseSameSeed());
-        keepSeedBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                keepSeedBoxActionPerformed(evt);
-            }
-        });
+        keepSeedBox.addActionListener(this::keepSeedBoxActionPerformed);
 
         sizeIncrementSpinner.setModel(new javax.swing.SpinnerNumberModel(1, null, null, 1));
-        sizeIncrementSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                sizeIncrementSpinnerStateChanged(evt);
-            }
-        });
+        sizeIncrementSpinner.addChangeListener(this::sizeIncrementSpinnerStateChanged);
 
         sizeLabel.setText("Size increment");
 
@@ -333,18 +295,10 @@ public class ToolPanel extends javax.swing.JPanel implements Updateable {
 
         warpModeBox.setText("Extreme warp");
         warpModeBox.setSelected(grid.getExtremeWarp());
-        warpModeBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                warpModeBoxActionPerformed(evt);
-            }
-        });
+        warpModeBox.addActionListener(this::warpModeBoxActionPerformed);
 
         initLengthSpinner.setModel(new javax.swing.SpinnerNumberModel(5, 1, null, 1));
-        initLengthSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                initLengthSpinnerStateChanged(evt);
-            }
-        });
+        initLengthSpinner.addChangeListener(this::initLengthSpinnerStateChanged);
 
         frameDelayLabel.setText("Frame delay");
 
@@ -357,11 +311,7 @@ public class ToolPanel extends javax.swing.JPanel implements Updateable {
 
         currentBox.setEnabled(false);
         currentBox.setMinimumSize(new java.awt.Dimension(55, 55));
-        currentBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                currentBoxActionPerformed(evt);
-            }
-        });
+        currentBox.addActionListener(this::currentBoxActionPerformed);
 
         currentLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         currentLabel.setText("Current");
@@ -372,19 +322,11 @@ public class ToolPanel extends javax.swing.JPanel implements Updateable {
 
         seedSpinner.setModel(new javax.swing.SpinnerNumberModel(0L, null, null, 1000L));
         seedSpinner.setValue((long) grid.getSeed());
-        seedSpinner.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                seedSpinnerPropertyChange(evt);
-            }
-        });
+        seedSpinner.addPropertyChangeListener(this::seedSpinnerPropertyChange);
 
         edgeKillsBox.setText("Edge kills");
         edgeKillsBox.setSelected(grid.getEdgeKills());
-        edgeKillsBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                edgeKillsBoxActionPerformed(evt);
-            }
-        });
+        edgeKillsBox.addActionListener(this::edgeKillsBoxActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);

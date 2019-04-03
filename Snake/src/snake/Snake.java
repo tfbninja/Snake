@@ -1,5 +1,6 @@
 package snake;
 
+import java.awt.AWTException;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Robot;
@@ -528,7 +529,7 @@ public class Snake extends Application implements Loggable {
                             bot.mouseMove(window.getX() + tempWindow.getFieldX() + 5, window.getY() + tempWindow.getFieldY() + 5);
                             bot.mousePress(mask);
                             bot.mouseRelease(mask);
-                        } catch (Exception e) {
+                        } catch (AWTException e) {
 
                         }
 
@@ -904,8 +905,7 @@ public class Snake extends Application implements Loggable {
                 s.useDelimiter("");
                 String negative = s.next();
                 s.useDelimiter(" ");
-                //System.out.println("first char: \"" + negative + "\"");
-                long seed = 0;
+                long seed;
                 if (s.hasNextLong()) {
                     seed = s.nextLong();
                 } else {

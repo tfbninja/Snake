@@ -79,9 +79,9 @@ public class MenuManager extends Controller {
      * Sets all menus to off
      */
     @Override
-    public void turnOff() {
+    public final void turnOff() {
         this.currentlyDisplaying.clear();
-        for (int i = 0; i < menuNames.size(); i++) {
+        for (String menuName : menuNames) {
             this.currentlyDisplaying.add(false);
         }
     }
