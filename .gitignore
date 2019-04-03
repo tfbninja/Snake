@@ -2,3 +2,5 @@
 Snake/nbproject/UPDATED.TXT
 *.properties
 *.local
+/Snake/build/
+/Snake/dist/
