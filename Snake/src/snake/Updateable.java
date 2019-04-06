@@ -12,7 +12,6 @@ public interface Updateable {
     void update();
 }
 
-
 /*
  * The MIT License
  *

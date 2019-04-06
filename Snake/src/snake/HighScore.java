@@ -1,33 +1,10 @@
-/*
- * The MIT License
- *
- * Copyright (c) 2019 Tim Barber.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
 package snake;
 
 import java.awt.event.KeyEvent;
 
 /**
  *
- * @author tfbni
+ * @author Tim Barber
  */
 public class HighScore extends javax.swing.JPanel {
 
@@ -188,6 +165,7 @@ public class HighScore extends javax.swing.JPanel {
     public int getFieldY() {
         return nameField.getY();
     }
+
     private void nameFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nameFieldKeyReleased
         // make the text upper case and trim it down to 3 characters
         nameField.setText(nameField.getText().toUpperCase().substring(0, (nameField.getText().length() < 3 ? nameField.getText().length() : 3)));
@@ -214,7 +192,7 @@ public class HighScore extends javax.swing.JPanel {
     }//GEN-LAST:event_nameFieldMouseClicked
 
     /*
-     * Requests focus
+     * Requests focus on the field
      */
     public void setFocusOnField() {
         nameField.requestFocus();

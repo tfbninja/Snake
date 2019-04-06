@@ -53,7 +53,7 @@ public class Snake extends Application implements Loggable {
 
     private int frame = 0;
 
-    private final boolean AI = false;
+    private static boolean AI = false;
 
     private static Board board;
 
@@ -253,6 +253,7 @@ public class Snake extends Application implements Loggable {
 //</editor-fold>
         events += "Initialized. | ";
         log.logState();
+
         // Main game loop - this is called every 1/30th of a second or so
         new AnimationTimer() {
             @Override
@@ -410,6 +411,13 @@ public class Snake extends Application implements Loggable {
         launch(args);
     }
 
+    /**
+     * Sets what the user views
+     *
+     * @param primaryStage
+     * @param root
+     * @param HELP_IV
+     */
     public void updateScreen(Stage primaryStage, BorderPane root, ImageView HELP_IV) {
         /*
          * This switch statement is the main controller of what is
@@ -650,13 +658,13 @@ public class Snake extends Application implements Loggable {
                     }
                 }
                 if (!GS.isPostGame()) {
-                    if (AI) {
-                        AI();
-                    }
                     board.drawBlocks();
                     scoresOverwritten = false;
                     if (frame % board.getGrid().getFrameSpeed() == 0) {
                         for (int i = 0; i < board.getGrid().getGensPerFrame(); i++) {
+                            if (AI) {
+                                AI();
+                            }
                             board.getGrid().update();
                         }
                     }
@@ -676,6 +684,10 @@ public class Snake extends Application implements Loggable {
                 }
                 break;
         }
+    }
+
+    public static void toggleAI() {
+        AI = !AI;
     }
 
     /**
@@ -1263,24 +1275,27 @@ public class Snake extends Application implements Loggable {
         if (GS.isGame()) {
             Grid grid = board.getGrid();
             int direction = board.getGrid().getDirection();
-            int randomizer = 0;
+            double randomizer = Math.random();
             int x = board.getGrid().getHeadX(), y = board.getGrid().getHeadY();
             int left = board.getGrid().getLeft(), right = board.getGrid().getRight(), front = board.getGrid().getFront();
             System.out.println("Left: " + left + ", right: " + right + ", front: " + front + ", dir: " + direction);
-            if ((grid.willKill(left)) && !grid.willKill(front) && y != 0) {
-                return;
-            } else if (grid.willKill(left) && grid.willKill(front)) {
-                System.out.println("turning right");
+            boolean killLeft = grid.willKill(left), killFront = grid.willKill(front), killRight = grid.willKill(right);
+            if (killLeft && killFront && killRight) {
+                // screwed
+            } else if (killLeft && killFront && !killRight) {
                 grid.turnRight();
-                return;
-            } else if (grid.willKill(front) && grid.willKill(right)) {
-                System.out.println("turning left");
+            } else if (killLeft && !killFront && killRight) {
+                // continue on
+            } else if (!killLeft && killFront && killRight) {
                 grid.turnLeft();
-                return;
-            } else if (!grid.willKill(left)) {
-                return;
+            } else if (!killLeft && killFront && !killRight) {
+                // need to turn
+                if (randomizer > 0.5) {
+                    grid.turnRight();
+                } else {
+                    grid.turnLeft();
+                }
             }
-            grid.turnRight();
         } else {
             // game is not in session
         }

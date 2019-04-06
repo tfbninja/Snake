@@ -966,14 +966,44 @@ public final class Grid extends squares implements Updateable, Loggable {
      * Literally turns right
      */
     public void turnRight() {
-        attemptSetDirection((direction + 1) % 4);
+        switch (direction) {
+            case 4:
+                attemptSetDirection(1);
+                break;
+            case 3:
+                attemptSetDirection(4);
+                break;
+            case 2:
+                attemptSetDirection(3);
+                break;
+            case 1:
+                attemptSetDirection(2);
+                break;
+            default:
+                break;
+        }
     }
 
     /**
      * Literally turns left
      */
     public void turnLeft() {
-        attemptSetDirection((direction - 1) % 4);
+        switch (direction) {
+            case 4:
+                attemptSetDirection(3);
+                break;
+            case 3:
+                attemptSetDirection(2);
+                break;
+            case 2:
+                attemptSetDirection(1);
+                break;
+            case 1:
+                attemptSetDirection(4);
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -1195,7 +1225,7 @@ public final class Grid extends squares implements Updateable, Loggable {
      * @return
      */
     public boolean willKill(int type) {
-        return type != 0 && type != 3;
+        return !(type == 0 || type == 3);
     }
 
     /**
@@ -1646,11 +1676,32 @@ public final class Grid extends squares implements Updateable, Loggable {
      * @return
      */
     public int safeCheck(int xPos, int yPos) {
-        if (xPos > super.getWidth()) {
+        if (extremeWarp) {
+            if (xPos < 0) {
+                xPos = super.getWidth() - yPos - 1;
+                yPos = 0;
+            }
+            if (xPos >= super.getWidth()) {
+                xPos = super.getWidth() - yPos - 1;
+                yPos = super.getLength() - 1;
+            }
+            if (yPos < 0) {
+                yPos = xPos;
+                xPos = super.getWidth() - 1;
+            }
+            if (yPos >= super.getLength()) {
+                yPos = xPos;
+                xPos = 0;
+            }
+        } else {
             xPos = xPos % super.getWidth();
-        }
-        if (yPos > super.getLength()) {
             yPos = yPos % super.getLength();
+            if (xPos < 0) {
+                xPos += super.getWidth();
+            }
+            if (yPos < 0) {
+                yPos += super.getLength();
+            }
         }
         try {
             return this.playArea[yPos][xPos];

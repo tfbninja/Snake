@@ -1,6 +1,5 @@
 package snake;
 
-//<editor-fold defaultstate="collapsed" desc="imports">
 /**
  *
  * @author Tim Barber
@@ -27,7 +26,7 @@ public class Button {
      * @param x top left x coordinate
      * @param y top left y coordinate
      * @param w width
-     * @param height
+     * @param h height
      */
     public Button(double x, double y, double w, double h) {
         this.x = x;
@@ -46,7 +45,7 @@ public class Button {
 
     /**
      *
-     * @param height
+     * @param h
      */
     public void setH(double h) {
         this.h = h;

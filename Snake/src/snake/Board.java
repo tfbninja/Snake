@@ -1,6 +1,5 @@
 package snake;
 
-//<editor-fold defaultstate="collapsed" desc="imports">
 import java.awt.Toolkit;
 import java.awt.datatransfer.*;
 import java.util.ArrayList;
@@ -847,6 +846,10 @@ public class Board implements Loggable {
             MM.setCurrent(0);
             reset();
             toolFrame.setVisible(false);
+        }
+
+        if (e.getCode() == KeyCode.Q && e.isShiftDown()) {
+            Snake.toggleAI();
         }
 
         if (e.getCode() == KeyCode.EQUALS && e.isShiftDown()) {

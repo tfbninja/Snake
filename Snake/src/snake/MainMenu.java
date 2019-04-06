@@ -4,7 +4,7 @@ import javafx.scene.image.ImageView;
 import static snake.Snake.getImageView;
 
 /**
- * This class controls background music and sfx, and correspondingly which
+ * This class controls background music and SFX, and correspondingly which
  * version of the main menu to show
  *
  * @author Tim Barber
