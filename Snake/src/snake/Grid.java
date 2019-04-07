@@ -31,6 +31,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     private boolean applesFrozen = false;
     private int startx;
     private int starty;
+    private int[][] marked;
 
     private boolean edgeKills = false;
 
@@ -1712,11 +1713,156 @@ public final class Grid extends squares implements Updateable, Loggable {
 
     /**
      *
+     * @param xPos
+     * @param yPos
+     * @return
+     */
+    public int safeCheck(int[][] list, int xPos, int yPos) {
+        if (extremeWarp) {
+            if (xPos < 0) {
+                xPos = super.getWidth() - yPos - 1;
+                yPos = 0;
+            }
+            if (xPos >= super.getWidth()) {
+                xPos = super.getWidth() - yPos - 1;
+                yPos = super.getLength() - 1;
+            }
+            if (yPos < 0) {
+                yPos = xPos;
+                xPos = super.getWidth() - 1;
+            }
+            if (yPos >= super.getLength()) {
+                yPos = xPos;
+                xPos = 0;
+            }
+        } else {
+            xPos = xPos % super.getWidth();
+            yPos = yPos % super.getLength();
+            if (xPos < 0) {
+                xPos += super.getWidth();
+            }
+            if (yPos < 0) {
+                yPos += super.getLength();
+            }
+        }
+        try {
+            return list[yPos][xPos];
+        } catch (ArrayIndexOutOfBoundsException b) {
+            return -1;
+        }
+    }
+
+    /**
+     *
+     * @param xPos
+     * @param yPos
+     * @return
+     */
+    public void safeSet(int[][] list, int xPos, int yPos, int value) {
+        if (extremeWarp) {
+            if (xPos < 0) {
+                xPos = super.getWidth() - yPos - 1;
+                yPos = 0;
+            }
+            if (xPos >= super.getWidth()) {
+                xPos = super.getWidth() - yPos - 1;
+                yPos = super.getLength() - 1;
+            }
+            if (yPos < 0) {
+                yPos = xPos;
+                xPos = super.getWidth() - 1;
+            }
+            if (yPos >= super.getLength()) {
+                yPos = xPos;
+                xPos = 0;
+            }
+        } else {
+            xPos = xPos % super.getWidth();
+            yPos = yPos % super.getLength();
+            if (xPos < 0) {
+                xPos += super.getWidth();
+            }
+            if (yPos < 0) {
+                yPos += super.getLength();
+            }
+        }
+        try {
+            list[yPos][xPos] = value;
+        } catch (ArrayIndexOutOfBoundsException b) {
+            System.out.println("error " + b.getLocalizedMessage());
+        }
+    }
+
+    /**
+     *
      * @param square
      * @return
      */
     public int safeCheck(Pair<Integer, Integer> square) {
         return safeCheck(square.getKey(), square.getValue());
+    }
+
+    public int getArea(int xPos, int yPos) {
+        marked = new int[super.getLength()][super.getWidth()];
+        return getAreaHelper(xPos, yPos);
+    }
+
+    private int getAreaHelper(int xPos, int yPos) {
+        if (!willKill(safeCheck(xPos, yPos)) && safeCheck(marked, xPos, yPos) != 1) {
+            safeSet(marked, xPos, yPos, 1);
+            return 1 + getAreaHelper(xPos - 1, yPos) + getAreaHelper(xPos, yPos - 1) + getAreaHelper(xPos + 1, yPos) + getAreaHelper(xPos, yPos + 1);
+        } else {
+            safeSet(marked, xPos, yPos, 1);
+            return 0;
+        }
+    }
+
+    public int getLeftArea() {
+        int x = getHeadX(), y = getHeadY();
+        switch (direction) {
+            case 1:
+                return getArea(x - 1, y);
+            case 2:
+                return getArea(x, y - 1);
+            case 3:
+                return getArea(x + 1, y);
+            case 4:
+                return getArea(x, y + 1);
+            default:
+                return 0;
+        }
+    }
+
+    public int getRightArea() {
+        int x = getHeadX(), y = getHeadY();
+        switch (direction) {
+            case 1:
+                return getArea(x + 1, y);
+            case 2:
+                return getArea(x, y + 1);
+            case 3:
+                return getArea(x - 1, y);
+            case 4:
+                return getArea(x, y - 1);
+            default:
+                return 0;
+        }
+    }
+
+    public int getFrontArea() {
+        int x = getHeadX(), y = getHeadY();
+        switch (direction) {
+            case 1:
+                return getArea(x, y - 1);
+            case 2:
+                return getArea(x + 1, y);
+            case 3:
+                return getArea(x, y + 1);
+            case 4:
+                return getArea(x - 1, y);
+            default:
+                return 0;
+        }
     }
 
     /**

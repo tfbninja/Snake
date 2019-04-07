@@ -117,7 +117,9 @@ public class HighScore extends javax.swing.JPanel {
     }//GEN-LAST:event_nameFieldActionPerformed
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        Snake.setUserName(nameField.getText());
+        if (nameField.getText().length() > 0) {
+            Snake.setUserName(nameField.getText());
+        }
     }//GEN-LAST:event_okButtonActionPerformed
 
     /**

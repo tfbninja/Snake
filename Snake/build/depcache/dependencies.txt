@@ -381,10 +381,11 @@ java.lang.String
 javafx.scene.image.Image
 java.awt.Color
 java.lang.Long
+java.lang.IndexOutOfBoundsException
 javafx.geometry.Insets
 javafx.application.Application
-java.lang.InterruptedException
 java.util.Iterator
+java.lang.InterruptedException
 java.nio.file.CopyOption
 java.awt.AWTException
 java.io.PrintStream
