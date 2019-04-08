@@ -16,6 +16,7 @@ javafx.scene.canvas.GraphicsContext
 snake.ToolPanel
 javafx.scene.paint.Color
 javafx.scene.text.Font
+[I
 snake.Button
 javafx.stage.Stage
 [D
@@ -36,8 +37,8 @@ java.io.PrintStream
 javafx.scene.paint.Paint
 snake.GameState
 snake.Loggable
-javafx.scene.input.KeyEvent
 snake.Board$1
+javafx.scene.input.KeyEvent
 snake.Snake
 [[I
 ||:snake.Locatable

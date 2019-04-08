@@ -57,10 +57,10 @@ public class Board implements Loggable {
     //menu variables
     private boolean soundOn = true;
 
-    private int toolButtonX = 10;
-    private int toolButtonY = 50;
-    private int toolButtonSpace = 20;
-    private int toolButtonSize = 50;
+    private int toolButtonX = 5;
+    private int toolButtonY = 30;
+    private int toolButtonSpace = 10;
+    private int toolButtonSize = 30;
 
     // in order, xPos, yPos, Width, Height
     private final Button easyButton = new Button(12, 292, 194, 51);
@@ -84,7 +84,7 @@ public class Board implements Loggable {
         new Button(toolButtonX, toolButtonY + (toolButtonSize + toolButtonSpace) * 2, toolButtonSize, toolButtonSize),
         new Button(toolButtonX, toolButtonY + (toolButtonSize + toolButtonSpace) * 3, toolButtonSize, toolButtonSize),
         new Button(toolButtonX, toolButtonY + (toolButtonSize + toolButtonSpace) * 4, toolButtonSize, toolButtonSize),
-        new Button(toolButtonX, toolButtonY + (toolButtonSize + toolButtonSpace) * 5, toolButtonSize, 0.5 * toolButtonSize)};
+        new Button(toolButtonX, toolButtonY + (toolButtonSize + toolButtonSpace) * 5, toolButtonSize, toolButtonSize)};
     private String[] sandboxButtonsFSNames = {"BLANK", "HEAD", "APPLE", "ROCK", "PORTAL", "CLEAR"};
 
     private boolean nightTheme = false;
@@ -128,15 +128,6 @@ public class Board implements Loggable {
         grid.clearApples();
         primaryStage = primary;
         turnOffFullscreen(w, h);
-
-        double scalar = Math.min(w, h);
-        easyButtonFS = new Button(12 / 430.0 * scalar, 292 / 430.0 * scalar, 194 / 430.0 * scalar, 51 / 430.0 * scalar);
-        medButtonFS = new Button(219 / 430.0 * scalar, 292 / 430.0 * scalar, 194 / 430.0 * scalar, 51 / 430.0 * scalar);
-        hardButtonFS = new Button(12 / 430.0 * scalar, 353 / 430.0 * scalar, 194 / 430.0 * scalar, 51 / 430.0 * scalar);
-        impButtonFS = new Button(219 / 430.0 * scalar, 353 / 430.0 * scalar, 194 / 430.0 * scalar, 51 / 430.0 * scalar);
-        musicButtonFS = new Button(12 / 430.0 * scalar, 18 / 430.0 * scalar, 55 / 430.0 * scalar, 37 / 430.0 * scalar);
-        SFXButtonFS = new Button(83 / 430.0 * scalar, 18 / 430.0 * scalar, 28 / 430.0 * scalar, 37 / 430.0 * scalar);
-        helpButtonFS = new Button(13 / 430.0 * scalar, 255 / 430.0 * scalar, 47 / 430.0 * scalar, 22 / 430.0 * scalar);
 
         events += "Initialized | ";
     }
@@ -543,6 +534,18 @@ public class Board implements Loggable {
             appleTextX = width - (XMARGIN / 2) - 50;
             appleTextY = (int) (screenHeight - YMARGIN / 2) - 20;
         }
+        double scalar = Math.min(screenWidth, screenHeight);
+        easyButtonFS = new Button(12 / 430.0 * scalar, 292 / 430.0 * scalar, 194 / 430.0 * scalar, 51 / 430.0 * scalar);
+        medButtonFS = new Button(219 / 430.0 * scalar, 292 / 430.0 * scalar, 194 / 430.0 * scalar, 51 / 430.0 * scalar);
+        hardButtonFS = new Button(12 / 430.0 * scalar, 353 / 430.0 * scalar, 194 / 430.0 * scalar, 51 / 430.0 * scalar);
+        impButtonFS = new Button(219 / 430.0 * scalar, 353 / 430.0 * scalar, 194 / 430.0 * scalar, 51 / 430.0 * scalar);
+        musicButtonFS = new Button(12 / 430.0 * scalar, 18 / 430.0 * scalar, 55 / 430.0 * scalar, 37 / 430.0 * scalar);
+        SFXButtonFS = new Button(83 / 430.0 * scalar, 18 / 430.0 * scalar, 28 / 430.0 * scalar, 37 / 430.0 * scalar);
+        helpButtonFS = new Button(13 / 430.0 * scalar, 255 / 430.0 * scalar, 47 / 430.0 * scalar, 22 / 430.0 * scalar);
+
+        for (Button b : sandboxButtonsFS) {
+            b.setScale(scalar / 430.0);
+        }
         drawBlocks();
     }
 
@@ -569,6 +572,17 @@ public class Board implements Loggable {
         edgeSize = 2;
         appleTextX = XMARGIN + width / 2 - 20;
         appleTextY = h - 5;
+        double scalar = Math.min(w, h);
+        easyButtonFS = new Button(12 / 430.0 * scalar, 292 / 430.0 * scalar, 194 / 430.0 * scalar, 51 / 430.0 * scalar);
+        medButtonFS = new Button(219 / 430.0 * scalar, 292 / 430.0 * scalar, 194 / 430.0 * scalar, 51 / 430.0 * scalar);
+        hardButtonFS = new Button(12 / 430.0 * scalar, 353 / 430.0 * scalar, 194 / 430.0 * scalar, 51 / 430.0 * scalar);
+        impButtonFS = new Button(219 / 430.0 * scalar, 353 / 430.0 * scalar, 194 / 430.0 * scalar, 51 / 430.0 * scalar);
+        musicButtonFS = new Button(12 / 430.0 * scalar, 18 / 430.0 * scalar, 55 / 430.0 * scalar, 37 / 430.0 * scalar);
+        SFXButtonFS = new Button(83 / 430.0 * scalar, 18 / 430.0 * scalar, 28 / 430.0 * scalar, 37 / 430.0 * scalar);
+        helpButtonFS = new Button(13 / 430.0 * scalar, 255 / 430.0 * scalar, 47 / 430.0 * scalar, 22 / 430.0 * scalar);
+        for (Button b : sandboxButtonsFS) {
+            b.setScale(1);
+        }
         drawBlocks();
     }
 
@@ -709,32 +723,34 @@ public class Board implements Loggable {
             // we're gonna go ahead and assume a normal width > height monitor shape here
             // draw toolbox
             Color bgColor = Color.web(getColorScheme()[getColorScheme().length - 1]);
+            int[] xAdd = {5, 7, 6, 6, 3};
+            double scl = Math.min(screenW, screenH);
             for (int i = 0; i < sandboxButtonsFS.length; i++) {
                 if (i == 5) { // clear button
                     if (GS.isGame()) {
                         gc.setFill(dim(Color.web("d7d7c3"), 0.5));
-                        gc.fillRect(toolButtonX, toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i), toolButtonSize, toolButtonSize);
+                        gc.fillRect(toolButtonX / 430.0 * scl, (toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i)) / 430.0 * scl, toolButtonSize / 430.0 * scl, toolButtonSize / 430.0 * scl);
                         gc.setFill(dim(invert(bgColor), 0.5));
-                        gc.setFont(new Font("Tahoma", 10));
-                        gc.fillText(sandboxButtonsFSNames[i], toolButtonX + 20, toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i) + (toolButtonSize / 2));
+                        gc.setFont(new Font("Tahoma", 7 / 430.0 * scl));
+                        gc.fillText("RESET", (toolButtonX + 5) / 430.0 * scl, (toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i) + (toolButtonSize / 2) + 2) / 430.0 * scl);
                     } else {
                         gc.setFill(Color.web("d7d7c3"));
-                        gc.fillRect(toolButtonX, toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i), toolButtonSize, toolButtonSize);
+                        gc.fillRect(toolButtonX / 430.0 * scl, (toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i)) / 430.0 * scl, toolButtonSize / 430.0 * scl, toolButtonSize / 430.0 * scl);
                         gc.setFill(invert(bgColor));
-                        gc.setFont(new Font("Tahoma", 10));
-                        gc.fillText(sandboxButtonsFSNames[i], toolButtonX + 20, toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i) + (toolButtonSize / 2));
+                        gc.setFont(new Font("Tahoma", 7 / 430.0 * scl));
+                        gc.fillText("CLEAR", (toolButtonX + 5) / 430.0 * scl, (toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i) + (toolButtonSize / 2) + 2) / 430.0 * scl);
                     }
                 } else {
                     gc.setFill(Color.web(getColorScheme()[i]));
-                    gc.fillRect(toolButtonX, toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i), toolButtonSize, toolButtonSize);
+                    gc.fillRect(toolButtonX / 430.0 * scl, (toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i)) / 430.0 * scl, toolButtonSize / 430.0 * scl, toolButtonSize / 430.0 * scl);
                     gc.setFill(invert(bgColor));
-                    gc.setFont(new Font("Tahoma", 10));
-                    gc.fillText(sandboxButtonsFSNames[i], toolButtonX + 20, toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i) + (toolButtonSize / 2));
+                    gc.setFont(new Font("Tahoma", 7 / 430.0 * scl));
+                    gc.fillText(sandboxButtonsFSNames[i], (toolButtonX + xAdd[i]) / 430.0 * scl, (toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i) + (toolButtonSize / 2) + 2) / 430.0 * scl);
                 }
             }
             gc.setFill(Color.BLUEVIOLET);
-            gc.setLineWidth(1);
-            gc.strokeRect(toolButtonX - 1, toolButtonY + (toolButtonSpace * fullScreenToolNumber(toolPanel.getCurrentTool()) + (toolButtonSize * fullScreenToolNumber(toolPanel.getCurrentTool()))) - 1, toolButtonSize + 2, toolButtonSize + 2);
+            gc.setLineWidth(1 / 430.0 * scl);
+            gc.strokeRect((toolButtonX - 1) / 430.0 * scl, (toolButtonY + (toolButtonSpace * fullScreenToolNumber(toolPanel.getCurrentTool()) + (toolButtonSize * fullScreenToolNumber(toolPanel.getCurrentTool()))) - 1) / 430.0 * scl, (toolButtonSize + 2) / 430.0 * scl, (toolButtonSize + 2) / 430.0 * scl);
         }
     }
 

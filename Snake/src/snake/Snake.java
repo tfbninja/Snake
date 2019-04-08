@@ -1289,8 +1289,8 @@ public class Snake extends Application implements Loggable {
                 appleY = board.getGrid().find(3).get(0).getValue();
             } catch (java.lang.IndexOutOfBoundsException e) {
                 // no apple
-                appleX = 0;
-                appleY = 0;
+                appleX = random.nextInt(grid.getWidth());
+                appleY = random.nextInt(grid.getLength());
             }
             System.out.println("Left: " + left + ", right: " + right + ", front: " + front + ", dir: " + direction);
             boolean killLeft = grid.willKill(left), killFront = grid.willKill(front), killRight = grid.willKill(right);

@@ -10,6 +10,7 @@ public class Button {
     private double y;
     private double w;
     private double h;
+    private double scale;
 
     /**
      * Default, sets everything to 0
@@ -19,6 +20,7 @@ public class Button {
         this.y = 0;
         this.w = 0;
         this.h = 0;
+        this.scale = 1;
     }
 
     /**
@@ -33,14 +35,31 @@ public class Button {
         this.y = y;
         this.w = w;
         this.h = h;
+        this.scale = 1;
     }
 
     /**
      *
-     * @return height
+     * @param x     top left x coordinate
+     * @param y     top left y coordinate
+     * @param w     width
+     * @param h     height
+     * @param scale scale
+     */
+    public Button(double x, double y, double w, double h, double scale) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        this.scale = scale;
+    }
+
+    /**
+     *
+     * @return height * scale
      */
     public double getH() {
-        return h;
+        return h * scale;
     }
 
     /**
@@ -51,12 +70,20 @@ public class Button {
         this.h = h;
     }
 
+    public double getScale() {
+        return scale;
+    }
+
+    public void setScale(double scale) {
+        this.scale = scale;
+    }
+
     /**
      *
-     * @return width
+     * @return width * scale
      */
     public double getW() {
-        return w;
+        return w * scale;
     }
 
     /**
@@ -69,10 +96,10 @@ public class Button {
 
     /**
      *
-     * @return top left x-coordinate
+     * @return top left x-coordinate * scale
      */
     public double getX() {
-        return x;
+        return x * scale;
     }
 
     /**
@@ -85,10 +112,10 @@ public class Button {
 
     /**
      *
-     * @return top left y-coordinate
+     * @return top left y-coordinate * scale
      */
     public double getY() {
-        return y;
+        return y * scale;
     }
 
     /**
@@ -106,12 +133,12 @@ public class Button {
      * @return whether the mouse clicked over the button
      */
     public boolean inBounds(double mX, double mY) {
-        return mX >= x && mY >= y && mX <= x + w && mY <= y + h;
+        return mX >= getX() && mY >= getY() && mX <= getX() + getW() && mY <= getY() + getH();
     }
 
     @Override
     public String toString() {
-        return "Button{" + "x=" + x + ", y=" + y + ", w=" + w + ", h=" + h + '}';
+        return "Button{" + "x=" + x + ", y=" + y + ", w=" + w + ", h=" + h + ", scale=" + scale + "}";
     }
 
 }
