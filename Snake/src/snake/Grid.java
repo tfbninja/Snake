@@ -1217,7 +1217,7 @@ public final class Grid extends squares implements Updateable, Loggable {
      * @return
      */
     public boolean willKill(int xPos, int yPos) {
-        return safeCheck(xPos, yPos) != 0 && safeCheck(xPos, yPos) != 3;
+        return safeCheck(xPos, yPos) != 0 && safeCheck(xPos, yPos) != 3 && safeCheck(xPos, yPos) < 10;
     }
 
     /**
@@ -1226,7 +1226,7 @@ public final class Grid extends squares implements Updateable, Loggable {
      * @return
      */
     public boolean willKill(int type) {
-        return !(type == 0 || type == 3);
+        return !(type == 0 || type == 3 || type >= 10);
     }
 
     /**
@@ -1236,16 +1236,16 @@ public final class Grid extends squares implements Updateable, Loggable {
     public int getLeft() {
         int x = this.pos.get(0).getKey();
         int y = this.pos.get(0).getValue();
-        switch (direction) {
-            case 2:
-                return safeCheck(x, y - 1);
-            case 3:
-                return safeCheck(x + 1, y);
-            case 4:
-                return safeCheck(x, y + 1);
-            default:
-                return safeCheck(x - 1, y);
+        int result;
+        int[] xadd = {-1, 0, 1, 0};
+        int[] yadd = {0, -1, 0, 1};
+        while (isPortal(x + xadd[direction - 1], y + yadd[direction - 1])) {
+            int oldX = x, oldY = y;
+            x = this.otherPortalPos(oldX, oldY)[0] + xadd[direction - 1];
+            y = this.otherPortalPos(oldX, oldY)[1] + yadd[direction - 1];
         }
+        result = safeCheck(x + xadd[direction - 1], y + yadd[direction - 1]);
+        return result;
     }
 
     /**
@@ -1255,16 +1255,16 @@ public final class Grid extends squares implements Updateable, Loggable {
     public int getRight() {
         int x = this.pos.get(0).getKey();
         int y = this.pos.get(0).getValue();
-        switch (direction) {
-            case 2:
-                return safeCheck(x, y + 1);
-            case 3:
-                return safeCheck(x - 1, y);
-            case 4:
-                return safeCheck(x, y - 1);
-            default:
-                return safeCheck(x + 1, y);
+        int result;
+        int[] xadd = {1, 0, -1, 0};
+        int[] yadd = {0, 1, 0, -1};
+        while (isPortal(x + xadd[direction - 1], y + yadd[direction - 1])) {
+            int oldX = x, oldY = y;
+            x = this.otherPortalPos(oldX, oldY)[0] + xadd[direction - 1];
+            y = this.otherPortalPos(oldX, oldY)[1] + yadd[direction - 1];
         }
+        result = safeCheck(x + xadd[direction - 1], y + yadd[direction - 1]);
+        return result;
     }
 
     /**
@@ -1274,16 +1274,15 @@ public final class Grid extends squares implements Updateable, Loggable {
     public int getFront() {
         int x = this.pos.get(0).getKey();
         int y = this.pos.get(0).getValue();
-        switch (direction) {
-            case 2:
-                return safeCheck(x + 1, y);
-            case 3:
-                return safeCheck(x, y + 1);
-            case 4:
-                return safeCheck(x - 1, y);
-            default:
-                return safeCheck(x, y - 1);
+        int result;
+
+        while (isPortal(x + XADD[direction - 1], y + YADD[direction - 1])) {
+            int oldX = x, oldY = y;
+            x = this.otherPortalPos(oldX, oldY)[0] + XADD[direction - 1];
+            y = this.otherPortalPos(oldX, oldY)[1] + YADD[direction - 1];
         }
+        result = safeCheck(x + XADD[direction - 1], y + YADD[direction - 1]);
+        return result;
     }
 
     /**
@@ -1500,7 +1499,10 @@ public final class Grid extends squares implements Updateable, Loggable {
                 if (this.isBody(headX, headY)) {
                     GS.setToPostGame();
                     return;
-                } else if (this.isApple(nextX, nextY)) {
+                }
+                this.safeSetCell(headX, headY, 2);
+
+                if (this.isApple(nextX, nextY)) {
                     // ate an apple
                     this.applesEaten++;
                     if (MENU.getSFX()) {
@@ -1516,8 +1518,11 @@ public final class Grid extends squares implements Updateable, Loggable {
                     this.pos.add(0, new Pair<>(nextX, nextY)); // add segment in front
                     this.setCell(nextX, nextY, 1); // update grid
                     this.removeExtra();
+                } else if (this.isRock(nextX, nextY)) {
+                    events += " Rock";
+                    die();
+                    return;
                 }
-                this.safeSetCell(headX, headY, 2);
 
                 headX = nextX;
                 headY = nextY;

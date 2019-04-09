@@ -1292,7 +1292,7 @@ public class Snake extends Application implements Loggable {
                 appleX = random.nextInt(grid.getWidth());
                 appleY = random.nextInt(grid.getLength());
             }
-            System.out.println("Left: " + left + ", right: " + right + ", front: " + front + ", dir: " + direction);
+            //System.out.println("Left: " + left + ", right: " + right + ", front: " + front + ", dir: " + direction);
             boolean killLeft = grid.willKill(left), killFront = grid.willKill(front), killRight = grid.willKill(right);
             if (killLeft && killFront && killRight) {
                 // screwed
