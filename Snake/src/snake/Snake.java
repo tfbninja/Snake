@@ -1275,23 +1275,12 @@ public class Snake extends Application implements Loggable {
         if (GS.isGame()) {
             Grid grid = board.getGrid();
             double multiplier = 1.5;
-            int direction = board.getGrid().getDirection();
-            double randomizer = Math.random() * 1.3;
-            int x = board.getGrid().getHeadX(), y = board.getGrid().getHeadY();
+
             int left = board.getGrid().getLeft(), right = board.getGrid().getRight(), front = board.getGrid().getFront();
             int frontArea = grid.getFrontArea();
             int rightArea = grid.getRightArea();
             int leftArea = grid.getLeftArea();
-            int appleX;
-            int appleY;
-            try {
-                appleX = board.getGrid().find(3).get(0).getKey();
-                appleY = board.getGrid().find(3).get(0).getValue();
-            } catch (java.lang.IndexOutOfBoundsException e) {
-                // no apple
-                appleX = random.nextInt(grid.getWidth());
-                appleY = random.nextInt(grid.getLength());
-            }
+
             //System.out.println("Left: " + left + ", right: " + right + ", front: " + front + ", dir: " + direction);
             boolean killLeft = grid.willKill(left), killFront = grid.willKill(front), killRight = grid.willKill(right);
             if (killLeft && killFront && killRight) {
