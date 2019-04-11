@@ -74,7 +74,7 @@ public class Logger {
     /**
      * Returns a string of length len containing the input int
      *
-     * @param x integer to convert
+     * @param x   integer to convert
      * @param len desired length of output string
      * @return String of length len properly formatted
      */
@@ -113,6 +113,9 @@ public class Logger {
         logs++;
     }
 
+    /*
+     * Ends the logging process and grabs all the events from the classes
+     */
     private void endLog() {
         log += "Final log (" + logs + ") of all events - " + formatDateTime() + "\n";
         logs++;

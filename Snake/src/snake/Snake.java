@@ -53,7 +53,7 @@ public class Snake extends Application implements Loggable {
 
     private int frame = 0;
 
-    private final boolean AI = false;
+    private static boolean AI = false;
 
     private static Board board;
 
@@ -253,6 +253,7 @@ public class Snake extends Application implements Loggable {
 //</editor-fold>
         events += "Initialized. | ";
         log.logState();
+
         // Main game loop - this is called every 1/30th of a second or so
         new AnimationTimer() {
             @Override
@@ -410,6 +411,13 @@ public class Snake extends Application implements Loggable {
         launch(args);
     }
 
+    /**
+     * Sets what the user views
+     *
+     * @param primaryStage
+     * @param root
+     * @param HELP_IV
+     */
     public void updateScreen(Stage primaryStage, BorderPane root, ImageView HELP_IV) {
         /*
          * This switch statement is the main controller of what is
@@ -650,13 +658,13 @@ public class Snake extends Application implements Loggable {
                     }
                 }
                 if (!GS.isPostGame()) {
-                    if (AI) {
-                        AI();
-                    }
                     board.drawBlocks();
                     scoresOverwritten = false;
                     if (frame % board.getGrid().getFrameSpeed() == 0) {
                         for (int i = 0; i < board.getGrid().getGensPerFrame(); i++) {
+                            if (AI) {
+                                AI();
+                            }
                             board.getGrid().update();
                         }
                     }
@@ -676,6 +684,10 @@ public class Snake extends Application implements Loggable {
                 }
                 break;
         }
+    }
+
+    public static void toggleAI() {
+        AI = !AI;
     }
 
     /**
@@ -1262,27 +1274,243 @@ public class Snake extends Application implements Loggable {
     public static void AI() {
         if (GS.isGame()) {
             Grid grid = board.getGrid();
-            int direction = board.getGrid().getDirection();
-            int randomizer = 0;
-            int x = board.getGrid().getHeadX(), y = board.getGrid().getHeadY();
+            double multiplier = 1.5;
+
             int left = board.getGrid().getLeft(), right = board.getGrid().getRight(), front = board.getGrid().getFront();
-            System.out.println("Left: " + left + ", right: " + right + ", front: " + front + ", dir: " + direction);
-            if ((grid.willKill(left)) && !grid.willKill(front) && y != 0) {
-                return;
-            } else if (grid.willKill(left) && grid.willKill(front)) {
-                System.out.println("turning right");
+            int frontArea = grid.getFrontArea();
+            int rightArea = grid.getRightArea();
+            int leftArea = grid.getLeftArea();
+
+            //System.out.println("Left: " + left + ", right: " + right + ", front: " + front + ", dir: " + direction);
+            boolean killLeft = grid.willKill(left), killFront = grid.willKill(front), killRight = grid.willKill(right);
+            if (killLeft && killFront && killRight) {
+                // screwed
+            } else if (killLeft && killFront && !killRight) {
                 grid.turnRight();
-                return;
-            } else if (grid.willKill(front) && grid.willKill(right)) {
-                System.out.println("turning left");
+            } else if (killLeft && !killFront && killRight) {
+                // continue on
+            } else if (killLeft && !killFront && !killRight) {
+                if (rightArea > frontArea * multiplier) {
+                    grid.turnRight();
+                } else if (frontArea > rightArea * multiplier) {
+                    // go forward
+                } else {
+                    goToApple(true, false, false);
+                }
+            } else if (!killLeft && killFront && killRight) {
                 grid.turnLeft();
-                return;
-            } else if (!grid.willKill(left)) {
-                return;
+            } else if (!killLeft && killFront && !killRight) {
+                // need to turn (fix spiral of death)
+                if (rightArea > leftArea * multiplier) {
+                    grid.turnRight();
+                } else if (leftArea > rightArea * multiplier) {
+                    grid.turnLeft();
+                } else {
+                    goToApple(false, true, false);
+                }
+            } else if (!killLeft && !killFront && killRight) {
+                if (frontArea > leftArea * multiplier) {
+                    // go forward
+                } else if (leftArea > frontArea * multiplier) {
+                    grid.turnLeft();
+                } else {
+                    goToApple(false, false, true);
+                }
+            } else if (!killLeft && !killFront && !killRight) {
+
+                if (frontArea > leftArea + rightArea) {
+                    // go forward
+                } else if (leftArea > frontArea + rightArea) {
+                    grid.turnLeft();
+                } else if (rightArea > leftArea + frontArea) {
+                    grid.turnRight();
+                } else if (leftArea > rightArea * multiplier && leftArea > frontArea * multiplier) {
+                    grid.turnLeft();
+                } else if (rightArea > leftArea * multiplier && rightArea > frontArea * multiplier) {
+                    grid.turnRight();
+                } else if (frontArea > leftArea * multiplier && frontArea > rightArea * multiplier) {
+                    // go forward
+                } else if (frontArea * multiplier < leftArea || frontArea * multiplier < rightArea) {
+                    goToApple(false, true, false);
+                } else if (leftArea * multiplier < frontArea || leftArea * multiplier < rightArea) {
+                    goToApple(true, false, false);
+                } else if (rightArea * multiplier < leftArea || rightArea * multiplier < frontArea) {
+                    goToApple(false, false, true);
+                } else {
+                    goToApple(false, false, false);
+                }
             }
-            grid.turnRight();
         } else {
             // game is not in session
+        }
+    }
+
+    public static void goToApple(boolean excludeLeft, boolean excludeFront, boolean excludeRight) {
+        Grid grid = board.getGrid();
+        int direction = board.getGrid().getDirection();
+        double randomizer = Math.random() * 1.3;
+        int x = board.getGrid().getHeadX(), y = board.getGrid().getHeadY();
+        int appleX;
+        int appleY;
+        try {
+            appleX = board.getGrid().find(3).get(0).getKey();
+            appleY = board.getGrid().find(3).get(0).getValue();
+        } catch (java.lang.IndexOutOfBoundsException e) {
+            // no apple
+            appleX = 0;
+            appleY = 0;
+        }
+
+        switch (direction) {
+            case 1:
+                if (x - appleX > 0) {
+                    if (!excludeLeft) {
+                        grid.turnLeft();
+                    }
+                } else if (x - appleX < 0) {
+                    if (!excludeRight) {
+                        grid.turnRight();
+                    }
+                } else if (y - appleY > 0) {
+                    if (excludeFront) {
+                        if (randomizer < 0.5) {
+                            if (!excludeLeft) {
+                                grid.turnLeft();
+                            } else {
+                                grid.turnRight();
+                            }
+                        } else {
+                            if (!excludeRight) {
+                                grid.turnRight();
+                            } else {
+                                grid.turnLeft();
+                            }
+                        }
+                    }
+                } else if (y - appleY < 0) {
+                    if (randomizer > 0.5) {
+                        if (!excludeRight) {
+                            grid.turnRight();
+                        }
+                    } else {
+                        if (!excludeLeft) {
+                            grid.turnLeft();
+                        }
+                    }
+                }
+                break;
+            case 2:
+                if (x - appleX > 0) {
+                    if (randomizer > 0.5) {
+                        if (!excludeRight) {
+                            grid.turnRight();
+                        }
+                    } else {
+                        if (!excludeLeft) {
+                            grid.turnLeft();
+                        }
+                    }
+                } else if (x - appleX < 0) {
+                    if (excludeFront) {
+                        if (randomizer < 0.5) {
+                            if (!excludeLeft) {
+                                grid.turnLeft();
+                            } else {
+                                grid.turnRight();
+                            }
+                        } else {
+                            if (!excludeRight) {
+                                grid.turnRight();
+                            } else {
+                                grid.turnLeft();
+                            }
+                        }
+                    }
+                } else if (y - appleY > 0) {
+                    if (!excludeLeft) {
+                        grid.turnLeft();
+                    }
+                } else if (y - appleY < 0) {
+                    if (!excludeRight) {
+                        grid.turnRight();
+                    }
+                }
+                break;
+            case 3:
+                if (x - appleX > 0) {
+                    if (!excludeRight) {
+                        grid.turnRight();
+                    }
+                } else if (x - appleX < 0) {
+                    if (!excludeLeft) {
+                        grid.turnLeft();
+                    }
+                } else if (y - appleY > 0) {
+                    if (randomizer > 0.5) {
+                        if (!excludeRight) {
+                            grid.turnRight();
+                        }
+                    } else {
+                        if (!excludeLeft) {
+                            grid.turnLeft();
+                        }
+                    }
+                } else if (y - appleY < 0) {
+                    if (excludeFront) {
+                        if (randomizer < 0.5) {
+                            if (!excludeLeft) {
+                                grid.turnLeft();
+                            } else {
+                                grid.turnRight();
+                            }
+                        } else {
+                            if (!excludeRight) {
+                                grid.turnRight();
+                            } else {
+                                grid.turnLeft();
+                            }
+                        }
+                    }
+                }
+                break;
+
+            case 4:
+                if (x - appleX > 0) {
+                    if (randomizer > 0.5) {
+                        if (!excludeRight) {
+                            grid.turnRight();
+                        }
+                    } else {
+                        if (!excludeLeft) {
+                            grid.turnLeft();
+                        }
+                    }
+                } else if (x - appleX < 0) {
+                    if (excludeFront) {
+                        if (randomizer < 0.5) {
+                            if (!excludeLeft) {
+                                grid.turnLeft();
+                            } else {
+                                grid.turnRight();
+                            }
+                        } else {
+                            if (!excludeRight) {
+                                grid.turnRight();
+                            } else {
+                                grid.turnLeft();
+                            }
+                        }
+                    }
+                } else if (y - appleY > 0) {
+                    if (!excludeLeft) {
+                        grid.turnLeft();
+                    }
+                } else if (y - appleY < 0) {
+                    if (!excludeRight) {
+                        grid.turnRight();
+                    }
+                }
+                break;
         }
     }
 

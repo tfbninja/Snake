@@ -31,6 +31,7 @@ public final class Grid extends squares implements Updateable, Loggable {
     private boolean applesFrozen = false;
     private int startx;
     private int starty;
+    private int[][] marked;
 
     private boolean edgeKills = false;
 
@@ -966,14 +967,44 @@ public final class Grid extends squares implements Updateable, Loggable {
      * Literally turns right
      */
     public void turnRight() {
-        attemptSetDirection((direction + 1) % 4);
+        switch (direction) {
+            case 4:
+                attemptSetDirection(1);
+                break;
+            case 3:
+                attemptSetDirection(4);
+                break;
+            case 2:
+                attemptSetDirection(3);
+                break;
+            case 1:
+                attemptSetDirection(2);
+                break;
+            default:
+                break;
+        }
     }
 
     /**
      * Literally turns left
      */
     public void turnLeft() {
-        attemptSetDirection((direction - 1) % 4);
+        switch (direction) {
+            case 4:
+                attemptSetDirection(3);
+                break;
+            case 3:
+                attemptSetDirection(2);
+                break;
+            case 2:
+                attemptSetDirection(1);
+                break;
+            case 1:
+                attemptSetDirection(4);
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -1186,7 +1217,7 @@ public final class Grid extends squares implements Updateable, Loggable {
      * @return
      */
     public boolean willKill(int xPos, int yPos) {
-        return safeCheck(xPos, yPos) != 0 && safeCheck(xPos, yPos) != 3;
+        return safeCheck(xPos, yPos) != 0 && safeCheck(xPos, yPos) != 3 && safeCheck(xPos, yPos) < 10;
     }
 
     /**
@@ -1195,7 +1226,7 @@ public final class Grid extends squares implements Updateable, Loggable {
      * @return
      */
     public boolean willKill(int type) {
-        return type != 0 && type != 3;
+        return !(type == 0 || type == 3 || type >= 10);
     }
 
     /**
@@ -1205,16 +1236,16 @@ public final class Grid extends squares implements Updateable, Loggable {
     public int getLeft() {
         int x = this.pos.get(0).getKey();
         int y = this.pos.get(0).getValue();
-        switch (direction) {
-            case 2:
-                return safeCheck(x, y - 1);
-            case 3:
-                return safeCheck(x + 1, y);
-            case 4:
-                return safeCheck(x, y + 1);
-            default:
-                return safeCheck(x - 1, y);
+        int result;
+        int[] xadd = {-1, 0, 1, 0};
+        int[] yadd = {0, -1, 0, 1};
+        while (isPortal(x + xadd[direction - 1], y + yadd[direction - 1])) {
+            int oldX = x, oldY = y;
+            x = this.otherPortalPos(oldX, oldY)[0] + xadd[direction - 1];
+            y = this.otherPortalPos(oldX, oldY)[1] + yadd[direction - 1];
         }
+        result = safeCheck(x + xadd[direction - 1], y + yadd[direction - 1]);
+        return result;
     }
 
     /**
@@ -1224,16 +1255,16 @@ public final class Grid extends squares implements Updateable, Loggable {
     public int getRight() {
         int x = this.pos.get(0).getKey();
         int y = this.pos.get(0).getValue();
-        switch (direction) {
-            case 2:
-                return safeCheck(x, y + 1);
-            case 3:
-                return safeCheck(x - 1, y);
-            case 4:
-                return safeCheck(x, y - 1);
-            default:
-                return safeCheck(x + 1, y);
+        int result;
+        int[] xadd = {1, 0, -1, 0};
+        int[] yadd = {0, 1, 0, -1};
+        while (isPortal(x + xadd[direction - 1], y + yadd[direction - 1])) {
+            int oldX = x, oldY = y;
+            x = this.otherPortalPos(oldX, oldY)[0] + xadd[direction - 1];
+            y = this.otherPortalPos(oldX, oldY)[1] + yadd[direction - 1];
         }
+        result = safeCheck(x + xadd[direction - 1], y + yadd[direction - 1]);
+        return result;
     }
 
     /**
@@ -1243,16 +1274,15 @@ public final class Grid extends squares implements Updateable, Loggable {
     public int getFront() {
         int x = this.pos.get(0).getKey();
         int y = this.pos.get(0).getValue();
-        switch (direction) {
-            case 2:
-                return safeCheck(x + 1, y);
-            case 3:
-                return safeCheck(x, y + 1);
-            case 4:
-                return safeCheck(x - 1, y);
-            default:
-                return safeCheck(x, y - 1);
+        int result;
+
+        while (isPortal(x + XADD[direction - 1], y + YADD[direction - 1])) {
+            int oldX = x, oldY = y;
+            x = this.otherPortalPos(oldX, oldY)[0] + XADD[direction - 1];
+            y = this.otherPortalPos(oldX, oldY)[1] + YADD[direction - 1];
         }
+        result = safeCheck(x + XADD[direction - 1], y + YADD[direction - 1]);
+        return result;
     }
 
     /**
@@ -1469,7 +1499,10 @@ public final class Grid extends squares implements Updateable, Loggable {
                 if (this.isBody(headX, headY)) {
                     GS.setToPostGame();
                     return;
-                } else if (this.isApple(nextX, nextY)) {
+                }
+                this.safeSetCell(headX, headY, 2);
+
+                if (this.isApple(nextX, nextY)) {
                     // ate an apple
                     this.applesEaten++;
                     if (MENU.getSFX()) {
@@ -1485,8 +1518,11 @@ public final class Grid extends squares implements Updateable, Loggable {
                     this.pos.add(0, new Pair<>(nextX, nextY)); // add segment in front
                     this.setCell(nextX, nextY, 1); // update grid
                     this.removeExtra();
+                } else if (this.isRock(nextX, nextY)) {
+                    events += " Rock";
+                    die();
+                    return;
                 }
-                this.safeSetCell(headX, headY, 2);
 
                 headX = nextX;
                 headY = nextY;
@@ -1646,11 +1682,32 @@ public final class Grid extends squares implements Updateable, Loggable {
      * @return
      */
     public int safeCheck(int xPos, int yPos) {
-        if (xPos > super.getWidth()) {
+        if (extremeWarp) {
+            if (xPos < 0) {
+                xPos = super.getWidth() - yPos - 1;
+                yPos = 0;
+            }
+            if (xPos >= super.getWidth()) {
+                xPos = super.getWidth() - yPos - 1;
+                yPos = super.getLength() - 1;
+            }
+            if (yPos < 0) {
+                yPos = xPos;
+                xPos = super.getWidth() - 1;
+            }
+            if (yPos >= super.getLength()) {
+                yPos = xPos;
+                xPos = 0;
+            }
+        } else {
             xPos = xPos % super.getWidth();
-        }
-        if (yPos > super.getLength()) {
             yPos = yPos % super.getLength();
+            if (xPos < 0) {
+                xPos += super.getWidth();
+            }
+            if (yPos < 0) {
+                yPos += super.getLength();
+            }
         }
         try {
             return this.playArea[yPos][xPos];
@@ -1661,11 +1718,156 @@ public final class Grid extends squares implements Updateable, Loggable {
 
     /**
      *
+     * @param xPos
+     * @param yPos
+     * @return
+     */
+    public int safeCheck(int[][] list, int xPos, int yPos) {
+        if (extremeWarp) {
+            if (xPos < 0) {
+                xPos = super.getWidth() - yPos - 1;
+                yPos = 0;
+            }
+            if (xPos >= super.getWidth()) {
+                xPos = super.getWidth() - yPos - 1;
+                yPos = super.getLength() - 1;
+            }
+            if (yPos < 0) {
+                yPos = xPos;
+                xPos = super.getWidth() - 1;
+            }
+            if (yPos >= super.getLength()) {
+                yPos = xPos;
+                xPos = 0;
+            }
+        } else {
+            xPos = xPos % super.getWidth();
+            yPos = yPos % super.getLength();
+            if (xPos < 0) {
+                xPos += super.getWidth();
+            }
+            if (yPos < 0) {
+                yPos += super.getLength();
+            }
+        }
+        try {
+            return list[yPos][xPos];
+        } catch (ArrayIndexOutOfBoundsException b) {
+            return -1;
+        }
+    }
+
+    /**
+     *
+     * @param xPos
+     * @param yPos
+     * @return
+     */
+    public void safeSet(int[][] list, int xPos, int yPos, int value) {
+        if (extremeWarp) {
+            if (xPos < 0) {
+                xPos = super.getWidth() - yPos - 1;
+                yPos = 0;
+            }
+            if (xPos >= super.getWidth()) {
+                xPos = super.getWidth() - yPos - 1;
+                yPos = super.getLength() - 1;
+            }
+            if (yPos < 0) {
+                yPos = xPos;
+                xPos = super.getWidth() - 1;
+            }
+            if (yPos >= super.getLength()) {
+                yPos = xPos;
+                xPos = 0;
+            }
+        } else {
+            xPos = xPos % super.getWidth();
+            yPos = yPos % super.getLength();
+            if (xPos < 0) {
+                xPos += super.getWidth();
+            }
+            if (yPos < 0) {
+                yPos += super.getLength();
+            }
+        }
+        try {
+            list[yPos][xPos] = value;
+        } catch (ArrayIndexOutOfBoundsException b) {
+            System.out.println("error " + b.getLocalizedMessage());
+        }
+    }
+
+    /**
+     *
      * @param square
      * @return
      */
     public int safeCheck(Pair<Integer, Integer> square) {
         return safeCheck(square.getKey(), square.getValue());
+    }
+
+    public int getArea(int xPos, int yPos) {
+        marked = new int[super.getLength()][super.getWidth()];
+        return getAreaHelper(xPos, yPos);
+    }
+
+    private int getAreaHelper(int xPos, int yPos) {
+        if (!willKill(safeCheck(xPos, yPos)) && safeCheck(marked, xPos, yPos) != 1) {
+            safeSet(marked, xPos, yPos, 1);
+            return 1 + getAreaHelper(xPos - 1, yPos) + getAreaHelper(xPos, yPos - 1) + getAreaHelper(xPos + 1, yPos) + getAreaHelper(xPos, yPos + 1);
+        } else {
+            safeSet(marked, xPos, yPos, 1);
+            return 0;
+        }
+    }
+
+    public int getLeftArea() {
+        int x = getHeadX(), y = getHeadY();
+        switch (direction) {
+            case 1:
+                return getArea(x - 1, y);
+            case 2:
+                return getArea(x, y - 1);
+            case 3:
+                return getArea(x + 1, y);
+            case 4:
+                return getArea(x, y + 1);
+            default:
+                return 0;
+        }
+    }
+
+    public int getRightArea() {
+        int x = getHeadX(), y = getHeadY();
+        switch (direction) {
+            case 1:
+                return getArea(x + 1, y);
+            case 2:
+                return getArea(x, y + 1);
+            case 3:
+                return getArea(x - 1, y);
+            case 4:
+                return getArea(x, y - 1);
+            default:
+                return 0;
+        }
+    }
+
+    public int getFrontArea() {
+        int x = getHeadX(), y = getHeadY();
+        switch (direction) {
+            case 1:
+                return getArea(x, y - 1);
+            case 2:
+                return getArea(x + 1, y);
+            case 3:
+                return getArea(x, y + 1);
+            case 4:
+                return getArea(x - 1, y);
+            default:
+                return 0;
+        }
     }
 
     /**

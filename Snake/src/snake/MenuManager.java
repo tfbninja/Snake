@@ -3,7 +3,7 @@ package snake;
 import java.util.ArrayList;
 
 /**
- * This Class controls what should be displayed on screen at all times
+ * This class controls what should be displayed on screen at all times
  *
  * @author Tim Barber
  */

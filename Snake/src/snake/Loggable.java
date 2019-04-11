@@ -21,7 +21,6 @@ public interface Loggable {
     String getEvents();
 }
 
-
 /*
  * The MIT License
  *

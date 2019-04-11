@@ -13,10 +13,11 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 /**
+ * This class manages audio files
  *
  * @author Tim Barber
  */
-public class Sound { // Holds one audio file
+public class Sound {
 
     private String filename;
     private URL resource;

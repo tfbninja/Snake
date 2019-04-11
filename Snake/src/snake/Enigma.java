@@ -1,24 +1,21 @@
 package snake;
 
 import java.io.InvalidObjectException;
-import java.time.LocalDateTime;
-import java.util.Random;
 
 /**
  *
  * @author Tim Barber
  */
 public class Enigma {
-    // works up to 255
 
     private static int maxAmt = 7;
     private static int additive = 50;
 
     /*
-     * So the old method doesn't work, new method:
-     * Unicode(num % 40 + 63)
-     * num * 2 + 3
-     * Unicode(num % 40 + 67)
+     * Algorithm by character(s):
+     * First char: Unicode(num % 40 + 63)
+     * Middle chars: num * 2 + 3
+     * End char: Unicode(num % 40 + 67)
      */
     /**
      *
@@ -51,77 +48,6 @@ public class Enigma {
             throw new InvalidObjectException("first char: " + firstCharCheck + " last char: " + lastCharCheck + " length check: " + longShotLengthCheck);
         }
         return mid;
-    }
-
-    /**
-     *
-     * @param num
-     * @return
-     */
-    public static String encodeOld(int num) {
-        /*
-         * Old method:
-         * i^2 + 15 number of chars
-         * last character is unicode(i^2 + 17)
-         * character i is unicode(i + 9)
-         * first character is unicode(multiple of 13)
-         * all other characters must be multiples of 2 or 3
-         */
-        Random random = new Random(LocalDateTime.now().getNano());
-        String encoded = "";
-        encoded += (char) (65 + random.nextInt(maxAmt) * 13);
-        for (int i = 0; i < num - 1; i++) {
-            if (random.nextBoolean()) {
-                encoded += (char) ((random.nextInt(maxAmt) + additive) * 2);
-            } else {
-                encoded += (char) ((random.nextInt(maxAmt) + additive) * 3);
-            }
-        }
-        encoded += (char) (num + 9);
-        for (int i = 0; i < num * num - num + 13; i++) {
-            if (random.nextBoolean()) {
-                encoded += (char) ((random.nextInt(maxAmt) + additive) * 2);
-            } else {
-                encoded += (char) ((random.nextInt(maxAmt) + additive) * 3);
-            }
-        }
-        encoded += (char) (num * num + 17);
-
-        return encoded;
-    }
-
-    /**
-     *
-     * @param encoded
-     * @return
-     * @throws InvalidObjectException
-     */
-    public static int decodeOld(String encoded) throws InvalidObjectException {
-        /*
-         * Old method:
-         * i^2 + 15 number of chars
-         * last character is unicode(i^2 + 17)
-         * character i is unicode(i + 9)
-         * first character is unicode(multiple of 13)
-         * all other characters must be multiples of 2 or 3
-         */
-        boolean firstCheck = encoded.charAt(0) % 13 == 0;
-        int temp = (int) Math.sqrt(encoded.charAt(encoded.length() - 1) - 17);
-        boolean lengthCheck = encoded.length() == temp * temp + 15;
-        boolean tempCheck = encoded.charAt(temp) == (char) (temp + 9);
-        boolean otherChecks = true;
-
-        int index = 0;
-        for (char c : encoded.toCharArray()) {
-            if (index != temp && index != 0 && index != encoded.length() - 1) {
-                otherChecks = otherChecks && ((int) c % 2 == 0 || (int) c % 3 == 0);
-            }
-        }
-        if (!firstCheck || !lengthCheck || !tempCheck || !otherChecks) {
-            throw new InvalidObjectException("first char check: " + firstCheck + " length check: " + lengthCheck + " last char check: " + tempCheck + " other chars check: " + otherChecks);
-        }
-
-        return temp;
     }
 }
 

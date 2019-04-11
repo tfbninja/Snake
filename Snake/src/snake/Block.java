@@ -6,7 +6,7 @@ import javafx.scene.paint.Color;
 
 /**
  *
- * @author Timothy
+ * @author Tim Barber
  */
 public class Block implements Locatable {
 
