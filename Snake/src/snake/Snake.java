@@ -79,7 +79,7 @@ public class Snake extends Application implements Loggable {
     private boolean nightMode = false;
     private boolean sandboxReset = false;
     private String tempSandboxFile = "";
-    int[][] appleMap;
+    private static int[][] appleMap;
 
     private static final ArrayList<String> MENUNAMES = new ArrayList<String>() {
         {
@@ -90,7 +90,7 @@ public class Snake extends Application implements Loggable {
             add("Game");
         }
     };
-    private final MenuManager MM = new MenuManager(MENUNAMES);
+    private static final MenuManager MM = new MenuManager(MENUNAMES);
     private static final MainMenu MENU = new MainMenu();
     private static final GameState GS = new GameState(1);
 
@@ -490,19 +490,8 @@ public class Snake extends Application implements Loggable {
                 // reset sandbox
                 if (board.getGrid().getDiffLevel() == 0 && !sandboxReset) {
                     sandboxReset = true;
+                    resetSandbox();
 
-                    board.resetKeepGrid(); // reverts apples to initial
-                    int[] headPos2 = board.getGrid().getStartPos();
-                    board.getGrid().removeAll(1);
-                    board.getGrid().removeAll(2);
-                    board.getGrid().setPos(headPos2[0], headPos2[1]);
-                    board.getGrid().setGrowBy(toolPanel.getGrowBy());
-                    board.getGrid().setEdgeKills(toolPanel.getEdgeKills());
-                    board.setToSandboxPlayArea();
-                    board.getGrid().setApples(appleMap);
-                    board.drawBlocks();
-                    MM.setCurrent(4);
-                    GS.setToPreGame();
                 } else if (!scoresOverwritten && board.getGrid().getDiffLevel() != 0) {
                     //<editor-fold defaultstate="collapsed" desc="save high scores">
                     int thisDifficulty = board.getGrid().getDiffLevel();
@@ -684,6 +673,21 @@ public class Snake extends Application implements Loggable {
                 }
                 break;
         }
+    }
+
+    public static void resetSandbox() {
+        board.resetKeepGrid(); // reverts apples to initial
+        int[] headPos2 = board.getGrid().getStartPos();
+        board.getGrid().removeAll(1);
+        board.getGrid().removeAll(2);
+        board.getGrid().setPos(headPos2[0], headPos2[1]);
+        board.getGrid().setGrowBy(toolPanel.getGrowBy());
+        board.getGrid().setEdgeKills(toolPanel.getEdgeKills());
+        board.setToSandboxPlayArea();
+        board.getGrid().setApples(appleMap);
+        board.drawBlocks();
+        MM.setCurrent(4);
+        GS.setToPreGame();
     }
 
     public static void toggleAI() {
@@ -1133,7 +1137,7 @@ public class Snake extends Application implements Loggable {
     /**
      *
      * @param size side length of the imaginary square bounding the high score
-     *             screen
+     * screen
      * @return Canvas with high scores drawn on
      */
     public static Canvas drawHighScoreScreen(double size) {
@@ -1531,7 +1535,7 @@ public class Snake extends Application implements Loggable {
     /**
      *
      * @param filename destination file path
-     * @param score    raw score
+     * @param score raw score
      * @param username name of scorer
      */
     public static void writeEncodedScore(String filename, int score, String username) {

@@ -110,11 +110,11 @@ public class Board implements Loggable {
 //</editor-fold>
     /**
      *
-     * @param w       the horizontal width
-     * @param h       the vertical height
-     * @param mm      the MenuManager object
-     * @param menu    the Menu object
-     * @param gs      the GameState object
+     * @param w the horizontal width
+     * @param h the vertical height
+     * @param mm the MenuManager object
+     * @param menu the Menu object
+     * @param gs the GameState object
      * @param primary the stage object holding the various graphical components
      */
     public Board(int w, int h, MenuManager mm, MainMenu menu, GameState gs, Stage primary) {
@@ -188,7 +188,7 @@ public class Board implements Loggable {
     /**
      *
      * @param size the dimension defining the side length of the imaginary
-     *             square around the menu screen
+     * square around the menu screen
      * @return A Canvas object with graphics displaying the menu
      */
     public Canvas getFullScreenMenu(double size) {
@@ -728,7 +728,7 @@ public class Board implements Loggable {
             for (int i = 0; i < sandboxButtonsFS.length; i++) {
                 if (i == 5) { // clear button
                     if (GS.isGame()) {
-                        gc.setFill(dim(Color.web("d7d7c3"), 0.5));
+                        gc.setFill(Color.web("d7d7c3"));
                         gc.fillRect(toolButtonX / 430.0 * scl, (toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i)) / 430.0 * scl, toolButtonSize / 430.0 * scl, toolButtonSize / 430.0 * scl);
                         gc.setFill(dim(invert(bgColor), 0.5));
                         gc.setFont(new Font("Tahoma", 7 / 430.0 * scl));
@@ -1053,7 +1053,7 @@ public class Board implements Loggable {
     /**
      *
      * @return the lowest int starting from ten that has no corresponding pair
-     *         in the grid
+     * in the grid
      */
     public int findUnusedPortalNum() {
         int num = 10;
@@ -1273,6 +1273,8 @@ public class Board implements Loggable {
                         if (i == 5) { // clear button
                             if (!GS.isGame()) {
                                 grid.clear();
+                            } else {
+                                Snake.resetSandbox();
                             }
                         } else {
                             toolPanel.setCurrentTool(i);
