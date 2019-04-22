@@ -236,15 +236,21 @@ public class Snake extends Application implements Loggable {
             // Safely exit the program when closed
             System.exit(0);
         });
-        primaryStage.setOnHidden(event -> {
-            pause = true;
-            // When the main game window is hidden we don't want the toolbox shown
-            toolboxFrame.setVisible(false);
-        });
-        primaryStage.setOnShowing(event -> {
-            pause = false;
-            // If the user minimized the main window and maximized it again, bring up the toolbox
-            toolboxFrame.setVisible(true);
+
+        primaryStage.iconifiedProperty().addListener(e -> {
+            if (primaryStage.isIconified()) {
+                pause = true;
+                // When the main game window is hidden we don't want the toolbox shown
+                System.out.println("hiding toolframe");
+                toolboxFrame.setState(JFrame.ICONIFIED);
+            } else {
+
+                pause = false;
+                // If the user minimized the main window and maximized it again, bring up the toolbox
+                System.out.println("restoring toolframe");
+                toolboxFrame.setState(JFrame.NORMAL);
+                toolboxFrame.toFront();
+            }
         });
 
         primaryStage.show();
