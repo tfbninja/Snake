@@ -74,7 +74,7 @@ public class Logger {
     /**
      * Returns a string of length len containing the input int
      *
-     * @param x   integer to convert
+     * @param x integer to convert
      * @param len desired length of output string
      * @return String of length len properly formatted
      */
@@ -143,6 +143,15 @@ public class Logger {
         endLog();
 
         try {
+            File logFolder = null;
+            if (destination.contains("\\")) {
+                logFolder = new File(destination.substring(0, destination.lastIndexOf("\\")));
+            } else {
+                logFolder = new File(destination.substring(0, destination.lastIndexOf("/")));
+            }
+            if (!logFolder.exists()) {
+                logFolder.mkdir();
+            }
             FileWriter creator;
             try (PrintWriter printer = new PrintWriter(destination, "UTF-8")) {
                 creator = new FileWriter(new File(destination));
