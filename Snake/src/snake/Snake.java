@@ -113,6 +113,19 @@ public class Snake extends Application implements Loggable {
         log.add(board);
         log.add(board.getGrid());
 
+        // if log files are more than 30 days old, delete
+        File logFolder = new File("resources/logs");
+        File[] directoryListing = logFolder.listFiles();
+
+        if (directoryListing != null) {
+            for (File child : directoryListing) {
+                //if (child.getPath())
+            }
+        } else {
+            events += "Can not find resources/logs folder | ";
+        }
+
+
         /*
          * Initialize settings to last used using a settings.snk file that
          * contains variables for the background music, the sound fx, and night
