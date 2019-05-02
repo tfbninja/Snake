@@ -193,7 +193,7 @@ public class HighScore extends javax.swing.JPanel {
 
     }//GEN-LAST:event_nameFieldMouseClicked
 
-    /*
+    /**
      * Requests focus on the field
      */
     public void setFocusOnField() {

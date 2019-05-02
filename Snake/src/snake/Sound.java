@@ -106,6 +106,10 @@ public class Sound {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public String getFilename() {
         return filename;
     }

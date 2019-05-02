@@ -70,10 +70,18 @@ public class Button {
         this.h = h;
     }
 
+    /**
+     *
+     * @return
+     */
     public double getScale() {
         return scale;
     }
 
+    /**
+     *
+     * @param scale
+     */
     public void setScale(double scale) {
         this.scale = scale;
     }

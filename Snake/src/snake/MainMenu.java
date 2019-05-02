@@ -71,6 +71,11 @@ public class MainMenu extends Controller {
     /*
      * Sets all vars to false
      */
+
+    /**
+     *
+     */
+
     @Override
     public void turnOff() {
         music = false;

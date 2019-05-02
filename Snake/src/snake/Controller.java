@@ -8,7 +8,7 @@ package snake;
  */
 public abstract class Controller {
 
-    /*
+    /**
      * Turns off all variables
      */
     public abstract void turnOff();

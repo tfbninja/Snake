@@ -67,6 +67,9 @@ public class Snake extends Application implements Loggable {
 
     private boolean scoresOverwritten = false;
 
+    /**
+     *
+     */
     public static String tempName = "";
 
     private File settings;
@@ -244,6 +247,7 @@ public class Snake extends Application implements Loggable {
         // This is the class that actually displays a 'physical' window on the screen
         primaryStage.setTitle("JSnake");
         primaryStage.setScene(scene);
+        //primaryStage.getIcons().add(new Image("resources/art/icon36.jpg"));
         primaryStage.setOnCloseRequest(event -> {
             log.saveLogFile("resources/logs/log" + log.formatDateTime().replaceAll("[.:/ ]", "") + ".snklog");
             // Safely exit the program when closed
@@ -694,6 +698,9 @@ public class Snake extends Application implements Loggable {
         }
     }
 
+    /**
+     * Method that prepares sandbox for new round after death
+     */
     public static void resetSandbox() {
         board.resetKeepGrid(); // reverts apples to initial
         int[] headPos2 = board.getGrid().getStartPos();
@@ -709,6 +716,9 @@ public class Snake extends Application implements Loggable {
         GS.setToPreGame();
     }
 
+    /**
+     * Toggles AI boolean
+     */
     public static void toggleAI() {
         AI = !AI;
     }
@@ -1368,6 +1378,12 @@ public class Snake extends Application implements Loggable {
         }
     }
 
+    /**
+     *
+     * @param excludeLeft
+     * @param excludeFront
+     * @param excludeRight
+     */
     public static void goToApple(boolean excludeLeft, boolean excludeFront, boolean excludeRight) {
         Grid grid = board.getGrid();
         int direction = board.getGrid().getDirection();

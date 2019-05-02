@@ -121,6 +121,10 @@ public final class Grid extends squares implements Updateable, Loggable {
         events += "Initialized. | ";
     }
 
+    /**
+     *
+     * @param M
+     */
     public void addMainMenu(MainMenu M) {
         MENU = M;
     }
@@ -480,6 +484,11 @@ public final class Grid extends squares implements Updateable, Loggable {
      * Replaces all "\" or "\\" characters with a "/"
      * @param badlyFormattedPath Bad file path string
      * @return properly formatted file path string
+     */
+    /**
+     *
+     * @param badlyFormattedPath
+     * @return
      */
     public static String formatFilePath(String badlyFormattedPath) {
         //
@@ -1580,7 +1589,7 @@ public final class Grid extends squares implements Updateable, Loggable {
         this.playArea = new int[super.getLength()][super.getWidth()];
     }
 
-    /*
+    /**
      * Resets score counter to 0
      */
     public void resetApplesEaten() {
@@ -1718,6 +1727,7 @@ public final class Grid extends squares implements Updateable, Loggable {
 
     /**
      *
+     * @param list
      * @param xPos
      * @param yPos
      * @return
@@ -1759,9 +1769,10 @@ public final class Grid extends squares implements Updateable, Loggable {
 
     /**
      *
+     * @param list
      * @param xPos
      * @param yPos
-     * @return
+     * @param value
      */
     public void safeSet(int[][] list, int xPos, int yPos, int value) {
         if (extremeWarp) {
@@ -1807,6 +1818,12 @@ public final class Grid extends squares implements Updateable, Loggable {
         return safeCheck(square.getKey(), square.getValue());
     }
 
+    /**
+     *
+     * @param xPos
+     * @param yPos
+     * @return
+     */
     public int getArea(int xPos, int yPos) {
         marked = new int[super.getLength()][super.getWidth()];
         return getAreaHelper(xPos, yPos);
@@ -1822,6 +1839,10 @@ public final class Grid extends squares implements Updateable, Loggable {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public int getLeftArea() {
         int x = getHeadX(), y = getHeadY();
         switch (direction) {
@@ -1838,6 +1859,10 @@ public final class Grid extends squares implements Updateable, Loggable {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public int getRightArea() {
         int x = getHeadX(), y = getHeadY();
         switch (direction) {
@@ -1854,6 +1879,10 @@ public final class Grid extends squares implements Updateable, Loggable {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public int getFrontArea() {
         int x = getHeadX(), y = getHeadY();
         switch (direction) {

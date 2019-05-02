@@ -506,13 +506,13 @@ public class Board implements Loggable {
         toolPanel.updateButtonColors(getColorScheme());
     }
 
-    /*
+    /**
      * Either this or turnOffFullscreen(w,h) MUST be called during
      * initialization of Board for it to properly initialize graphics variables
-     *
      * @param screenWidth Width of the screen
      * @param screenHeight Height of the screen
      */
+
     public void setFullscreen(double screenWidth, double screenHeight) {
         fullscreen = true;
         screenW = screenWidth;
@@ -556,6 +556,13 @@ public class Board implements Loggable {
      * @param w Width of the window
      * @param h Height of the window
      */
+
+    /**
+     *
+     * @param w
+     * @param h
+     */
+
     public void turnOffFullscreen(int w, int h) {
         fullscreen = false;
         screenW = w;
@@ -766,6 +773,12 @@ public class Board implements Loggable {
         }
     }
 
+    /**
+     *
+     * @param c
+     * @param opacity
+     * @return
+     */
     public Color dim(Color c, double opacity) {
         return new Color(c.getRed(), c.getGreen(), c.getBlue(), opacity);
     }
