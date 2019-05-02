@@ -1,4 +1,4 @@
-1 - number of frames to wait before waiting (min 1)
+7 - number of frames to wait before waiting (min 1)
 30 - initial snake length
 1 - snake grow amt
 0 - edge kills (0 for false, 1 for true)
