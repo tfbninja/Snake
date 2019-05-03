@@ -247,7 +247,7 @@ public class Snake extends Application implements Loggable {
         // This is the class that actually displays a 'physical' window on the screen
         primaryStage.setTitle("JSnake");
         primaryStage.setScene(scene);
-        //primaryStage.getIcons().add(new Image("resources/art/icon36.jpg"));
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("resources/art/icon36.jpg")));
         primaryStage.setOnCloseRequest(event -> {
             log.saveLogFile("resources/logs/log" + log.formatDateTime().replaceAll("[.:/ ]", "") + ".snklog");
             // Safely exit the program when closed
