@@ -473,8 +473,8 @@ public class Board implements Loggable {
         }
 
         gc.setFill(Color.web("b30e0e"));
-        gc.setFont(new Font("DejaVu Sans", 20 / 430.0 * size));
-        gc.fillText("Press r to restart", 240 / 430.0 * size, 424 / 430.0 * size);
+        gc.setFont(new Font("DejaVu Sans", 18 / 430.0 * size));
+        gc.fillText("PRESS R TO RESTART", 230 / 430.0 * size, 427 / 430.0 * size);
 
         gc.setFill(Color.web("b1600f"));
         gc.setFont(new Font("Impact", 24 / 430.0 * size));
@@ -578,7 +578,7 @@ public class Board implements Loggable {
         borderSize = 2;
         edgeSize = 2;
         appleTextX = XMARGIN + width / 2 - 20;
-        appleTextY = h - 5;
+        appleTextY = h;
         double scalar = Math.min(w, h);
         easyButtonFS = new Button(12 / 430.0 * scalar, 292 / 430.0 * scalar, 194 / 430.0 * scalar, 51 / 430.0 * scalar);
         medButtonFS = new Button(219 / 430.0 * scalar, 292 / 430.0 * scalar, 194 / 430.0 * scalar, 51 / 430.0 * scalar);
@@ -663,13 +663,14 @@ public class Board implements Loggable {
         GraphicsContext gc = this.canvas.getGraphicsContext2D();
 
         //clear background
-        gc.setFill(Color.web(this.bg));
+        gc.setFill(Color.web(bg));
         gc.fillRect(0, 0, this.width, this.height);
 
         // update black border
-        gc.setStroke(Color.BLACK);
-        gc.setLineWidth(borderSize);
-        gc.fillRect(borderSize / 2, borderSize / 2, width - borderSize, height - borderSize);
+        //gc.setStroke(Color.BLACK);
+        //gc.setLineWidth(borderSize);
+        //gc.fillRect(borderSize / 2, borderSize / 2, width - borderSize, height - borderSize);
+
 
         if (this.grid.getEdgeKills()) {
             // update red border indicating that edge kills
@@ -680,6 +681,8 @@ public class Board implements Loggable {
         }
         gc.setLineWidth(edgeSize);
         int pixelSize = GRIDSIZE * blockSize + GRIDSIZE * margin;
+        gc.setFill(Color.web(this.bg));
+        gc.fillRect(XMARGIN - edgeSize / 2, YMARGIN - edgeSize / 2, pixelSize + edgeSize - 1, pixelSize + edgeSize - 1);
         gc.strokeRect(XMARGIN - edgeSize / 2, YMARGIN - edgeSize / 2, pixelSize + edgeSize - 1, pixelSize + edgeSize - 1);
 
         //draw squares

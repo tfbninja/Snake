@@ -39,9 +39,9 @@ import javax.swing.JFrame;
 public class Snake extends Application implements Loggable {
 
     //<editor-fold defaultstate="collapsed" desc="instance vars">
-    private final int canvasMargin = 10;
-    private final int canvasW = 430;
-    private final int canvasH = 430;
+    private static final int canvasMargin = 10;
+    private static final int canvasW = 430;
+    private static final int canvasH = 430;
     private final int WIDTH = 430 + canvasMargin * 2;
     private final int HEIGHT = 430 + canvasMargin * 2;
 
@@ -102,7 +102,7 @@ public class Snake extends Application implements Loggable {
     private Logger log = new Logger(this);
     private static String events = "";
 
-    private boolean fullscreen = false;
+    private static boolean fullscreen = false;
 //</editor-fold>
 
     @Override
@@ -248,6 +248,7 @@ public class Snake extends Application implements Loggable {
         primaryStage.setTitle("JSnake");
         primaryStage.setScene(scene);
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("resources/art/icon36.jpg")));
+        primaryStage.setResizable(false);
         primaryStage.setOnCloseRequest(event -> {
             log.saveLogFile("resources/logs/log" + log.formatDateTime().replaceAll("[.:/ ]", "") + ".snklog");
             // Safely exit the program when closed
@@ -397,28 +398,15 @@ public class Snake extends Application implements Loggable {
         scene.setOnKeyPressed(
                 (KeyEvent eventa) -> {
                     if (eventa.getCode() == KeyCode.F11) {
-                        fullscreen = !fullscreen;
-                        primaryStage.setFullScreen(fullscreen);
-                        double w = primaryStage.getWidth();
-                        double h = primaryStage.getHeight();
                         if (fullscreen) {
-                            board.setFullscreen(w, h);
-                            int yspace = (int) (Math.max(h - w, 0) / 2);
-                            int xspace = (int) (Math.max(w - h, 0) / 2);
-                            root.setPadding(new Insets(yspace, xspace, yspace, xspace));
+                            turnOffFullscreen(primaryStage, board, root);
                         } else {
-                            board.turnOffFullscreen(canvasW, canvasH);
-                            root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+                            turnOnFullscreen(primaryStage, root);
                         }
                         updateScreen(primaryStage, root, HELP_IV);
                     }
                     if (eventa.getCode() == KeyCode.ESCAPE && fullscreen) {
-                        fullscreen = !fullscreen;
-                        primaryStage.setFullScreen(false);
-                        double w = primaryStage.getWidth();
-                        double h = primaryStage.getHeight();
-                        board.turnOffFullscreen(canvasW, canvasH);
-                        root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+                        turnOffFullscreen(primaryStage, board, root);
                         updateScreen(primaryStage, root, HELP_IV);
                     } else {
                         board.keyPressed(eventa);
@@ -434,6 +422,26 @@ public class Snake extends Application implements Loggable {
         launch(args);
     }
 
+    public static void turnOnFullscreen(Stage primaryStage, BorderPane root) {
+        fullscreen = true;
+        primaryStage.setFullScreen(fullscreen);
+        double w = primaryStage.getWidth();
+        double h = primaryStage.getHeight();
+        board.setFullscreen(w, h);
+        int yspace = (int) (Math.max(h - w, 0) / 2);
+        int xspace = (int) (Math.max(w - h, 0) / 2);
+        root.setPadding(new Insets(yspace, xspace, yspace, xspace));
+    }
+
+    public static void turnOffFullscreen(Stage primaryStage, Board board, BorderPane root) {
+        fullscreen = false;
+        primaryStage.setFullScreen(fullscreen);
+        double w = primaryStage.getWidth();
+        double h = primaryStage.getHeight();
+        board.turnOffFullscreen(canvasW, canvasH);
+        root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+    }
+
     /**
      * Sets what the user views
      *
@@ -442,6 +450,10 @@ public class Snake extends Application implements Loggable {
      * @param HELP_IV
      */
     public void updateScreen(Stage primaryStage, BorderPane root, ImageView HELP_IV) {
+        if (primaryStage.isMaximized()) {
+            primaryStage.setMaximized(false);
+            turnOnFullscreen(primaryStage, root);
+        }
         /*
          * This switch statement is the main controller of what is
          * going on at any given point in time, dictated by the
@@ -464,6 +476,7 @@ public class Snake extends Application implements Loggable {
         switch (MM.getCurrent()) {
             case 0:
                 // show main menu
+                root.setStyle("-fx-background-color: black");
                 if (fullscreen) {
                     double w = primaryStage.getWidth();
                     double h = primaryStage.getHeight();
@@ -481,6 +494,7 @@ public class Snake extends Application implements Loggable {
                 break;
             case 1:
                 // show high scores
+                root.setStyle("-fx-background-color: black");
                 if (fullscreen) {
                     double w = primaryStage.getWidth();
                     double h = primaryStage.getHeight();
@@ -493,6 +507,7 @@ public class Snake extends Application implements Loggable {
                 root.setTop(drawHighScoreScreen(Math.min(primaryStage.getWidth(), primaryStage.getHeight())));
                 break;
             case 2:
+                root.setStyle("-fx-background-color: black");
                 // show help
                 if (fullscreen) {
                     double w = primaryStage.getWidth();
@@ -506,6 +521,7 @@ public class Snake extends Application implements Loggable {
                 root.setTop(HELP_IV);
                 break;
             case 3:
+                root.setStyle("-fx-background-color: black");
                 // game over - show lose screen and deal with high scores
                 GS.setToPostGame();
                 board.drawBlocks();
@@ -652,6 +668,7 @@ public class Snake extends Application implements Loggable {
                 break;
 
             case 4:
+                root.setStyle("-fx-background-color: #" + board.getColorScheme()[board.getColorScheme().length - 1]);
                 root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
 
                 // show the actual game
@@ -1166,7 +1183,7 @@ public class Snake extends Application implements Loggable {
     /**
      *
      * @param size side length of the imaginary square bounding the high score
-     * screen
+     *             screen
      * @return Canvas with high scores drawn on
      */
     public static Canvas drawHighScoreScreen(double size) {
@@ -1570,7 +1587,7 @@ public class Snake extends Application implements Loggable {
     /**
      *
      * @param filename destination file path
-     * @param score raw score
+     * @param score    raw score
      * @param username name of scorer
      */
     public static void writeEncodedScore(String filename, int score, String username) {
