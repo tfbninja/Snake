@@ -46,6 +46,7 @@ public class Board implements Loggable {
     private String body = "249b0f";
     private String head = "b76309";
     private String bg = "ceceb5";
+    private String backdrop = "a29b95";
     private String rock = "53585e";
     private String applesEaten = "750BE0";
     private final String[] portalColors = {"90094E", "550C74", "dfb708", "ef5658", "bb3dff"};
@@ -180,6 +181,7 @@ public class Board implements Loggable {
         body = "2377DD";
         head = "AF6C00";
         bg = "212121";
+        backdrop = "000000";
         rock = "1e1e1e";
         applesEaten = "EDDDD4";
         toolPanel.updateButtonColors(getColorScheme());
@@ -488,7 +490,7 @@ public class Board implements Loggable {
      * @return A list of colors formatted like this: "rrggbb"
      */
     public String[] getColorScheme() {
-        String[] colorScheme = {blank, head, apple, rock, portalColors[0], bg};
+        String[] colorScheme = {blank, head, apple, rock, portalColors[0], backdrop, bg};
         return colorScheme;
     }
 
@@ -501,6 +503,7 @@ public class Board implements Loggable {
         body = "249b0f";
         head = "b76309";
         bg = "ceceb5";
+        backdrop = "a29b95";
         rock = "53585e";
         applesEaten = "750BE0";
         toolPanel.updateButtonColors(getColorScheme());
@@ -663,14 +666,8 @@ public class Board implements Loggable {
         GraphicsContext gc = this.canvas.getGraphicsContext2D();
 
         //clear background
-        gc.setFill(Color.web(bg));
+        gc.setFill(Color.web(backdrop));
         gc.fillRect(0, 0, this.width, this.height);
-
-        // update black border
-        //gc.setStroke(Color.BLACK);
-        //gc.setLineWidth(borderSize);
-        //gc.fillRect(borderSize / 2, borderSize / 2, width - borderSize, height - borderSize);
-
 
         if (this.grid.getEdgeKills()) {
             // update red border indicating that edge kills

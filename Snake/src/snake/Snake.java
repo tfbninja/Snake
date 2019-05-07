@@ -248,7 +248,10 @@ public class Snake extends Application implements Loggable {
         primaryStage.setTitle("JSnake");
         primaryStage.setScene(scene);
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("resources/art/icon36.jpg")));
-        primaryStage.setResizable(false);
+        primaryStage.setMaxWidth(466);
+        primaryStage.setMinWidth(466);
+        primaryStage.setMaxHeight(488);
+        primaryStage.setMinHeight(488);
         primaryStage.setOnCloseRequest(event -> {
             log.saveLogFile("resources/logs/log" + log.formatDateTime().replaceAll("[.:/ ]", "") + ".snklog");
             // Safely exit the program when closed
@@ -668,7 +671,7 @@ public class Snake extends Application implements Loggable {
                 break;
 
             case 4:
-                root.setStyle("-fx-background-color: #" + board.getColorScheme()[board.getColorScheme().length - 1]);
+                root.setStyle("-fx-background-color: #" + board.getColorScheme()[board.getColorScheme().length - 2]);
                 root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
 
                 // show the actual game
