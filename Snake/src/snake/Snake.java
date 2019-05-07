@@ -272,6 +272,7 @@ public class Snake extends Application implements Loggable {
 
         primaryStage.show();
         toolboxFrame.setLocation((int) primaryStage.getX() - toolPanel.getWidth() - 20, (int) primaryStage.getY());
+        //add icon to toolboxFrame
         toolboxFrame.setVisible(false);
 //</editor-fold>
         events += "Initialized. | ";

@@ -729,28 +729,28 @@ public class Board implements Loggable {
         if (fullscreen && grid.getDiffLevel() == 0) {
             // we're gonna go ahead and assume a normal width > height monitor shape here
             // draw toolbox
-            Color bgColor = Color.web(getColorScheme()[getColorScheme().length - 1]);
+            Color bgColor = Color.web(getColorScheme()[getColorScheme().length - 2]);
             int[] xAdd = {5, 7, 6, 6, 3};
             double scl = Math.min(screenW, screenH);
             for (int i = 0; i < sandboxButtonsFS.length; i++) {
                 if (i == 5) { // clear button
                     if (GS.isGame()) {
-                        gc.setFill(Color.web("d7d7c3"));
+                        gc.setFill(invert(Color.web(getColorScheme()[getColorScheme().length - 2])).darker().darker());
                         gc.fillRect(toolButtonX / 430.0 * scl, (toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i)) / 430.0 * scl, toolButtonSize / 430.0 * scl, toolButtonSize / 430.0 * scl);
-                        gc.setFill(dim(invert(bgColor), 0.5));
+                        gc.setFill(Color.WHITE);
                         gc.setFont(new Font("Tahoma", 7 / 430.0 * scl));
                         gc.fillText("RESET", (toolButtonX + 5) / 430.0 * scl, (toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i) + (toolButtonSize / 2) + 2) / 430.0 * scl);
                     } else {
-                        gc.setFill(Color.web("d7d7c3"));
+                        gc.setFill(invert(Color.web(getColorScheme()[getColorScheme().length - 2])).darker().darker());
                         gc.fillRect(toolButtonX / 430.0 * scl, (toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i)) / 430.0 * scl, toolButtonSize / 430.0 * scl, toolButtonSize / 430.0 * scl);
-                        gc.setFill(invert(bgColor));
+                        gc.setFill(Color.WHITE);
                         gc.setFont(new Font("Tahoma", 7 / 430.0 * scl));
                         gc.fillText("CLEAR", (toolButtonX + 5) / 430.0 * scl, (toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i) + (toolButtonSize / 2) + 2) / 430.0 * scl);
                     }
                 } else {
                     gc.setFill(Color.web(getColorScheme()[i]));
                     gc.fillRect(toolButtonX / 430.0 * scl, (toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i)) / 430.0 * scl, toolButtonSize / 430.0 * scl, toolButtonSize / 430.0 * scl);
-                    gc.setFill(invert(bgColor));
+                    gc.setFill(Color.WHITE);
                     gc.setFont(new Font("Tahoma", 7 / 430.0 * scl));
                     gc.fillText(sandboxButtonsFSNames[i], (toolButtonX + xAdd[i]) / 430.0 * scl, (toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i) + (toolButtonSize / 2) + 2) / 430.0 * scl);
                 }
