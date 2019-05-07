@@ -248,10 +248,6 @@ public class Snake extends Application implements Loggable {
         primaryStage.setTitle("JSnake");
         primaryStage.setScene(scene);
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("resources/art/icon36.jpg")));
-        primaryStage.setMaxWidth(466);
-        primaryStage.setMinWidth(466);
-        primaryStage.setMaxHeight(488);
-        primaryStage.setMinHeight(488);
         primaryStage.setOnCloseRequest(event -> {
             log.saveLogFile("resources/logs/log" + log.formatDateTime().replaceAll("[.:/ ]", "") + ".snklog");
             // Safely exit the program when closed
