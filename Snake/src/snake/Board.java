@@ -503,9 +503,9 @@ public class Board implements Loggable {
         body = "249b0f";
         head = "b76309";
         bg = "ceceb5";
-        backdrop = "a29b95";
+        backdrop = "70157e";
         rock = "53585e";
-        applesEaten = "750BE0";
+        applesEaten = "f6c48a";
         toolPanel.updateButtonColors(getColorScheme());
     }
 
