@@ -552,7 +552,7 @@ public final class Grid extends squares implements Updateable, Loggable {
      */
     public void reset() {
         won = false;
-        if (this.useSameSeedOnReset) {
+        if (this.useSameSeedOnReset && diffLevel == 0) {
             random.setSeed(seed);
         } else {
             random.setSeed(random.nextLong());
