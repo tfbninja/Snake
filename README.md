@@ -1,4 +1,9 @@
 # JavaFX Snake
+Requirements:
+- Best played on Windows 7 or later (excluding 8 of course, we don't speak of that)
+- Can't guarantee anything on Mac
+- You'll need Java SDK 8, anything else might not work
+
 Play by downloading this repository as a .zip file, extracting, navigating to the 'Executable JAR' folder, and running 'Snake.jar.' Tricky, I know. Play instructions are contained in-game.
 
 ## Keyboard shortcuts:
