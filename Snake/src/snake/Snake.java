@@ -102,6 +102,8 @@ public class Snake extends Application implements Loggable {
     private Logger log = new Logger(this);
     private static String events = "";
 
+    private static ArrayList<ImageView> helpScreens = new ArrayList<>();
+    private static int helpIndex = 0;
     private static boolean fullscreen = false;
 //</editor-fold>
 
@@ -109,6 +111,7 @@ public class Snake extends Application implements Loggable {
     public void start(Stage primaryStage) {
         //<editor-fold defaultstate="collapsed" desc="initialization">
         setupBGMusic();
+        setupHelp();
         //Assert resources folder
         // Create Board of block objects
         board = new Board(canvasW, canvasH, MM, MENU, GS, primaryStage);
@@ -442,6 +445,23 @@ public class Snake extends Application implements Loggable {
         root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
     }
 
+    public static void incrementHelpIndex() {
+        if (helpIndex < helpScreens.size()) {
+            if (helpIndex == helpScreens.size() - 1) {
+                helpIndex = 0;
+                MM.setCurrent(0);
+            } else {
+                helpIndex++;
+            }
+        }
+    }
+
+    public static void decrementHelpIndex() {
+        if (helpIndex > 0) {
+            helpIndex--;
+        }
+    }
+
     /**
      * Sets what the user views
      *
@@ -512,13 +532,13 @@ public class Snake extends Application implements Loggable {
                 if (fullscreen) {
                     double w = primaryStage.getWidth();
                     double h = primaryStage.getHeight();
-                    int yspace = (int) (Math.max(h - w, 0) / 2);
-                    int xspace = (int) (Math.max(w - h, 0) / 2);
+                    int yspace = (int) (h / 2 - 225);
+                    int xspace = (int) (Math.max(w - h + 450, 0) / 2);
                     root.setPadding(new Insets(yspace, xspace, yspace, xspace));
                 } else {
-                    root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+                    root.setPadding(new Insets(0, 0, 0, 0));
                 }
-                root.setTop(HELP_IV);
+                root.setTop(helpScreens.get(helpIndex));
                 break;
             case 3:
                 root.setStyle("-fx-background-color: black");
@@ -754,6 +774,19 @@ public class Snake extends Application implements Loggable {
         } else {
             events += "Can not find resources/sounds/bg folder | ";
             System.out.println("Cannot find the resources/sounds/bg folder... try setting the working directory to the folder that Snake.java or Snake.jar is contained in.");
+        }
+    }
+
+    public void setupHelp() {
+        File helpFolder = new File("resources/art/help");
+        File[] directoryListing = helpFolder.listFiles();
+        if (directoryListing != null) {
+            for (File child : directoryListing) {
+                helpScreens.add(getImageView(child.getAbsolutePath()));
+            }
+        } else {
+            events += "Can not find resources/art/help folder | ";
+            System.out.println("Cannot find the resources/art/help folder... try setting the working directory to the folder that Snake.java or Snake.jar is contained in.");
         }
     }
 

@@ -901,6 +901,14 @@ public class Board implements Loggable {
             System.out.println(grid.exportCode());
         }
 
+        if (MM.getCurrent() == 2 && (e.getCode() == KeyCode.RIGHT || e.getCode() == KeyCode.LEFT)) {
+            if (e.getCode() == KeyCode.RIGHT) {
+                Snake.incrementHelpIndex();
+            } else {
+                Snake.decrementHelpIndex();
+            }
+        }
+
         if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0) {
             if (null != e.getCode()) {
                 switch (e.getCode()) {
@@ -1241,6 +1249,10 @@ public class Board implements Loggable {
         if (leftClick) {
             // left click
 
+            if (MM.getCurrent() == 2) {
+                Snake.incrementHelpIndex();
+            }
+
             // sandbox mode editing
             if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0 && xVal >= 0 && xVal < grid.getWidth() && yVal >= 0 && yVal < grid.getLength()) {
                 int tool = toolPanel.getCurrentTool();
@@ -1355,8 +1367,6 @@ public class Board implements Loggable {
                     Clipboard tmpClp = Toolkit.getDefaultToolkit().getSystemClipboard();
                     tmpClp.setContents(tmpSel, null);
                 }
-            } else if (MM.getCurrent() == 2) {
-                MM.setCurrent(0);
             }
         } else if (e.isSecondaryButtonDown()) {
             // right click
