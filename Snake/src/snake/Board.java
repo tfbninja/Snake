@@ -46,7 +46,8 @@ public class Board implements Loggable {
     private String body = "249b0f";
     private String head = "b76309";
     private String bg = "ceceb5";
-    private String backdrop = "a29b95";
+    private String backdropKill = "a29b95";
+    private String backdropSafe = "000000";
     private String rock = "53585e";
     private String applesEaten = "750BE0";
     private final String[] portalColors = {"90094E", "550C74", "dfb708", "ef5658", "bb3dff"};
@@ -173,7 +174,7 @@ public class Board implements Loggable {
     }
 
     /**
-     * Sets the different colors variables to a dark colors cheme
+     * Sets the different colors variables to a dark colors scheme
      */
     public void setDarkMode() {
         blank = "444444";
@@ -181,7 +182,8 @@ public class Board implements Loggable {
         body = "2377DD";
         head = "AF6C00";
         bg = "212121";
-        backdrop = "000000";
+        backdropKill = "490C00";
+        backdropSafe = "16351F";
         rock = "1e1e1e";
         applesEaten = "EDDDD4";
         toolPanel.updateButtonColors(getColorScheme());
@@ -490,8 +492,14 @@ public class Board implements Loggable {
      * @return A list of colors formatted like this: "rrggbb"
      */
     public String[] getColorScheme() {
-        String[] colorScheme = {blank, head, apple, rock, portalColors[0], backdrop, bg};
-        return colorScheme;
+        if (grid.getEdgeKills()) {
+            String[] colorScheme = {blank, head, apple, rock, portalColors[0], backdropSafe, backdropKill, bg};
+            return colorScheme;
+        } else {
+            String[] colorScheme = {blank, head, apple, rock, portalColors[0], backdropKill, backdropSafe, bg};
+            return colorScheme;
+        }
+
     }
 
     /**
@@ -503,19 +511,20 @@ public class Board implements Loggable {
         body = "249b0f";
         head = "b76309";
         bg = "ceceb5";
-        backdrop = "70157e";
+        backdropKill = "bf6490";
+        backdropSafe = "61E786";
         rock = "53585e";
-        applesEaten = "f6c48a";
+        applesEaten = "e9edbb";
         toolPanel.updateButtonColors(getColorScheme());
     }
 
     /**
      * Either this or turnOffFullscreen(w,h) MUST be called during
      * initialization of Board for it to properly initialize graphics variables
+     *
      * @param screenWidth Width of the screen
      * @param screenHeight Height of the screen
      */
-
     public void setFullscreen(double screenWidth, double screenHeight) {
         fullscreen = true;
         screenW = screenWidth;
@@ -559,13 +568,11 @@ public class Board implements Loggable {
      * @param w Width of the window
      * @param h Height of the window
      */
-
     /**
      *
      * @param w
      * @param h
      */
-
     public void turnOffFullscreen(int w, int h) {
         fullscreen = false;
         screenW = w;
@@ -666,16 +673,16 @@ public class Board implements Loggable {
         GraphicsContext gc = this.canvas.getGraphicsContext2D();
 
         //clear background
-        gc.setFill(Color.web(backdrop));
-        gc.fillRect(0, 0, this.width, this.height);
-
         if (this.grid.getEdgeKills()) {
             // update red border indicating that edge kills
-            gc.setStroke(Color.CRIMSON.darker());
+            gc.setStroke(Color.web(backdropKill));
+            gc.setFill(Color.web(backdropKill));
         } else {
             // update green border indicating that warp mode is on
-            gc.setStroke(Color.CHARTREUSE);
+            gc.setStroke(Color.web(backdropSafe));
+            gc.setFill(Color.web(backdropSafe));
         }
+        gc.fillRect(0, 0, this.width, this.height);
         gc.setLineWidth(edgeSize);
         int pixelSize = GRIDSIZE * blockSize + GRIDSIZE * margin;
         gc.setFill(Color.web(this.bg));
