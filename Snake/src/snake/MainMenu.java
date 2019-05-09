@@ -13,21 +13,10 @@ public class MainMenu extends Controller {
 
     private boolean music = true;
     private boolean sfx = true;
-    private ImageView current;
-    private ImageView OnOn;
-    private ImageView OnOff;
-    private ImageView OffOn;
-    private ImageView OffOff;
-
     /**
      * Initializes the ImageView objects for the 4 menu screens
      */
     public MainMenu() {
-        // set up files
-        OnOn = getImageView("resources/art/updatedMenus/ButtonShadows/menuMOnSOn.png");
-        OnOff = getImageView("resources/art/updatedMenus/ButtonShadows/menuMOnSOff.png");
-        OffOn = getImageView("resources/art/updatedMenus/ButtonShadows/menuMOffSOn.png");
-        OffOff = getImageView("resources/art/updatedMenus/ButtonShadows/menuMOffSOff.png");
     }
 
     /**
@@ -47,40 +36,13 @@ public class MainMenu extends Controller {
     }
 
     /**
-     *
-     * @return The ImageView object currently in use
-     */
-    public ImageView getMenu() {
-        OnOn = getImageView("resources/art/updatedMenus/ButtonShadows/menuMOnSOn.png");
-        OnOff = getImageView("resources/art/updatedMenus/ButtonShadows/menuMOnSOff.png");
-        OffOn = getImageView("resources/art/updatedMenus/ButtonShadows/menuMOffSOn.png");
-        OffOff = getImageView("resources/art/updatedMenus/ButtonShadows/menuMOffSOff.png");
-        if (music) {
-            if (sfx) {
-                return OnOn;
-            }
-            return OnOff;
-        }
-        if (sfx) {
-            return OffOn;
-        }
-        return OffOff;
-        // return current;
-    }
-
-    /*
      * Sets all vars to false
-     */
-
-    /**
-     *
      */
 
     @Override
     public void turnOff() {
         music = false;
         sfx = false;
-        current = OffOff;
     }
 
     /**
@@ -89,7 +51,6 @@ public class MainMenu extends Controller {
     public void turnOn() {
         music = true;
         sfx = true;
-        current = OnOn;
     }
 
     /**
@@ -98,11 +59,6 @@ public class MainMenu extends Controller {
      */
     public void turnOffMusic() {
         music = false;
-        if (sfx) {
-            current = OffOn;
-        } else {
-            current = OffOff;
-        }
     }
 
     /**
@@ -111,11 +67,6 @@ public class MainMenu extends Controller {
      */
     public void turnOffSFX() {
         sfx = false;
-        if (music) {
-            current = OnOff;
-        } else {
-            current = OffOff;
-        }
     }
 
     /**
@@ -124,11 +75,6 @@ public class MainMenu extends Controller {
      */
     public void turnOnMusic() {
         music = true;
-        if (sfx) {
-            current = OnOn;
-        } else {
-            current = OnOff;
-        }
     }
 
     /**
@@ -137,10 +83,5 @@ public class MainMenu extends Controller {
      */
     public void turnOnSFX() {
         sfx = true;
-        if (music) {
-            current = OnOn;
-        } else {
-            current = OffOn;
-        }
     }
 }

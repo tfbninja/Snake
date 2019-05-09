@@ -59,7 +59,7 @@ public class Snake extends Application implements Loggable {
     private static Board board;
 
     private ArrayList<Sound> bgMusic = new ArrayList<>();
-    private final Sound DAWON = new Sound("resources/sounds/DAWON.mp3");
+    private Sound DAWON;
     private boolean won = false;
     private static ArrayList<Integer> scores = new ArrayList<>();
     private int[] oldScores;
@@ -111,9 +111,17 @@ public class Snake extends Application implements Loggable {
     @Override
     public void start(Stage primaryStage) {
         //<editor-fold defaultstate="collapsed" desc="initialization">
+        //Assert resources folder
+        File resourcesFolder = new File("resources/");
+        if (!resourcesFolder.exists()) {
+            System.out.println("FATAL ERROR: RESOURCES FOLDER NOT FOUND, EXITING PROGRAM.");
+            System.exit(404);
+        }
+
         setupBGMusic();
         setupHelp();
-        //Assert resources folder
+        DAWON = new Sound("resources/sounds/DAWON.mp3");
+
         // Create Board of block objects
         board = new Board(canvasW, canvasH, MM, MENU, GS, primaryStage);
         board.setOutsideMargin(canvasMargin);
@@ -243,7 +251,7 @@ public class Snake extends Application implements Loggable {
         root.setStyle("-fx-background-color: black");
 
         // More information on the MainMenu class in MainMenu.java
-        root.setTop(MENU.getMenu()); // display titlescreen
+        root.setTop(board.getFullScreenMenu(430)); // display titlescreen
 
         // A Scene object tells a Stage object what to display
         Scene scene = new Scene(root, WIDTH, HEIGHT);
