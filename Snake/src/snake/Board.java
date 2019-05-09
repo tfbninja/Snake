@@ -49,7 +49,8 @@ public class Board implements Loggable {
     private String backdropKill = "a29b95";
     private String backdropSafe = "000000";
     private String rock = "53585e";
-    private String applesEaten = "750BE0";
+    private String applesEatenKill = "750BE0";
+    private String applesEatenSafe = "750BE0";
     private final String[] portalColors = {"90094E", "550C74", "dfb708", "ef5658", "bb3dff"};
 
     private boolean lost = false;
@@ -112,11 +113,11 @@ public class Board implements Loggable {
 //</editor-fold>
     /**
      *
-     * @param w the horizontal width
-     * @param h the vertical height
-     * @param mm the MenuManager object
-     * @param menu the Menu object
-     * @param gs the GameState object
+     * @param w       the horizontal width
+     * @param h       the vertical height
+     * @param mm      the MenuManager object
+     * @param menu    the Menu object
+     * @param gs      the GameState object
      * @param primary the stage object holding the various graphical components
      */
     public Board(int w, int h, MenuManager mm, MainMenu menu, GameState gs, Stage primary) {
@@ -157,7 +158,8 @@ public class Board implements Loggable {
                 + "Colors: [blank: \"" + blank + "\", apple: \"" + apple + "\", "
                 + "body: \"" + body + "\", head: \""
                 + head + "\", bg: \"" + bg + "\", rock: \""
-                + rock + "\", applesEaten: \"" + applesEaten
+                + rock + "\", applesEatenKill: \"" + applesEatenKill
+                + "\", applesEatenSafe: \"" + applesEatenSafe
                 + "\", portal colors: " + Arrays.deepToString(portalColors) + "], "
                 + "lost: " + lost + ", "
                 + "key presses: " + keyPresses + ", "
@@ -182,17 +184,18 @@ public class Board implements Loggable {
         body = "2377DD";
         head = "AF6C00";
         bg = "212121";
-        backdropKill = "490C00";
-        backdropSafe = "16351F";
+        backdropKill = "5B2333";
+        backdropSafe = "247BA0";
         rock = "1e1e1e";
-        applesEaten = "EDDDD4";
+        applesEatenKill = "0A090C";
+        applesEatenSafe = "0A090C";
         toolPanel.updateButtonColors(getColorScheme());
     }
 
     /**
      *
      * @param size the dimension defining the side length of the imaginary
-     * square around the menu screen
+     *             square around the menu screen
      * @return A Canvas object with graphics displaying the menu
      */
     public Canvas getFullScreenMenu(double size) {
@@ -511,10 +514,11 @@ public class Board implements Loggable {
         body = "249b0f";
         head = "b76309";
         bg = "ceceb5";
-        backdropKill = "bf6490";
-        backdropSafe = "61E786";
+        backdropKill = "F61067";
+        backdropSafe = "7AE7C7";
         rock = "53585e";
-        applesEaten = "e9edbb";
+        applesEatenKill = "e9edbb";
+        applesEatenSafe = "EA633A";
         toolPanel.updateButtonColors(getColorScheme());
     }
 
@@ -522,7 +526,7 @@ public class Board implements Loggable {
      * Either this or turnOffFullscreen(w,h) MUST be called during
      * initialization of Board for it to properly initialize graphics variables
      *
-     * @param screenWidth Width of the screen
+     * @param screenWidth  Width of the screen
      * @param screenHeight Height of the screen
      */
     public void setFullscreen(double screenWidth, double screenHeight) {
@@ -721,7 +725,11 @@ public class Board implements Loggable {
         }
 
         // update apples eaten
-        gc.setFill(Color.web(applesEaten));
+        if (grid.getEdgeKills()) {
+            gc.setFill(Color.web(applesEatenKill));
+        } else {
+            gc.setFill(Color.web(applesEatenSafe));
+        }
         if (fullscreen) {
             gc.setFont(fullScreenAppleFont);
             gc.fillText("" + this.getGrid().getApplesEaten(), appleTextX, appleTextY);
@@ -1073,7 +1081,7 @@ public class Board implements Loggable {
     /**
      *
      * @return the lowest int starting from ten that has no corresponding pair
-     * in the grid
+     *         in the grid
      */
     public int findUnusedPortalNum() {
         int num = 10;
