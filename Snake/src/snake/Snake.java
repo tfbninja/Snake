@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
@@ -125,7 +126,9 @@ public class Snake extends Application implements Loggable {
 
         if (directoryListing != null) {
             for (File child : directoryListing) {
-                //if (child.getPath())
+                if (!child.getName().substring(3, 5).equals(String.valueOf(LocalDateTime.now().getMonth().getValue())) && !child.getName().substring(3, 4).equals(String.valueOf(LocalDateTime.now().getMonth().getValue()))) {
+                    child.delete();
+                }
             }
         } else {
             events += "Can not find resources/logs folder | ";
@@ -191,6 +194,8 @@ public class Snake extends Application implements Loggable {
 
         if (nightMode) {
             board.setDarkMode();
+        } else {
+            board.setLightMode();
         }
         board.setSFX(sfxOn);
         if (sfxOn) {
@@ -1216,7 +1221,7 @@ public class Snake extends Application implements Loggable {
     /**
      *
      * @param size side length of the imaginary square bounding the high score
-     *             screen
+     * screen
      * @return Canvas with high scores drawn on
      */
     public static Canvas drawHighScoreScreen(double size) {
@@ -1620,7 +1625,7 @@ public class Snake extends Application implements Loggable {
     /**
      *
      * @param filename destination file path
-     * @param score    raw score
+     * @param score raw score
      * @param username name of scorer
      */
     public static void writeEncodedScore(String filename, int score, String username) {
