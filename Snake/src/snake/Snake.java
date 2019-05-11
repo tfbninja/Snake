@@ -15,8 +15,12 @@ import java.util.Random;
 import java.util.Scanner;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
+import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -24,9 +28,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import javax.imageio.ImageIO;
@@ -97,6 +103,7 @@ public class Snake extends Application implements Loggable {
     private static final MenuManager MM = new MenuManager(MENUNAMES);
     private static final MainMenu MENU = new MainMenu();
     private static final GameState GS = new GameState(1);
+    private static final ViewManager VM = new ViewManager(false);
 
     private static boolean pause = false;
 
@@ -106,6 +113,16 @@ public class Snake extends Application implements Loggable {
     private static ArrayList<ImageView> helpScreens = new ArrayList<>();
     private static int helpIndex = 0;
     private static boolean fullscreen = false;
+
+    // 3d vars
+    //Tracks drag starting point for x and y
+    private double anchorX, anchorY;
+    //Keep track of current angle for x and y
+    private double anchorAngleX = 0;
+    private double anchorAngleY = 0;
+    //We will update these after drag. Using JavaFX property to bind with object
+    private final DoubleProperty angleX = new SimpleDoubleProperty(0);
+    private final DoubleProperty angleY = new SimpleDoubleProperty(0);
 //</editor-fold>
 
     @Override
@@ -123,7 +140,7 @@ public class Snake extends Application implements Loggable {
         DAWON = new Sound("resources/sounds/DAWON.mp3");
 
         // Create Board of block objects
-        board = new Board(canvasW, canvasH, MM, MENU, GS, primaryStage);
+        board = new Board(canvasW, canvasH, MM, MENU, GS, VM, primaryStage);
         board.setOutsideMargin(canvasMargin);
         log.add(board);
         log.add(board.getGrid());
@@ -254,11 +271,30 @@ public class Snake extends Application implements Loggable {
         root.setTop(board.getFullScreenMenu(430)); // display titlescreen
 
         // A Scene object tells a Stage object what to display
-        Scene scene = new Scene(root, WIDTH, HEIGHT);
+        Scene scene = new Scene(root, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
 
         // Get the Canvas used by Board ready to display when the user selects a difficulty level
         board.drawBlocks();
+        board.drawBlocks3d();
         board.getGrid().addMainMenu(MENU);
+
+        initMouseControl(board.getGroup(), scene);
+
+        //Prepare X and Y axis rotation transformation obejcts
+        Rotate xRotate;
+        Rotate yRotate;
+        //Add both transformation to the container
+        board.getGroup().getTransforms().addAll(
+                xRotate = new Rotate(0, Rotate.X_AXIS),
+                yRotate = new Rotate(0, Rotate.Y_AXIS)
+        );
+        /*
+         * Bind Double property angleX/angleY with corresponding transformation.
+         * When we update angleX / angleY, the transform will also be auto
+         * updated.
+         */
+        xRotate.angleProperty().bind(angleX);
+        yRotate.angleProperty().bind(angleY);
 
         // This is the class that actually displays a 'physical' window on the screen
         primaryStage.setTitle("JSnake");
@@ -385,16 +421,33 @@ public class Snake extends Application implements Loggable {
                      * we grab it from the Board object here
                      */
                     nightMode = board.getNightTheme();
-                    updateScreen(primaryStage, root, HELP_IV);
+                    updateScreen(primaryStage, root, scene, HELP_IV);
                 }
             }
         }.
                 start();
 
+        scene.setOnScroll((ScrollEvent event) -> {
+            events += "Scroll | ";
+            board.zoom(event.getDeltaY());
+        });
+
         // Input handling
         scene.setOnMousePressed(
                 (MouseEvent event) -> {
                     events += "Mouse clk at (" + event.getX() + ", " + event.getY() + ") | ";
+                    if (VM.get3dMode()) {
+                        //Save start points
+                        anchorX = event.getSceneX();
+                        anchorY = event.getSceneY();
+                        //Save current rotation angle
+                        anchorAngleX = angleX.get();
+                        anchorAngleY = angleY.get();
+                        if (event.isMiddleButtonDown()) {
+                            angleX.set(0);
+                            angleY.set(0);
+                        }
+                    }
                     board.mouseClicked(event);
                 }
         );
@@ -402,6 +455,15 @@ public class Snake extends Application implements Loggable {
         scene.setOnMouseDragged(
                 (MouseEvent event) -> {
                     board.mouseDragged(event);
+                    if (VM.get3dMode()) {
+                        /*
+                         * event.getSceneY() gives current Y value. Find how
+                         * much
+                         * far away it is from saved anchorY point.
+                         */
+                        angleX.set(anchorAngleX - (anchorY - event.getSceneY()));
+                        angleY.set(anchorAngleY + anchorX - event.getSceneX());
+                    }
                 }
         );
 
@@ -413,22 +475,50 @@ public class Snake extends Application implements Loggable {
 
         scene.setOnKeyPressed(
                 (KeyEvent eventa) -> {
+
                     if (eventa.getCode() == KeyCode.F11) {
                         if (fullscreen) {
                             turnOffFullscreen(primaryStage, board, root);
                         } else {
                             turnOnFullscreen(primaryStage, root);
                         }
-                        updateScreen(primaryStage, root, HELP_IV);
+                        updateScreen(primaryStage, root, scene, HELP_IV);
                     }
                     if (eventa.getCode() == KeyCode.ESCAPE && fullscreen) {
                         turnOffFullscreen(primaryStage, board, root);
-                        updateScreen(primaryStage, root, HELP_IV);
+                        updateScreen(primaryStage, root, scene, HELP_IV);
                     } else {
                         board.keyPressed(eventa);
                     }
                 }
         );
+    }
+
+    private void initMouseControl(SmartGroup group, Scene scene) {
+        Rotate xRotate;
+        Rotate yRotate;
+        group.getTransforms().addAll(
+                xRotate = new Rotate(0, Rotate.X_AXIS),
+                yRotate = new Rotate(0, Rotate.Y_AXIS)
+        );
+        xRotate.angleProperty().bind(angleX);
+        yRotate.angleProperty().bind(angleY);
+
+        scene.setOnMousePressed(event -> {
+            if (VM.get3dMode()) {
+                anchorX = event.getSceneX();
+                anchorY = event.getSceneY();
+                anchorAngleX = angleX.get();
+                anchorAngleY = angleY.get();
+            }
+        });
+
+        scene.setOnMouseDragged(event -> {
+            if (VM.get3dMode()) {
+                angleX.set(anchorAngleX - (anchorY - event.getSceneY()));
+                angleY.set(anchorAngleY + anchorX - event.getSceneX());
+            }
+        });
     }
 
     /**
@@ -482,10 +572,25 @@ public class Snake extends Application implements Loggable {
      * @param root
      * @param HELP_IV
      */
-    public void updateScreen(Stage primaryStage, BorderPane root, ImageView HELP_IV) {
+    public void updateScreen(Stage primaryStage, BorderPane root, Scene scene, ImageView HELP_IV) {
         if (primaryStage.isMaximized()) {
             primaryStage.setMaximized(false);
             turnOnFullscreen(primaryStage, root);
+        }
+
+        if (VM.get3dMode()) {
+            if (scene.getCamera() != board.getCamera()) {
+                scene.setCamera(board.getCamera());
+            }
+        } else {
+            if (scene.getCamera() == board.getCamera()) {
+                PerspectiveCamera def = new PerspectiveCamera();
+                def.setTranslateX(0);
+                def.setTranslateY(0);
+                def.setTranslateZ(0);
+
+                scene.setCamera(def);
+            }
         }
         /*
          * This switch statement is the main controller of what is
@@ -706,8 +811,14 @@ public class Snake extends Application implements Loggable {
 
                 // show the actual game
                 sandboxReset = false;
-                if (root.getTop() != board.getCanvas() && !GS.isPostGame()) {
-                    root.setTop(board.getCanvas());
+                if (VM.get3dMode()) {
+                    if (root.getTop() != board.getGroup() && !GS.isPostGame()) {
+                        root.setTop(board.getGroup());
+                    }
+                } else {
+                    if (root.getTop() != board.getCanvas() && !GS.isPostGame()) {
+                        root.setTop(board.getCanvas());
+                    }
                 }
                 if (GS.isPreGame()) {
                     oldScores = toList(scores);
@@ -720,7 +831,11 @@ public class Snake extends Application implements Loggable {
                     }
                 }
                 if (!GS.isPostGame()) {
-                    board.drawBlocks();
+                    if (VM.get3dMode()) {
+                        board.drawBlocks3d();
+                    } else {
+                        board.drawBlocks();
+                    }
                     scoresOverwritten = false;
                     if (frame % board.getGrid().getFrameSpeed() == 0) {
                         for (int i = 0; i < board.getGrid().getGensPerFrame(); i++) {
@@ -1229,7 +1344,7 @@ public class Snake extends Application implements Loggable {
     /**
      *
      * @param size side length of the imaginary square bounding the high score
-     * screen
+     *             screen
      * @return Canvas with high scores drawn on
      */
     public static Canvas drawHighScoreScreen(double size) {
@@ -1633,7 +1748,7 @@ public class Snake extends Application implements Loggable {
     /**
      *
      * @param filename destination file path
-     * @param score raw score
+     * @param score    raw score
      * @param username name of scorer
      */
     public static void writeEncodedScore(String filename, int score, String username) {

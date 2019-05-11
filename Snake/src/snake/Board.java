@@ -4,15 +4,18 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import javafx.scene.AmbientLight;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.shape.*;
-import javafx.scene.Group;
-import javafx.scene.paint.PhongMaterial;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.*;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Pair;
@@ -32,9 +35,16 @@ public class Board implements Loggable {
     private int height;
     private Grid grid;
     private Canvas canvas;
-    private Group root;
+    private SmartGroup root;
+    private Box[][] boxes;
+    private Box[][] borderBoxes;
+    private PerspectiveCamera camera;
+    private AmbientLight ambient1;
+    private PointLight point1;
+
+    private int cameraSpeed = 100;
     private int outsideMargin = 10;
-    private int margin = 1;
+    private int margin = 0;
     private int XMARGIN = 15;
     private int YMARGIN = 5;
     private int blockSize = 15;
@@ -99,6 +109,7 @@ public class Board implements Loggable {
     private final MenuManager MM;
     private final MainMenu MENU;
     private final GameState GS;
+    private final ViewManager VM;
 
     private int[][] sandbox;
 
@@ -117,22 +128,31 @@ public class Board implements Loggable {
 //</editor-fold>
     /**
      *
-     * @param w the horizontal width
-     * @param h the vertical height
-     * @param mm the MenuManager object
-     * @param menu the Menu object
-     * @param gs the GameState object
+     * @param w       the horizontal width
+     * @param h       the vertical height
+     * @param mm      the MenuManager object
+     * @param menu    the Menu object
+     * @param gs      the GameState object
      * @param primary the stage object holding the various graphical components
      */
-    public Board(int w, int h, MenuManager mm, MainMenu menu, GameState gs, Stage primary) {
+    public Board(int w, int h, MenuManager mm, MainMenu menu, GameState gs, ViewManager vm, Stage primary) {
         this.width = w;
         this.height = h;
         this.MM = mm;
         this.MENU = menu;
         this.GS = gs;
+        this.VM = vm;
         canvas = new Canvas(width, height);
-        root = new Group();
+
+        root = new SmartGroup();
         createGrid();
+        initBoxes();
+        camera = new PerspectiveCamera(false);
+        camera.setTranslateX(0);
+        camera.setTranslateY(0);
+        camera.setTranslateZ(0);
+        camera.setNearClip(0);
+
         grid.clearApples();
         primaryStage = primary;
         turnOffFullscreen(w, h);
@@ -140,8 +160,16 @@ public class Board implements Loggable {
         events += "Initialized | ";
     }
 
-    public Group getGroup() {
+    public SmartGroup getGroup() {
         return root;
+    }
+
+    public void zoom(double amt) {
+        camera.setTranslateZ(camera.getTranslateZ() + amt);
+    }
+
+    public PerspectiveCamera getCamera() {
+        return camera;
     }
 
     /**
@@ -204,7 +232,7 @@ public class Board implements Loggable {
     /**
      *
      * @param size the dimension defining the side length of the imaginary
-     * square around the menu screen
+     *             square around the menu screen
      * @return A Canvas object with graphics displaying the menu
      */
     public Canvas getFullScreenMenu(double size) {
@@ -535,7 +563,7 @@ public class Board implements Loggable {
      * Either this or turnOffFullscreen(w,h) MUST be called during
      * initialization of Board for it to properly initialize graphics variables
      *
-     * @param screenWidth Width of the screen
+     * @param screenWidth  Width of the screen
      * @param screenHeight Height of the screen
      */
     public void setFullscreen(double screenWidth, double screenHeight) {
@@ -548,7 +576,7 @@ public class Board implements Loggable {
         XMARGIN = Math.max((int) (screenWidth - screenHeight) / 2, 0);
         YMARGIN = Math.max((int) (screenHeight - screenWidth) / 2, 0) + 20;
         canvas = new Canvas(width, height);
-        margin = (int) ((Math.min(screenWidth, screenHeight) - Math.min(XMARGIN, YMARGIN) - borderSize - edgeSize) / 16) / grid.getWidth();
+        margin = 0; //(int) ((Math.min(screenWidth, screenHeight) - Math.min(XMARGIN, YMARGIN) - borderSize - edgeSize) / 16) / grid.getWidth();
         blockSize = (int) ((Math.min(screenWidth, screenHeight) - Math.min(XMARGIN, YMARGIN) - borderSize - edgeSize) / 16 * 15) / grid.getWidth();
 
         edgeSize = 5;
@@ -596,7 +624,7 @@ public class Board implements Loggable {
         outsideMargin = 10;
         XMARGIN = 15;
         YMARGIN = 5;
-        margin = 1;
+        margin = 0;
         blockSize = 15;
         borderSize = 2;
         edgeSize = 2;
@@ -631,6 +659,7 @@ public class Board implements Loggable {
     public void createGrid() {
         grid = new Grid(GRIDSIZE, GRIDSIZE, 21, 20);
         grid.addGameState(GS);
+        grid.addViewManager(VM);
         grid.addToolPanel(toolPanel);
         grid.addMainMenu(MENU);
     }
@@ -679,41 +708,118 @@ public class Board implements Loggable {
         }
     }
 
+    public void initBoxes() {
+        //ambient1 = new AmbientLight(Color.AQUA);
+        //ambient1.setTranslateX(-180);
+        //ambient1.setTranslateY(-90);
+        //ambient1.setTranslateZ(-120);
+//
+        //point1 = new PointLight(Color.AQUA);
+        //point1.setTranslateX(180);
+        //point1.setTranslateY(190);
+        //point1.setTranslateZ(180);
+        //root.getChildren().addAll(ambient1);//, point1);
+        borderBoxes = new Box[grid.getLength() + 2][grid.getWidth() + 2];
+        for (int r = 0; r < borderBoxes.length; r++) {
+            for (int c = 0; c < borderBoxes[r].length; c++) {
+                if (r == 0 || r == borderBoxes.length - 1 || c == 0 || c == borderBoxes[r].length - 1) {
+                    borderBoxes[r][c] = new Box();
+                    borderBoxes[r][c].setWidth(blockSize);
+                    borderBoxes[r][c].setHeight(blockSize);
+                    borderBoxes[r][c].setDepth(blockSize);
+                    root.getChildren().add(borderBoxes[r][c]);
+                } else {
+                    borderBoxes[r][c] = null;
+                }
+            }
+        }
+        boxes = new Box[grid.getLength()][grid.getWidth()];
+        for (int r = 0; r < grid.getLength(); r++) {
+            for (int c = 0; c < grid.getWidth(); c++) {
+                boxes[r][c] = new Box();
+                boxes[r][c].setWidth(blockSize);
+                boxes[r][c].setHeight(blockSize);
+                boxes[r][c].setDepth(blockSize);
+                boxes[r][c].setBlendMode(BlendMode.ADD);
+                //ambient1.getScope().add(boxes[r][c]);
+                //point1.getScope().add(boxes[r][c]);
+                root.getChildren().add(boxes[r][c]);
+            }
+        }
+    }
+
     public void drawBlocks3d() {
 
+        int r = 0, c = 0;
+        for (Box[] boxl : borderBoxes) {
+            for (Box box : boxl) {
+                if (box != null) {
+                    PhongMaterial edge = new PhongMaterial();
+                    box.setOpacity(1);
+                    if (nightTheme) {
+                        edge.setSpecularColor(Color.BLACK);
+                        edge.setSpecularPower(0.5);
+                        if (grid.getEdgeKills()) {
+                            edge.setDiffuseColor(Color.web(this.backdropKill));
+                        } else {
+                            edge.setDiffuseColor(Color.web(this.backdropSafe));
+                        }
+                    } else {
+                        edge.setSpecularColor(Color.LIGHTBLUE);
+                        edge.setSpecularPower(1.0);
+                        if (grid.getEdgeKills()) {
+                            edge.setDiffuseColor(Color.web(this.backdropKill));
+                        } else {
+                            edge.setDiffuseColor(Color.web(this.backdropSafe));
+                        }
+                    }
+                    box.setMaterial(edge);
+                    box.setTranslateX(r * (blockSize + margin) - (((grid.getWidth() / 2) + 1) * (blockSize + margin)));
+                    box.setTranslateY(c * (blockSize + margin) - (((grid.getLength() / 2) + 1) * (blockSize + margin)));
+                }
+                c++;
+            }
+            r++;
+        }
         //draw squares
         int xPixel = this.XMARGIN;
         for (int x = 0; x < this.grid.getWidth(); x++) {
             int yPixel = this.YMARGIN;
             for (int y = 0; y < this.grid.getLength(); y++) {
-                Box temp = new Box();
-                temp.setWidth(blockSize);
-                temp.setHeight(blockSize);
-                temp.setDepth(blockSize);
-                temp.setTranslateX(x * (blockSize + margin));
-                temp.setTranslateY(y * (blockSize + margin));
-                //Preparing the phong material of type specular color 
+                Box temp = boxes[y][x];
+                temp.setVisible(true);
+                temp.setOpacity(1);
+                temp.setTranslateX(x * (blockSize + margin) - (grid.getWidth() / 2 * (blockSize + margin)));
+                temp.setTranslateY(y * (blockSize + margin) - (grid.getLength() / 2 * (blockSize + margin)));
+
+                //Preparing the phong material of type specular color
                 PhongMaterial material = new PhongMaterial();
-                //setting the specular color map to the material 
-
-                root.getChildren().add(temp);
-                Color c;
-                if (this.grid.isApple(x, y)) {
-                    material.setSpecularColor(Color.web(this.apple)); // red
-                } else if (this.grid.isBody(x, y)) {
-                    material.setSpecularColor(Color.web(this.body)); // green
-                } else if (this.grid.isHead(x, y)) {
-                    material.setSpecularColor(Color.web(this.head)); // brown
-                } else if (this.grid.isBlank(x, y)) {
-                    material.setSpecularColor(Color.web(this.blank)); // light blue
-                } else if (this.grid.isRock(x, y)) {
-                    material.setSpecularColor(Color.web(this.rock)); // gray
-                } else if (this.grid.isPortal(x, y) && grid.find(grid.safeCheck(x, y)).size() == 2) {
-                    material.setSpecularColor(Color.web(portalColors[(grid.safeCheck(x, y) - 10) % this.portalColors.length]));
-                } else { // unmatched portal
+                if (nightTheme) {
                     material.setSpecularColor(Color.BLACK);
+                    material.setSpecularPower(0.5);
+                } else {
+                    material.setSpecularColor(Color.LIGHTBLUE);
+                    material.setSpecularPower(1.0);
                 }
+                //setting the specular color map to the material
 
+                if (this.grid.isApple(x, y)) {
+                    material.setDiffuseColor(Color.web(this.apple));
+                } else if (this.grid.isBody(x, y)) {
+                    material.setDiffuseColor(Color.web(this.body));
+                } else if (this.grid.isHead(x, y)) {
+                    material.setDiffuseColor(Color.web(this.head));
+                } else if (this.grid.isBlank(x, y)) {
+                    material.setDiffuseColor(Color.web(this.blank));
+                    temp.setBlendMode(BlendMode.ADD);
+                    temp.setOpacity(0);
+                } else if (this.grid.isRock(x, y)) {
+                    material.setDiffuseColor(Color.web(this.rock));
+                } else if (this.grid.isPortal(x, y) && grid.find(grid.safeCheck(x, y)).size() == 2) {
+                    material.setDiffuseColor(Color.web(portalColors[(grid.safeCheck(x, y) - 10) % this.portalColors.length]));
+                } else { // unmatched portal
+                    material.setDiffuseColor(Color.BLACK);
+                }
                 temp.setMaterial(material);
                 yPixel += margin + blockSize;
             }
@@ -919,11 +1025,18 @@ public class Board implements Loggable {
                 || i.getCode() == KeyCode.RIGHT || i.getCode() == KeyCode.D;
     }
 
+    public double distForm(double x, double y) {
+        return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+    }
+
     /**
      *
      * @param e KeyEvent holding the key press information
      */
     public void keyPressed(KeyEvent e) {
+        if (e.getCode() == KeyCode.P && MM.getCurrent() == 4) {
+            VM.toggle();
+        }
         if ((e.getCode() == KeyCode.R || e.getCode() == KeyCode.SPACE) && MM.getCurrent() == 3) {
             events += "reset | ";
             reset();
@@ -958,6 +1071,47 @@ public class Board implements Loggable {
                 Snake.incrementHelpIndex();
             } else {
                 Snake.decrementHelpIndex();
+            }
+        }
+
+        if (MM.getCurrent() == 4) {
+            if (null != e.getCode()) {
+                switch (e.getCode()) {
+                    case NUMPAD8:
+                        camera.setTranslateZ(camera.getTranslateZ() + cameraSpeed);
+                        break;
+                    case NUMPAD2:
+                        camera.setTranslateZ(camera.getTranslateZ() - cameraSpeed);
+                        break;
+                    case NUMPAD4:
+                        camera.setTranslateZ(camera.getTranslateX() - cameraSpeed);
+                        break;
+                    case NUMPAD6:
+                        camera.setTranslateZ(camera.getTranslateX() + cameraSpeed);
+                        break;
+                    case NUMPAD9:
+                        camera.setTranslateX(camera.getTranslateX() + distForm(cameraSpeed, cameraSpeed));
+                        camera.setTranslateY(camera.getTranslateY() - distForm(cameraSpeed, cameraSpeed));
+                        break;
+                    case NUMPAD7:
+                        camera.setTranslateX(camera.getTranslateX() - distForm(cameraSpeed, cameraSpeed));
+                        camera.setTranslateY(camera.getTranslateY() - distForm(cameraSpeed, cameraSpeed));
+                        break;
+                    case NUMPAD1:
+                        camera.setTranslateX(camera.getTranslateX() - distForm(cameraSpeed, cameraSpeed));
+                        camera.setTranslateY(camera.getTranslateY() + distForm(cameraSpeed, cameraSpeed));
+                        break;
+                    case NUMPAD3:
+                        camera.setTranslateX(camera.getTranslateX() + distForm(cameraSpeed, cameraSpeed));
+                        camera.setTranslateY(camera.getTranslateY() + distForm(cameraSpeed, cameraSpeed));
+                        break;
+                    case NUMPAD5:
+                        camera.setTranslateX(0);
+                        camera.setTranslateY(0);
+                        camera.setTranslateZ(0);
+                    default:
+                        break;
+                }
             }
         }
 
@@ -1141,7 +1295,7 @@ public class Board implements Loggable {
     /**
      *
      * @return the lowest int starting from ten that has no corresponding pair
-     * in the grid
+     *         in the grid
      */
     public int findUnusedPortalNum() {
         int num = 10;
