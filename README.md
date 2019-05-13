@@ -20,6 +20,8 @@ Play by downloading this repository as a .zip file, extracting, navigating to th
 | **X**        | Toggles SF**X**                           |
 | **N**        | Toggles **n**ight mode                    |
 | **R**        | **R**estarts level if on lose screen      |
+| **P**        | Toggles 3D mode                   	       |
+| **ENTER**    | Resets orientation in 3d mode             |
 | **BKSP**     | Exits to menu if on lose screen           |
 | **F11**      | Toggles fullscreen                        |
 | **ESC**      | Exits fullscreen                          |
@@ -37,3 +39,6 @@ In hard, your snake moves even faster, and now there are rocks randomly placed o
 
 ### Extreme
 Somewhat of a misnomer, a more apt title for this mode would be "***Wack***," but ya know, extreme sounds cooler. When you first start, you'll probably be like "wow this guy is stupid, the walls don't kill you, there's no rocks... what is he thinking calling this extreme???" Alright alright shut up. Just try warping through a wall and you'll see. Oh and your speed is 1.5x what it is on hard.
+
+### Sandbox
+Portals = fun
