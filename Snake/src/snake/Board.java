@@ -17,6 +17,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.*;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import javax.swing.JFrame;
@@ -38,6 +39,7 @@ public class Board implements Loggable {
     private SmartGroup root;
     private Box[][] boxes;
     private Box[][] borderBoxes;
+    private Text score;
     private PerspectiveCamera camera;
     private AmbientLight ambient1;
     private PointLight point1;
@@ -133,6 +135,7 @@ public class Board implements Loggable {
      * @param mm      the MenuManager object
      * @param menu    the Menu object
      * @param gs      the GameState object
+     * @param vm
      * @param primary the stage object holding the various graphical components
      */
     public Board(int w, int h, MenuManager mm, MainMenu menu, GameState gs, ViewManager vm, Stage primary) {
@@ -144,9 +147,7 @@ public class Board implements Loggable {
         this.VM = vm;
         canvas = new Canvas(width, height);
 
-        root = new SmartGroup();
         createGrid();
-        initBoxes();
         camera = new PerspectiveCamera(false);
         camera.setTranslateX(0);
         camera.setTranslateY(0);
@@ -155,7 +156,6 @@ public class Board implements Loggable {
 
         grid.clearApples();
         primaryStage = primary;
-        turnOffFullscreen(w, h);
 
         events += "Initialized | ";
     }
@@ -599,7 +599,9 @@ public class Board implements Loggable {
         for (Button b : sandboxButtonsFS) {
             b.setScale(scalar / 430.0);
         }
+        initBoxes();
         drawBlocks();
+        drawBlocks3d();
     }
 
     /*
@@ -614,7 +616,7 @@ public class Board implements Loggable {
      * @param w
      * @param h
      */
-    public void turnOffFullscreen(int w, int h) {
+    public final void turnOffFullscreen(int w, int h) {
         fullscreen = false;
         screenW = w;
         screenH = h;
@@ -622,8 +624,8 @@ public class Board implements Loggable {
         height = h;
         canvas = new Canvas(w, h);
         outsideMargin = 10;
-        XMARGIN = 15;
-        YMARGIN = 5;
+        XMARGIN = 25;
+        YMARGIN = 20;
         margin = 0;
         blockSize = 15;
         borderSize = 2;
@@ -641,7 +643,9 @@ public class Board implements Loggable {
         for (Button b : sandboxButtonsFS) {
             b.setScale(1);
         }
+        initBoxes();
         drawBlocks();
+        drawBlocks3d();
     }
 
     /**
@@ -656,7 +660,7 @@ public class Board implements Loggable {
      * The less repeated code, the better. All this does is create a grid and
      * load it with the necessary values
      */
-    public void createGrid() {
+    public final void createGrid() {
         grid = new Grid(GRIDSIZE, GRIDSIZE, 21, 20);
         grid.addGameState(GS);
         grid.addViewManager(VM);
@@ -709,16 +713,18 @@ public class Board implements Loggable {
     }
 
     public void initBoxes() {
-        //ambient1 = new AmbientLight(Color.AQUA);
-        //ambient1.setTranslateX(-180);
-        //ambient1.setTranslateY(-90);
-        //ambient1.setTranslateZ(-120);
-//
-        //point1 = new PointLight(Color.AQUA);
-        //point1.setTranslateX(180);
-        //point1.setTranslateY(190);
-        //point1.setTranslateZ(180);
-        //root.getChildren().addAll(ambient1);//, point1);
+        root = new SmartGroup();
+        Snake.initMouseControl(root);
+        score = new Text();
+        score.setFont(new Font("Calibri bold", 100));
+        PhongMaterial m = new PhongMaterial();
+        if (grid.getEdgeKills()) {
+            score.setFill(Color.web(this.applesEatenKill));
+        } else {
+            score.setFill(Color.web(this.applesEatenSafe));
+        }
+        root.getChildren().add(score);
+
         borderBoxes = new Box[grid.getLength() + 2][grid.getWidth() + 2];
         for (int r = 0; r < borderBoxes.length; r++) {
             for (int c = 0; c < borderBoxes[r].length; c++) {
@@ -774,25 +780,38 @@ public class Board implements Loggable {
                         }
                     }
                     box.setMaterial(edge);
-                    box.setTranslateX(r * (blockSize + margin) - (((grid.getWidth() / 2) + 1) * (blockSize + margin)));
-                    box.setTranslateY(c * (blockSize + margin) - (((grid.getLength() / 2) + 1) * (blockSize + margin)));
+                    if (fullscreen) {
+                        box.setTranslateX(XMARGIN + r * (blockSize + margin) - (((grid.getWidth() / 1) + 1) * (blockSize + margin)));
+                        box.setTranslateY(YMARGIN + c * (blockSize + margin) - (((grid.getLength() / 2) + 1) * (blockSize + margin)));
+                    } else {
+                        box.setTranslateX(XMARGIN + r * (blockSize + margin) - (((grid.getWidth() / 2) + 1) * (blockSize + margin)));
+                        box.setTranslateY(YMARGIN + c * (blockSize + margin) - (((grid.getLength() / 2) + 1) * (blockSize + margin)));
+                    }
                 }
                 c++;
             }
+            c = 0;
             r++;
         }
         //draw squares
-        int xPixel = this.XMARGIN;
         for (int x = 0; x < this.grid.getWidth(); x++) {
-            int yPixel = this.YMARGIN;
             for (int y = 0; y < this.grid.getLength(); y++) {
                 Box temp = boxes[y][x];
                 temp.setVisible(true);
                 temp.setOpacity(1);
-                temp.setTranslateX(x * (blockSize + margin) - (grid.getWidth() / 2 * (blockSize + margin)));
-                temp.setTranslateY(y * (blockSize + margin) - (grid.getLength() / 2 * (blockSize + margin)));
+                if (fullscreen) {
+                    temp.setTranslateX(XMARGIN + x * (blockSize + margin) - (grid.getWidth() * (blockSize + margin)));
+                    temp.setTranslateY(YMARGIN + y * (blockSize + margin) - (grid.getLength() / 2 * (blockSize + margin)));
+                    root.setTranslateX(XMARGIN);
+                    root.setTranslateY(YMARGIN / 2);
+                } else {
+                    root.setTranslateX(10);
+                    root.setTranslateY(4);
+                    temp.setTranslateX(XMARGIN + x * (blockSize + margin) - (grid.getWidth() / 2 * (blockSize + margin)));
+                    temp.setTranslateY(YMARGIN + y * (blockSize + margin) - (grid.getLength() / 2 * (blockSize + margin)));
+                }
 
-                //Preparing the phong material of type specular color
+                //Preparing the phong material
                 PhongMaterial material = new PhongMaterial();
                 if (nightTheme) {
                     material.setSpecularColor(Color.BLACK);
@@ -821,10 +840,12 @@ public class Board implements Loggable {
                     material.setDiffuseColor(Color.BLACK);
                 }
                 temp.setMaterial(material);
-                yPixel += margin + blockSize;
             }
-            xPixel += margin + blockSize;
         }
+        score.setText(String.valueOf(grid.getApplesEaten()));
+        score.setTranslateX(XMARGIN + (margin + blockSize) * grid.getWidth() / 4 - 100);
+        score.setTranslateY(YMARGIN + (margin + blockSize) * grid.getLength() / 4 - 100);
+        score.setTranslateZ(100);
     }
 
     /**

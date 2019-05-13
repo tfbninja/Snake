@@ -51,7 +51,7 @@ public class Snake extends Application implements Loggable {
     private static final int canvasH = 430;
     private final int WIDTH = 430 + canvasMargin * 2;
     private final int HEIGHT = 430 + canvasMargin * 2;
-
+    private static Scene scene;
     private static final Random random = new Random(System.currentTimeMillis());
 
     // secondary sandbox tool window
@@ -116,13 +116,13 @@ public class Snake extends Application implements Loggable {
 
     // 3d vars
     //Tracks drag starting point for x and y
-    private double anchorX, anchorY;
+    private static double anchorX, anchorY;
     //Keep track of current angle for x and y
-    private double anchorAngleX = 0;
-    private double anchorAngleY = 0;
+    private static double anchorAngleX = 0;
+    private static double anchorAngleY = 0;
     //We will update these after drag. Using JavaFX property to bind with object
-    private final DoubleProperty angleX = new SimpleDoubleProperty(0);
-    private final DoubleProperty angleY = new SimpleDoubleProperty(0);
+    private static final DoubleProperty angleX = new SimpleDoubleProperty(0);
+    private static final DoubleProperty angleY = new SimpleDoubleProperty(0);
 //</editor-fold>
 
     @Override
@@ -142,10 +142,11 @@ public class Snake extends Application implements Loggable {
         // Create Board of block objects
         board = new Board(canvasW, canvasH, MM, MENU, GS, VM, primaryStage);
         board.setOutsideMargin(canvasMargin);
+
         log.add(board);
         log.add(board.getGrid());
 
-        // if log files are more than 30 days old, delete
+        // if log files are from last month, delete
         File logFolder = new File("resources/logs");
         File[] directoryListing = logFolder.listFiles();
 
@@ -217,11 +218,7 @@ public class Snake extends Application implements Loggable {
         board.addToolFrame(toolboxFrame);
         board.addToolPanel(toolPanel);
 
-        if (nightMode) {
-            board.setDarkMode();
-        } else {
-            board.setLightMode();
-        }
+        board.setNightTheme(nightMode);
         board.setSFX(sfxOn);
         if (sfxOn) {
             MENU.turnOnSFX();
@@ -271,14 +268,16 @@ public class Snake extends Application implements Loggable {
         root.setTop(board.getFullScreenMenu(430)); // display titlescreen
 
         // A Scene object tells a Stage object what to display
-        Scene scene = new Scene(root, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
+        scene = new Scene(root, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
+        board.turnOffFullscreen(canvasW, canvasH);
+        board.initBoxes();
 
         // Get the Canvas used by Board ready to display when the user selects a difficulty level
         board.drawBlocks();
         board.drawBlocks3d();
         board.getGrid().addMainMenu(MENU);
 
-        initMouseControl(board.getGroup(), scene);
+        initMouseControl(board.getGroup());
 
         //Prepare X and Y axis rotation transformation obejcts
         Rotate xRotate;
@@ -487,6 +486,13 @@ public class Snake extends Application implements Loggable {
                     if (eventa.getCode() == KeyCode.ESCAPE && fullscreen) {
                         turnOffFullscreen(primaryStage, board, root);
                         updateScreen(primaryStage, root, scene, HELP_IV);
+                    } else if (eventa.getCode() == KeyCode.ENTER && MM.getCurrent() == 4) {
+                        anchorAngleX = 0;
+                        anchorAngleY = 0;
+                        anchorX = 0;
+                        anchorY = 0;
+                        angleX.set(0);
+                        angleY.set(0);
                     } else {
                         board.keyPressed(eventa);
                     }
@@ -494,7 +500,7 @@ public class Snake extends Application implements Loggable {
         );
     }
 
-    private void initMouseControl(SmartGroup group, Scene scene) {
+    public static void initMouseControl(SmartGroup group) {
         Rotate xRotate;
         Rotate yRotate;
         group.getTransforms().addAll(
