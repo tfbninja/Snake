@@ -5,6 +5,7 @@ import java.awt.datatransfer.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javafx.scene.AmbientLight;
+import javafx.scene.DepthTest;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
 import javafx.scene.canvas.Canvas;
@@ -130,11 +131,11 @@ public class Board implements Loggable {
 //</editor-fold>
     /**
      *
-     * @param w       the horizontal width
-     * @param h       the vertical height
-     * @param mm      the MenuManager object
-     * @param menu    the Menu object
-     * @param gs      the GameState object
+     * @param w the horizontal width
+     * @param h the vertical height
+     * @param mm the MenuManager object
+     * @param menu the Menu object
+     * @param gs the GameState object
      * @param vm
      * @param primary the stage object holding the various graphical components
      */
@@ -149,6 +150,7 @@ public class Board implements Loggable {
 
         createGrid();
         camera = new PerspectiveCamera(false);
+        camera.setDepthTest(DepthTest.ENABLE);
         camera.setTranslateX(0);
         camera.setTranslateY(0);
         camera.setTranslateZ(0);
@@ -232,7 +234,7 @@ public class Board implements Loggable {
     /**
      *
      * @param size the dimension defining the side length of the imaginary
-     *             square around the menu screen
+     * square around the menu screen
      * @return A Canvas object with graphics displaying the menu
      */
     public Canvas getFullScreenMenu(double size) {
@@ -563,7 +565,7 @@ public class Board implements Loggable {
      * Either this or turnOffFullscreen(w,h) MUST be called during
      * initialization of Board for it to properly initialize graphics variables
      *
-     * @param screenWidth  Width of the screen
+     * @param screenWidth Width of the screen
      * @param screenHeight Height of the screen
      */
     public void setFullscreen(double screenWidth, double screenHeight) {
@@ -714,6 +716,8 @@ public class Board implements Loggable {
 
     public void initBoxes() {
         root = new SmartGroup();
+        root.setDepthTest(DepthTest.ENABLE);
+        //root.getChildren().add(camera);
         Snake.initMouseControl(root);
         score = new Text();
         score.setFont(new Font("Calibri bold", 100));
@@ -1316,7 +1320,7 @@ public class Board implements Loggable {
     /**
      *
      * @return the lowest int starting from ten that has no corresponding pair
-     *         in the grid
+     * in the grid
      */
     public int findUnusedPortalNum() {
         int num = 10;
