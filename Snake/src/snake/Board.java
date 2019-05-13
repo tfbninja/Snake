@@ -818,7 +818,7 @@ public class Board implements Loggable {
                     material.setSpecularPower(0.5);
                 } else {
                     material.setSpecularColor(Color.LIGHTBLUE);
-                    material.setSpecularPower(1.0);
+                    material.setSpecularPower(100);
                 }
                 //setting the specular color map to the material
 
