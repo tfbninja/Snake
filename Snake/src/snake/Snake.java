@@ -334,8 +334,9 @@ public class Snake extends Application implements Loggable {
 
         root.setPadding(new Insets(100, 0, 0, 0));
         root.setStyle("-fx-background-color: black");
-        ImageView Logo = intro.getFrame(intro.getImages().size() - 1);
-        Logo.setFitWidth(root.getWidth());
+        int framestop = 87;
+        ImageView freezeframe = intro.getFrame(framestop);
+        freezeframe.setFitWidth(root.getWidth());
 
         // Main game loop - this is called every 1/30th of a second or so
         new AnimationTimer() {
@@ -353,19 +354,14 @@ public class Snake extends Application implements Loggable {
                      * things
                      */
                     frame++;
-                    if (frame < 298) {
+                    if (intro.getImages().size() > 0 && (frame < framestop || (frame < 700 && frame >= 400))) {
                         ImageView temp = intro.getFrame(0);
-                        if (!fullscreen) {
-                            temp.setFitWidth(root.getWidth());
-                            root.setTop(temp);
-                        } else {
-                            root.setLeft(temp);
-                        }
-
+                        System.out.println(intro.getImages().size() + "  " + frame);
+                        temp.setFitWidth(root.getWidth());
+                        root.setTop(temp);
                         intro.getImages().remove(0); // garbage collection, ImagePlayer takes up quite a bit of memory
-                        //} else if (frame < 700) {
-                        //  root.setPadding(new Insets(0));
-                        //  root.setTop(Logo);
+                    } else if (frame < 400) {
+                        root.setTop(freezeframe);
                     } else {
                         if (frame % 30 == 0) {
                             loopBG();
@@ -1382,7 +1378,7 @@ public class Snake extends Application implements Loggable {
     /**
      *
      * @param size side length of the imaginary square bounding the high score
-     *             screen
+     * screen
      * @return Canvas with high scores drawn on
      */
     public static Canvas drawHighScoreScreen(double size) {
@@ -1786,7 +1782,7 @@ public class Snake extends Application implements Loggable {
     /**
      *
      * @param filename destination file path
-     * @param score    raw score
+     * @param score raw score
      * @param username name of scorer
      */
     public static void writeEncodedScore(String filename, int score, String username) {
