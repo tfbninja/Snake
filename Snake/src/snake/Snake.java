@@ -296,7 +296,13 @@ public class Snake extends Application implements Loggable {
         xRotate.angleProperty().bind(angleX);
         yRotate.angleProperty().bind(angleY);
 
-        intro = new ImagePlayer("resources/art/intro/try2");
+        boolean introLoadedSuccessfully = true;
+        try {
+            intro = new ImagePlayer("resources/art/intro/try2");
+        } catch (Exception e) {
+            events += "Could not load intro + " + e.getMessage() + " | ";
+            System.out.println("could not load intro due to a(n) " + e.getMessage());
+        }
 
         // This is the class that actually displays a 'physical' window on the screen
         primaryStage.setTitle("JSnake");
@@ -332,11 +338,15 @@ public class Snake extends Application implements Loggable {
         events += "Initialized. | ";
         log.logState();
 
-        root.setPadding(new Insets(100, 0, 0, 0));
         root.setStyle("-fx-background-color: black");
-        int framestop = 87;
-        ImageView freezeframe = intro.getFrame(framestop);
-        freezeframe.setFitWidth(root.getWidth());
+        int framestop = 0;
+        ImageView freezeframe = null;
+        if (introLoadedSuccessfully) {
+            root.setPadding(new Insets(100, 0, 0, 0));
+            framestop = 87;
+            freezeframe = intro.getFrame(framestop);
+            freezeframe.setFitWidth(root.getWidth());
+        }
 
         // Main game loop - this is called every 1/30th of a second or so
         new AnimationTimer() {
@@ -354,13 +364,13 @@ public class Snake extends Application implements Loggable {
                      * things
                      */
                     frame++;
-                    if (intro.getImages().size() > 0 && (frame < framestop || (frame < 700 && frame >= 400))) {
+                    if (introLoadedSuccessfully && intro.getImages().size() > 0 && (frame < framestop || (frame < 700 && frame >= 400))) {
                         ImageView temp = intro.getFrame(0);
                         System.out.println(intro.getImages().size() + "  " + frame);
                         temp.setFitWidth(root.getWidth());
                         root.setTop(temp);
                         intro.getImages().remove(0); // garbage collection, ImagePlayer takes up quite a bit of memory
-                    } else if (frame < 400) {
+                    } else if (introLoadedSuccessfully && frame < 400) {
                         root.setTop(freezeframe);
                     } else {
                         if (frame % 30 == 0) {
@@ -525,6 +535,12 @@ public class Snake extends Application implements Loggable {
         );
     }
 
+    /**
+     * Initializes variables and binds objects to set up movement of the 3d
+     * objects with the mouse
+     *
+     * @param group
+     */
     public static void initMouseControl(SmartGroup group) {
         Rotate xRotate;
         Rotate yRotate;
@@ -532,7 +548,7 @@ public class Snake extends Application implements Loggable {
         double pivotY = group.getLayoutBounds().getHeight() / 2;
         group.getTransforms().addAll(
                 xRotate = new Rotate(0, pivotX, pivotY, 0, Rotate.X_AXIS),
-                yRotate = new Rotate(0, pivotX, pivotY, 0, Rotate.Z_AXIS)
+                yRotate = new Rotate(0, pivotX, pivotY, 0, Rotate.Y_AXIS)
         );
         xRotate.angleProperty().bind(angleX);
         yRotate.angleProperty().bind(angleY);
@@ -561,6 +577,13 @@ public class Snake extends Application implements Loggable {
         launch(args);
     }
 
+    /**
+     * Sets up the variables for fullscreen mode including triggering the
+     * board's variable for the same thing
+     *
+     * @param primaryStage
+     * @param root
+     */
     public static void turnOnFullscreen(Stage primaryStage, BorderPane root) {
         fullscreen = true;
         primaryStage.setFullScreen(fullscreen);
@@ -572,6 +595,13 @@ public class Snake extends Application implements Loggable {
         root.setPadding(new Insets(yspace, xspace, yspace, xspace));
     }
 
+    /**
+     * see turnOnFullscreen(Stage, BorderPane)
+     *
+     * @param primaryStage
+     * @param board
+     * @param root
+     */
     public static void turnOffFullscreen(Stage primaryStage, Board board, BorderPane root) {
         fullscreen = false;
         primaryStage.setFullScreen(fullscreen);
@@ -581,6 +611,9 @@ public class Snake extends Application implements Loggable {
         root.setPadding(new Insets(CANVAS_MARGIN, CANVAS_MARGIN, CANVAS_MARGIN, CANVAS_MARGIN));
     }
 
+    /**
+     * advances the help screen counter
+     */
     public static void incrementHelpIndex() {
         if (helpIndex < helpScreens.size()) {
             if (helpIndex == helpScreens.size() - 1) {
@@ -592,6 +625,9 @@ public class Snake extends Application implements Loggable {
         }
     }
 
+    /**
+     * rewinds through the help screen counter
+     */
     public static void decrementHelpIndex() {
         if (helpIndex > 0) {
             helpIndex--;
@@ -939,6 +975,9 @@ public class Snake extends Application implements Loggable {
         }
     }
 
+    /**
+     * Initializes help screen objects
+     */
     public void setupHelp() {
         File helpFolder = new File("resources/art/help");
         File[] directoryListing = helpFolder.listFiles();

@@ -4,14 +4,28 @@ package snake;
  *
  * @author Tim Barber
  */
+/**
+ *
+ * This class controls which mode should be displayed: 2d or 3d
+ */
 public class ViewManager extends Controller {
 
     private boolean Mode_3d = false;
 
+    /**
+     * Pretty self-explanatory
+     *
+     * @param val
+     */
     public ViewManager(boolean val) {
         Mode_3d = val;
     }
 
+    /**
+     * The state of the 3d_mode variable
+     *
+     * @return
+     */
     public boolean get3dMode() {
         return Mode_3d;
     }
@@ -21,10 +35,16 @@ public class ViewManager extends Controller {
         Mode_3d = false;
     }
 
+    /**
+     * Turns on the variable to true
+     */
     public void turnOn() {
         Mode_3d = true;
     }
 
+    /**
+     * toggles the variable
+     */
     public void toggle() {
         Mode_3d = !Mode_3d;
     }

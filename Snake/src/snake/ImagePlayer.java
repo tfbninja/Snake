@@ -16,6 +16,10 @@ public class ImagePlayer {
     private String imagePath;
     private ArrayList<ImageView> images;
 
+    /**
+     * Initialize the imageplayer with the folder directory of images
+     * @param folderPath 
+     */
     public ImagePlayer(String folderPath) {
         imagePath = folderPath;
         images = new ArrayList<>();
@@ -31,10 +35,19 @@ public class ImagePlayer {
         }
     }
 
+    /**
+     * 
+     * @return the imageview arraylist
+     */
     public ArrayList<ImageView> getImages() {
         return images;
     }
 
+    /**
+     * 
+     * @param num
+     * @return the imageview numth in the arraylist
+     */
     public ImageView getFrame(int num) {
         if (num < images.size() && num >= 0f) {
             return images.get(num);

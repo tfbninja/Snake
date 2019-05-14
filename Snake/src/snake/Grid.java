@@ -130,6 +130,10 @@ public final class Grid extends squares implements Updateable, Loggable {
         MENU = M;
     }
 
+    /**
+     * Adds the 3d mode controller so the grid can interact with it
+     * @param vm 
+     */
     public void addViewManager(ViewManager vm) {
         VM = vm;
     }

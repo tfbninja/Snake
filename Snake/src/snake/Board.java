@@ -162,14 +162,26 @@ public class Board implements Loggable {
         events += "Initialized | ";
     }
 
+    /**
+     *
+     * @return 3d object group
+     */
     public SmartGroup getGroup() {
         return root;
     }
 
+    /**
+     *
+     * @param amt the amount in pixels? to zoom
+     */
     public void zoom(double amt) {
         camera.setTranslateZ(camera.getTranslateZ() + amt);
     }
 
+    /**
+     *
+     * @return the camera being used
+     */
     public PerspectiveCamera getCamera() {
         return camera;
     }
@@ -714,6 +726,9 @@ public class Board implements Loggable {
         }
     }
 
+    /**
+     * Sets up all of the 3d objects
+     */
     public void initBoxes() {
         root = new SmartGroup();
         root.setDepthTest(DepthTest.ENABLE);
@@ -758,6 +773,9 @@ public class Board implements Loggable {
         }
     }
 
+    /**
+     * sets the colors for all the 3d objects
+     */
     public void drawBlocks3d() {
 
         int r = 0, c = 0;
@@ -1050,6 +1068,12 @@ public class Board implements Loggable {
                 || i.getCode() == KeyCode.RIGHT || i.getCode() == KeyCode.D;
     }
 
+    /**
+     *
+     * @param x the x-coordinate
+     * @param y the y-coordinate
+     * @return the euclidean distance between x and y
+     */
     public double distForm(double x, double y) {
         return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
     }
