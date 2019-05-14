@@ -46,13 +46,14 @@ import javax.swing.JFrame;
 public class Snake extends Application implements Loggable {
 
     //<editor-fold defaultstate="collapsed" desc="instance vars">
-    private static final int canvasMargin = 10;
+    private static final int CANVAS_MARGIN = 10;
     private static final int canvasW = 430;
     private static final int canvasH = 430;
-    private final int WIDTH = 430 + canvasMargin * 2;
-    private final int HEIGHT = 430 + canvasMargin * 2;
+    private final int WIDTH = 430 + CANVAS_MARGIN * 2;
+    private final int HEIGHT = 430 + CANVAS_MARGIN * 2;
     private static Scene scene;
     private static final Random random = new Random(System.currentTimeMillis());
+    private ImagePlayer intro;
 
     // secondary sandbox tool window
     private static ToolPanel toolPanel;
@@ -141,7 +142,7 @@ public class Snake extends Application implements Loggable {
 
         // Create Board of block objects
         board = new Board(canvasW, canvasH, MM, MENU, GS, VM, primaryStage);
-        board.setOutsideMargin(canvasMargin);
+        board.setOutsideMargin(CANVAS_MARGIN);
 
         log.add(board);
         log.add(board.getGrid());
@@ -261,7 +262,7 @@ public class Snake extends Application implements Loggable {
 
         // Arrange objects in window with a BorderPane
         BorderPane root = new BorderPane();
-        root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+        root.setPadding(new Insets(CANVAS_MARGIN, CANVAS_MARGIN, CANVAS_MARGIN, CANVAS_MARGIN));
         root.setStyle("-fx-background-color: black");
 
         // More information on the MainMenu class in MainMenu.java
@@ -294,6 +295,8 @@ public class Snake extends Application implements Loggable {
          */
         xRotate.angleProperty().bind(angleX);
         yRotate.angleProperty().bind(angleY);
+
+        intro = new ImagePlayer("resources/art/intro/try2");
 
         // This is the class that actually displays a 'physical' window on the screen
         primaryStage.setTitle("JSnake");
@@ -329,6 +332,11 @@ public class Snake extends Application implements Loggable {
         events += "Initialized. | ";
         log.logState();
 
+        root.setPadding(new Insets(100, 0, 0, 0));
+        root.setStyle("-fx-background-color: black");
+        ImageView Logo = intro.getFrame(intro.getImages().size() - 1);
+        Logo.setFitWidth(root.getWidth());
+
         // Main game loop - this is called every 1/30th of a second or so
         new AnimationTimer() {
             @Override
@@ -345,82 +353,102 @@ public class Snake extends Application implements Loggable {
                      * things
                      */
                     frame++;
-                    if (frame % 30 == 0) {
-                        loopBG();
-                        if (frame % 900 == 0) {
-                            // approx once every 30 seconds
-                            log.logState();
-                        }
-                        // We really don't need to set this variable every single time the game is updated, so we only do it every 30 times
-                        if (GS.isGame()) {
-                            sandboxReset = false;
+                    if (frame < 298) {
+                        ImageView temp = intro.getFrame(0);
+                        if (!fullscreen) {
+                            temp.setFitWidth(root.getWidth());
+                            root.setTop(temp);
+                        } else {
+                            root.setLeft(temp);
                         }
 
-                        // If we're currently in sandbox mode, and the board is not completely empty, and we are viewing the grid itself...
-                        if (board.getGrid().getDiffLevel() == 0 && !board.getGrid().isClear() && MM.getCurrent() == 4) {
-                            // ... then save the current grid vales to unsaved.sandbox
-                            try {
-                                // tempSandboxFile is a String holding all the important grid values in a custom format
-                                tempSandboxFile = compileToSandboxFile(board.getGrid().getEdgeKills(), board.getGrid().getFrameSpeed(), board.getGrid().getInitialLength(), board.getGrid().getGrowBy(), board.getGrid().getPlayArea(), board.getGrid().getExtremeWarp(), board.getGrid().getUseSameSeed(), board.getGrid().getSeed());
-
-                                try (BufferedWriter buffer = new BufferedWriter(new FileWriter("resources/unsaved.sandbox"))) {
-                                    /*
-                                     * Since for some reason BufferedWriter can
-                                     * only write one line at a time, we just
-                                     * loop over the string separated by
-                                     * newlines
-                                     */
-                                    for (String s : tempSandboxFile.split("\n")) {
-                                        buffer.write(s);
-                                        buffer.newLine();
-                                    }
-                                }
-                            } catch (IOException x) {
-                                events += "Could not save temp sandbox file. | ";
-                                System.out.println("Could not save temp sandbox file.");
-                            }
-                        }
-                        try {
-                            /*
-                             * Here we save the booleans for background music,
-                             * sound fx, and night mode in the settings.snk file
-                             * every 30th frame
-                             */
-                            FileWriter creator;
-                            try (PrintWriter printer = new PrintWriter(settingsLocation, "UTF-8")) {
-                                creator = new FileWriter(new File(settingsLocation));
-                                int tempSFX = MENU.getSFX() ? 1 : 0, tempNightMode = nightMode ? 1 : 0, tempMusic = MENU.getMusic() ? 1 : 0;
-                                printer.print("" + tempSFX + " - SFX toggle (0 for off, 1 for on)");
-                                printer.println();
-                                printer.print("" + tempNightMode + " - appearance (0 for normal, 1 for night mode)");
-                                printer.println();
-                                printer.print("" + tempMusic + " - background music toggle (0 for normal, 1 for night mode)");
-                                printer.println();
-                            }
-                            creator.close();
-                        } catch (IOException x) {
-                            events += "Could not save settings | ";
-                            System.out.println("Could not save settings - " + x.getLocalizedMessage());
-                        }
-                    }
-
-                    // Make sure the Board object is consistent with the MainMenu object
-                    board.setSFX(MENU.getSFX());
-
-                    // Make sure the background music is consistent with the MainMenu object
-                    if (MENU.getMusic()) {
-                        unmuteBG();
+                        intro.getImages().remove(0); // garbage collection, ImagePlayer takes up quite a bit of memory
+                        //} else if (frame < 700) {
+                        //  root.setPadding(new Insets(0));
+                        //  root.setTop(Logo);
                     } else {
-                        muteBG();
-                    }
+                        if (frame % 30 == 0) {
+                            loopBG();
+                            if (frame % 900 == 0) {
+                                // approx once every 30 seconds
+                                log.logState();
+                            }
+                            // We really don't need to set this variable every single time the game is updated, so we only do it every 30 times
+                            if (GS.isGame()) {
+                                sandboxReset = false;
+                            }
 
-                    /*
-                     * Since the board displays most of the graphics, it
-                     * naturally follows that it should manage night mode, hence
-                     * we grab it from the Board object here
-                     */
-                    nightMode = board.getNightTheme();
-                    updateScreen(primaryStage, root, scene, HELP_IV);
+                            // If we're currently in sandbox mode, and the board is not completely empty, and we are viewing the grid itself...
+                            if (board.getGrid().getDiffLevel() == 0 && !board.getGrid().isClear() && MM.getCurrent() == 4) {
+                                // ... then save the current grid vales to unsaved.sandbox
+                                try {
+                                    // tempSandboxFile is a String holding all the important grid values in a custom format
+                                    tempSandboxFile = compileToSandboxFile(board.getGrid().getEdgeKills(), board.getGrid().getFrameSpeed(), board.getGrid().getInitialLength(), board.getGrid().getGrowBy(), board.getGrid().getPlayArea(), board.getGrid().getExtremeWarp(), board.getGrid().getUseSameSeed(), board.getGrid().getSeed());
+
+                                    try (BufferedWriter buffer = new BufferedWriter(new FileWriter("resources/unsaved.sandbox"))) {
+                                        /*
+                                         * Since for some reason BufferedWriter
+                                         * can
+                                         * only write one line at a time, we
+                                         * just
+                                         * loop over the string separated by
+                                         * newlines
+                                         */
+                                        for (String s : tempSandboxFile.split("\n")) {
+                                            buffer.write(s);
+                                            buffer.newLine();
+                                        }
+                                    }
+                                } catch (IOException x) {
+                                    events += "Could not save temp sandbox file. | ";
+                                    System.out.println("Could not save temp sandbox file.");
+                                }
+                            }
+                            try {
+                                /*
+                                 * Here we save the booleans for background
+                                 * music,
+                                 * sound fx, and night mode in the settings.snk
+                                 * file
+                                 * every 30th frame
+                                 */
+                                FileWriter creator;
+                                try (PrintWriter printer = new PrintWriter(settingsLocation, "UTF-8")) {
+                                    creator = new FileWriter(new File(settingsLocation));
+                                    int tempSFX = MENU.getSFX() ? 1 : 0, tempNightMode = nightMode ? 1 : 0, tempMusic = MENU.getMusic() ? 1 : 0;
+                                    printer.print("" + tempSFX + " - SFX toggle (0 for off, 1 for on)");
+                                    printer.println();
+                                    printer.print("" + tempNightMode + " - appearance (0 for normal, 1 for night mode)");
+                                    printer.println();
+                                    printer.print("" + tempMusic + " - background music toggle (0 for normal, 1 for night mode)");
+                                    printer.println();
+                                }
+                                creator.close();
+                            } catch (IOException x) {
+                                events += "Could not save settings | ";
+                                System.out.println("Could not save settings - " + x.getLocalizedMessage());
+                            }
+                        }
+
+                        // Make sure the Board object is consistent with the MainMenu object
+                        board.setSFX(MENU.getSFX());
+
+                        // Make sure the background music is consistent with the MainMenu object
+                        if (MENU.getMusic()) {
+                            unmuteBG();
+                        } else {
+                            muteBG();
+                        }
+
+                        /*
+                         * Since the board displays most of the graphics, it
+                         * naturally follows that it should manage night mode,
+                         * hence
+                         * we grab it from the Board object here
+                         */
+                        nightMode = board.getNightTheme();
+                        updateScreen(primaryStage, root, scene, HELP_IV);
+                    }
                 }
             }
         }.
@@ -481,9 +509,10 @@ public class Snake extends Application implements Loggable {
                         } else {
                             turnOnFullscreen(primaryStage, root);
                         }
-                        updateScreen(primaryStage, root, scene, HELP_IV);
-                    }
-                    if (eventa.getCode() == KeyCode.ESCAPE && fullscreen) {
+                        if (frame < 298) {
+                            updateScreen(primaryStage, root, scene, HELP_IV);
+                        }
+                    } else if (eventa.getCode() == KeyCode.ESCAPE && fullscreen) {
                         turnOffFullscreen(primaryStage, board, root);
                         updateScreen(primaryStage, root, scene, HELP_IV);
                     } else if (eventa.getCode() == KeyCode.ENTER && MM.getCurrent() == 4) {
@@ -553,7 +582,7 @@ public class Snake extends Application implements Loggable {
         double w = primaryStage.getWidth();
         double h = primaryStage.getHeight();
         board.turnOffFullscreen(canvasW, canvasH);
-        root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+        root.setPadding(new Insets(CANVAS_MARGIN, CANVAS_MARGIN, CANVAS_MARGIN, CANVAS_MARGIN));
     }
 
     public static void incrementHelpIndex() {
@@ -578,6 +607,7 @@ public class Snake extends Application implements Loggable {
      *
      * @param primaryStage
      * @param root
+     * @param scene
      * @param HELP_IV
      */
     public void updateScreen(Stage primaryStage, BorderPane root, Scene scene, ImageView HELP_IV) {
@@ -585,6 +615,7 @@ public class Snake extends Application implements Loggable {
             primaryStage.setMaximized(false);
             turnOnFullscreen(primaryStage, root);
         }
+        root.setLeft(null);
 
         if (VM.get3dMode()) {
             if (scene.getCamera() != board.getCamera()) {
@@ -631,11 +662,10 @@ public class Snake extends Application implements Loggable {
                     root.setPadding(new Insets(yspace, xspace, yspace, xspace));
                     root.setTop(board.getFullScreenMenu(Math.min(w, h)));
                 } else {
-                    root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+                    root.setPadding(new Insets(CANVAS_MARGIN, CANVAS_MARGIN, CANVAS_MARGIN, CANVAS_MARGIN));
                     //root.setTop(MENU.getMenu());
                     root.setTop(board.getFullScreenMenu(430));
                 }
-
                 won = false;
                 break;
             case 1:
@@ -672,7 +702,7 @@ public class Snake extends Application implements Loggable {
                 GS.setToPostGame();
                 board.drawBlocks();
                 won = false;
-                // reset sandbox
+                // reset
                 if (board.getGrid().getDiffLevel() == 0 && !sandboxReset) {
                     sandboxReset = true;
                     resetSandbox();
@@ -723,7 +753,7 @@ public class Snake extends Application implements Loggable {
                                     }
                                     Thread.sleep(250);
                                 } catch (InterruptedException ex) {
-                                    //System.out.println("interuppted");
+                                    System.out.println("interuppted");
                                 }
                             } else {
                                 break;
@@ -779,7 +809,7 @@ public class Snake extends Application implements Loggable {
                             }
                             index++;
                         }
-                        root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+                        root.setPadding(new Insets(CANVAS_MARGIN, CANVAS_MARGIN, CANVAS_MARGIN, CANVAS_MARGIN));
                         root.setTop(board.getFullScreenBigOof(430, scores, highs, names));
                         scoresOverwritten = true;
                     }
@@ -805,7 +835,7 @@ public class Snake extends Application implements Loggable {
                         root.setTop(board.getFullScreenBigOof(Math.min(primaryStage.getWidth(), primaryStage.getHeight()), scores, highs, names));
                         scoresOverwritten = true;
                     } else {
-                        root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+                        root.setPadding(new Insets(CANVAS_MARGIN, CANVAS_MARGIN, CANVAS_MARGIN, CANVAS_MARGIN));
                         root.setTop(board.getFullScreenBigOof(430, scores, highs, names));
                         scoresOverwritten = true;
                     }
@@ -815,7 +845,7 @@ public class Snake extends Application implements Loggable {
 
             case 4:
                 root.setStyle("-fx-background-color: #" + board.getColorScheme()[board.getColorScheme().length - 2]);
-                root.setPadding(new Insets(canvasMargin, canvasMargin, canvasMargin, canvasMargin));
+                root.setPadding(new Insets(CANVAS_MARGIN, CANVAS_MARGIN, CANVAS_MARGIN, CANVAS_MARGIN));
 
                 // show the actual game
                 sandboxReset = false;
@@ -1352,7 +1382,7 @@ public class Snake extends Application implements Loggable {
     /**
      *
      * @param size side length of the imaginary square bounding the high score
-     * screen
+     *             screen
      * @return Canvas with high scores drawn on
      */
     public static Canvas drawHighScoreScreen(double size) {
@@ -1756,7 +1786,7 @@ public class Snake extends Application implements Loggable {
     /**
      *
      * @param filename destination file path
-     * @param score raw score
+     * @param score    raw score
      * @param username name of scorer
      */
     public static void writeEncodedScore(String filename, int score, String username) {
