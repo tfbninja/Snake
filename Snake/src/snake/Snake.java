@@ -345,7 +345,7 @@ public class Snake extends Application implements Loggable {
 
         if (introLoadedSuccessfully) {
             root.setPadding(new Insets(100, 0, 0, 0));
-            framestop = 87;
+            framestop = 86;
             freezeframe = intro.getFrame(framestop);
             freezeframe.setFitWidth(root.getWidth());
         }
@@ -366,7 +366,7 @@ public class Snake extends Application implements Loggable {
                      * things
                      */
                     frame++;
-                    if (introLoadedSuccessfully && intro.getImages().size() > 0 && (frame < framestop || (frame < 700 && frame >= 400))) {
+                    if (introLoadedSuccessfully && intro.getImages().size() > 0 && frame < framestop) {
                         ImageView temp = intro.getFrame(0);
                         System.out.println(intro.getImages().size() + "  " + frame);
                         temp.setFitWidth(root.getWidth());
