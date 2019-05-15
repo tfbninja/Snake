@@ -20,7 +20,7 @@ Play by downloading this repository as a .zip file, extracting, navigating to th
 | **X**        | Toggles SF**X**                           |
 | **N**        | Toggles **n**ight mode                    |
 | **R**        | **R**estarts level if on lose screen      |
-| **P**        | Toggles 3D mode                   	       |
+| **P**        | Toggles *3D* mode                   	       |
 | **ENTER**    | Resets orientation in 3d mode             |
 | **BKSP**     | Exits to menu if on lose screen           |
 | **F11**      | Toggles fullscreen                        |
