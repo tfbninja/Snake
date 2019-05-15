@@ -124,6 +124,9 @@ public class Snake extends Application implements Loggable {
     //We will update these after drag. Using JavaFX property to bind with object
     private static final DoubleProperty angleX = new SimpleDoubleProperty(0);
     private static final DoubleProperty angleY = new SimpleDoubleProperty(0);
+
+    int framestop = 0;
+    ImageView freezeframe = null;
 //</editor-fold>
 
     @Override
@@ -339,8 +342,7 @@ public class Snake extends Application implements Loggable {
         log.logState();
 
         root.setStyle("-fx-background-color: black");
-        int framestop = 0;
-        ImageView freezeframe = null;
+
         if (introLoadedSuccessfully) {
             root.setPadding(new Insets(100, 0, 0, 0));
             framestop = 87;
