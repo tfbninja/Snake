@@ -364,7 +364,7 @@ public class Snake extends Application implements Loggable {
 
         if (introLoadedSuccessfully) {
             root.setPadding(new Insets(100, 0, 0, 0));
-            framestop = 86;
+            framestop = 87;
             freezeframe = intro.getFrame(framestop);
             freezeframe.setFitWidth(root.getWidth());
         }
@@ -388,7 +388,7 @@ public class Snake extends Application implements Loggable {
                     frame++;
                     if (introLoadedSuccessfully && intro.getImages().size() > 0 && frame < framestop) {
                         ImageView temp = intro.getFrame(0);
-                        System.out.println(intro.getImages().size() + "  " + frame);
+                        //System.out.println(intro.getImages().size() + "  " + frame);
                         temp.setFitWidth(root.getWidth());
                         root.setTop(temp);
                         intro.getImages().remove(0); // garbage collection, ImagePlayer takes up quite a bit of memory
