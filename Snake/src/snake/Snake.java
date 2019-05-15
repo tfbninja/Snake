@@ -127,6 +127,7 @@ public class Snake extends Application implements Loggable {
 
     int framestop = 0;
     ImageView freezeframe = null;
+    boolean introLoadedSuccessfully = true;
 //</editor-fold>
 
     @Override
@@ -299,46 +300,65 @@ public class Snake extends Application implements Loggable {
         xRotate.angleProperty().bind(angleX);
         yRotate.angleProperty().bind(angleY);
 
-        boolean introLoadedSuccessfully = true;
         try {
-            intro = new ImagePlayer("resources/art/intro/try2");
+            if (Runtime.getRuntime().maxMemory() >= 1023741824) {
+                intro = new ImagePlayer("resources/art/intro/try2");
+            } else {
+                System.out.println(Runtime.getRuntime().maxMemory());
+                throw new IOException("Not enough heap space, run with -Xmx1g");
+            }
+
         } catch (Exception e) {
             events += "Could not load intro + " + e.getMessage() + " | ";
             System.out.println("could not load intro due to a(n) " + e.getMessage());
+            introLoadedSuccessfully = false;
         }
 
         // This is the class that actually displays a 'physical' window on the screen
-        primaryStage.setTitle("JSnake");
+        primaryStage.setTitle(
+                "JSnake");
         primaryStage.setScene(scene);
-        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("resources/art/icon36.jpg")));
-        primaryStage.setOnCloseRequest(event -> {
+
+        primaryStage.getIcons()
+                .add(new Image(getClass().getResourceAsStream("resources/art/icon36.jpg")));
+        primaryStage.setOnCloseRequest(event
+                -> {
             log.saveLogFile("resources/logs/log" + log.formatDateTime().replaceAll("[.:/ ]", "") + ".snklog");
             // Safely exit the program when closed
             System.exit(0);
-        });
+        }
+        );
 
-        primaryStage.iconifiedProperty().addListener(e -> {
-            if (primaryStage.isIconified()) {
-                pause = true;
-                // When the main game window is hidden we don't want the toolbox shown
-                System.out.println("hiding toolframe");
-                toolboxFrame.setState(JFrame.ICONIFIED);
-            } else {
+        primaryStage.iconifiedProperty()
+                .addListener(e -> {
+                    if (primaryStage.isIconified()) {
+                        pause = true;
+                        // When the main game window is hidden we don't want the toolbox shown
+                        System.out.println("hiding toolframe");
+                        toolboxFrame.setState(JFrame.ICONIFIED);
+                    } else {
 
-                pause = false;
-                // If the user minimized the main window and maximized it again, bring up the toolbox
-                System.out.println("restoring toolframe");
-                toolboxFrame.setState(JFrame.NORMAL);
-                toolboxFrame.toFront();
-            }
-        });
+                        pause = false;
+                        // If the user minimized the main window and maximized it again, bring up the toolbox
+                        System.out.println("restoring toolframe");
+                        toolboxFrame.setState(JFrame.NORMAL);
+                        toolboxFrame.toFront();
+                    }
+                }
+                );
 
         primaryStage.show();
-        toolboxFrame.setLocation((int) primaryStage.getX() - toolPanel.getWidth() - 20, (int) primaryStage.getY());
+
+        toolboxFrame.setLocation(
+                (int) primaryStage.getX()
+                - toolPanel.getWidth() - 20, (int) primaryStage.getY()
+        );
         //add icon to toolboxFrame
-        toolboxFrame.setVisible(false);
-//</editor-fold>
+        toolboxFrame.setVisible(
+                false);
+        //</editor-fold>
         events += "Initialized. | ";
+
         log.logState();
 
         root.setStyle("-fx-background-color: black");
@@ -353,7 +373,8 @@ public class Snake extends Application implements Loggable {
         // Main game loop - this is called every 1/30th of a second or so
         new AnimationTimer() {
             @Override
-            public void handle(long now) {
+            public void handle(long now
+            ) {
                 if (toolPanel.isVisible()) { // only if we are using the toolPanel
                     // Set all the grid settings accessed by the toolPanel to their corresponding values, and repaint the toolPanel
                     toolPanel.update();
@@ -459,13 +480,16 @@ public class Snake extends Application implements Loggable {
                     }
                 }
             }
-        }.
+        }
+                .
                 start();
 
-        scene.setOnScroll((ScrollEvent event) -> {
-            events += "Scroll | ";
-            board.zoom(event.getDeltaY());
-        });
+        scene.setOnScroll(
+                (ScrollEvent event) -> {
+                    events += "Scroll | ";
+                    board.zoom(event.getDeltaY());
+                }
+        );
 
         // Input handling
         scene.setOnMousePressed(
@@ -502,10 +526,11 @@ public class Snake extends Application implements Loggable {
                 }
         );
 
-        scene.setOnMouseReleased((MouseEvent event) -> {
-            events += "Mouse released | ";
-            board.mouseReleased(event);
-        }
+        scene.setOnMouseReleased(
+                (MouseEvent event) -> {
+                    events += "Mouse released | ";
+                    board.mouseReleased(event);
+                }
         );
 
         scene.setOnKeyPressed(
