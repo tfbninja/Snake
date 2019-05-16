@@ -137,6 +137,7 @@ public class Snake extends Application implements Loggable {
         File resourcesFolder = new File("resources/");
         if (!resourcesFolder.exists()) {
             System.out.println("FATAL ERROR: RESOURCES FOLDER NOT FOUND, EXITING PROGRAM.");
+            new ErrorMessage("FATAL ERROR: RESOURCES FOLDER NOT FOUND, EXITING PROGRAM.");
             System.exit(404);
         }
 
@@ -301,7 +302,7 @@ public class Snake extends Application implements Loggable {
         yRotate.angleProperty().bind(angleY);
 
         try {
-            if (Runtime.getRuntime().maxMemory() >= 1023741824) {
+            if (Runtime.getRuntime().maxMemory() >= 13000000) {
                 intro = new ImagePlayer("resources/art/intro/try2");
             } else {
                 System.out.println(Runtime.getRuntime().maxMemory());
@@ -1443,7 +1444,7 @@ public class Snake extends Application implements Loggable {
     /**
      *
      * @param size side length of the imaginary square bounding the high score
-     * screen
+     *             screen
      * @return Canvas with high scores drawn on
      */
     public static Canvas drawHighScoreScreen(double size) {
@@ -1847,7 +1848,7 @@ public class Snake extends Application implements Loggable {
     /**
      *
      * @param filename destination file path
-     * @param score raw score
+     * @param score    raw score
      * @param username name of scorer
      */
     public static void writeEncodedScore(String filename, int score, String username) {
