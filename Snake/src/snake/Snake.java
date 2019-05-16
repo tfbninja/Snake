@@ -36,6 +36,7 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 /**
@@ -152,13 +153,20 @@ public class Snake extends Application implements Loggable {
         log.add(board);
         log.add(board.getGrid());
 
-        // if log files are from last month, delete
+        // if log files are from last month or last week, delete
         File logFolder = new File("resources/logs");
         File[] directoryListing = logFolder.listFiles();
 
         if (directoryListing != null) {
             for (File child : directoryListing) {
-                if (!child.getName().substring(3, 5).equals(String.valueOf(LocalDateTime.now().getMonth().getValue())) && !child.getName().substring(3, 4).equals(String.valueOf(LocalDateTime.now().getMonth().getValue()))) {
+                try {
+                    int date1 = Integer.valueOf(child.getName().substring(3, 7));
+                    int date2 = Integer.valueOf(String.valueOf(Logger.twoDigit(LocalDateTime.now().getMonth().getValue())) + String.valueOf(Logger.twoDigit(LocalDateTime.now().getDayOfMonth())));
+                    //System.out.println("1: " + date1 + " , 2: " + date2);
+                    if (Math.abs(date2 - date1) > 7) {
+                        child.delete();
+                    }
+                } catch (NumberFormatException e) {
                     child.delete();
                 }
             }
@@ -301,6 +309,18 @@ public class Snake extends Application implements Loggable {
         xRotate.angleProperty().bind(angleX);
         yRotate.angleProperty().bind(angleY);
 
+        /*
+         * Here we are checking if the computer is allocating enough memory to
+         * the Java program to allow the caching of ~100+ images. The try-catch
+         * is actually kinda obsolete here, as the only error I've encountered
+         * completely bypasses the whole try-catch because it's a heap error
+         * several levels deep. The real error-catching here is preventative,
+         * namely the if-statement containing 'Runtime.getRuntime()...' All this
+         * does is check that the available heap space is more than 13mb (a
+         * generous margin of ~3.5mb thrown in for overhead) If it has enough
+         * space, the intro plays without a hitch (so far), and if not, the
+         * intro is skipped.
+         */
         try {
             if (Runtime.getRuntime().maxMemory() >= 13000000) {
                 intro = new ImagePlayer("resources/art/intro/try2");
@@ -310,60 +330,48 @@ public class Snake extends Application implements Loggable {
             }
         } catch (Exception e) { // yes this might not be best practice but see my dissertation near line 186
             events += "Could not load intro + " + e.getMessage() + " | ";
-            System.out.println("could not load intro due to a(n) " + e.getMessage());
+            System.out.println("could not load intro due to " + e.getMessage());
             introLoadedSuccessfully = false;
         }
 
         // This is the class that actually displays a 'physical' window on the screen
-        primaryStage.setTitle(
-                "JSnake");
+        primaryStage.setTitle("JSnake");
         primaryStage.setScene(scene);
-
-        primaryStage.getIcons()
-                .add(new Image(getClass().getResourceAsStream("resources/art/icon36.jpg")));
-        primaryStage.setOnCloseRequest(event
-                -> {
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("resources/art/icon36.jpg")));
+        primaryStage.setOnCloseRequest(event -> {
             log.saveLogFile("resources/logs/log" + log.formatDateTime().replaceAll("[.:/ ]", "") + ".snklog");
             // Safely exit the program when closed
             System.exit(0);
+        });
+
+        primaryStage.iconifiedProperty().addListener(e -> {
+            if (primaryStage.isIconified()) {
+                pause = true;
+                // When the main game window is hidden we don't want the toolbox shown
+                System.out.println("hiding toolframe");
+                toolboxFrame.setState(JFrame.ICONIFIED);
+            } else {
+                pause = false;
+                // If the user minimized the main window and maximized it again, bring up the toolbox
+                System.out.println("restoring toolframe");
+                toolboxFrame.setState(JFrame.NORMAL);
+                toolboxFrame.toFront();
+            }
         }
         );
 
-        primaryStage.iconifiedProperty()
-                .addListener(e -> {
-                    if (primaryStage.isIconified()) {
-                        pause = true;
-                        // When the main game window is hidden we don't want the toolbox shown
-                        System.out.println("hiding toolframe");
-                        toolboxFrame.setState(JFrame.ICONIFIED);
-                    } else {
-
-                        pause = false;
-                        // If the user minimized the main window and maximized it again, bring up the toolbox
-                        System.out.println("restoring toolframe");
-                        toolboxFrame.setState(JFrame.NORMAL);
-                        toolboxFrame.toFront();
-                    }
-                }
-                );
-
         primaryStage.show();
 
-        toolboxFrame.setLocation(
-                (int) primaryStage.getX()
-                - toolPanel.getWidth() - 20, (int) primaryStage.getY()
-        );
-        //add icon to toolboxFrame
-        toolboxFrame.setVisible(
-                false);
+        toolboxFrame.setLocation((int) primaryStage.getX() - toolPanel.getWidth() - 20, (int) primaryStage.getY());
+
+        toolboxFrame.setVisible(false);
+        toolboxFrame.setIconImage(new ImageIcon("resources/art/icon36.jpg").getImage());
         //</editor-fold>
         events += "Initialized. | ";
-
         log.logState();
 
-        root.setStyle("-fx-background-color: black");
-
         if (introLoadedSuccessfully) {
+            root.setStyle("-fx-background-color: black");
             root.setPadding(new Insets(100, 0, 0, 0));
             framestop = 87;
             freezeframe = intro.getFrame(framestop);
@@ -375,8 +383,8 @@ public class Snake extends Application implements Loggable {
             @Override
             public void handle(long now
             ) {
-                if (toolPanel.isVisible()) { // only if we are using the toolPanel
-                    // Set all the grid settings accessed by the toolPanel to their corresponding values, and repaint the toolPanel
+                if (toolPanel.isVisible()) { // only if we are using the toolPanel - essentially checking for sandbox mode
+                    // update grid settings accessed by the toolPanel to their corresponding values, and repaint/redraw the toolPanel
                     toolPanel.update();
                 }
 
@@ -388,21 +396,51 @@ public class Snake extends Application implements Loggable {
                      */
                     frame++;
                     if (introLoadedSuccessfully && intro.getImages().size() > 0 && frame < framestop) {
-                        ImageView temp = intro.getFrame(0);
-                        //System.out.println(intro.getImages().size() + "  " + frame);
-                        temp.setFitWidth(root.getWidth());
-                        root.setTop(temp);
-                        intro.getImages().remove(0); // garbage collection, ImagePlayer takes up quite a bit of memory
-                    } else if (introLoadedSuccessfully && frame < 400) {
+                        /*
+                         * If
+                         * 1) we have loaded the intro without heap overflow
+                         * errors and the like
+                         *
+                         * and
+                         *
+                         * 2) the ImagePlayer object has unplayed images
+                         *
+                         * and
+                         *
+                         * 3) the current frame is before the frame that we are
+                         * going to freeze on
+                         *
+                         * then continue playing the intro
+                         */
+                        ImageView temp = intro.getFrame(0); // grab the first frame
+                        temp.setFitWidth(root.getWidth()); // fit it
+                        root.setTop(temp); // display it
+                        intro.getImages().remove(0); // delete it for the sake of memory and now we can get the next one just by grabbing the first element
+                    } else if (introLoadedSuccessfully && frame < 400) { // if we have reached the image we want to freeze on, just display it
                         root.setTop(freezeframe);
-                    } else {
-                        if (frame % 30 == 0) {
-                            loopBG();
-                            if (frame % 900 == 0) {
-                                // approx once every 30 seconds
-                                log.logState();
+                    } else { // intro is done / never played at all and we can display the game
+                        if (frame % 30 == 0) { // ~every second
+                            loopBG(); // this method makes sure background music is always playing, see method for more details
+
+                            if (frame % 900 == 0) { // approx once every 30 seconds
+                                log.logState(); // the log class takes status on most variables for important classes making debugging easier
                             }
-                            // We really don't need to set this variable every single time the game is updated, so we only do it every 30 times
+
+                            /*
+                             * We really don't need to set this variable every
+                             * single time the game is updated, so we only do it
+                             * every 30 times. sandboxReset keeps the sandbox
+                             * Grid object from resetting more than once once
+                             * the player dies (if it
+                             * resets more than once problems arise, sometimes
+                             * it just clears entirely)
+                             *
+                             * Also can we note that I just used the word once
+                             * twice in a row in a somewhat grammatically
+                             * correct sentence
+                             *
+                             * And that I just said "once twice"
+                             */
                             if (GS.isGame()) {
                                 sandboxReset = false;
                             }
@@ -417,11 +455,9 @@ public class Snake extends Application implements Loggable {
                                     try (BufferedWriter buffer = new BufferedWriter(new FileWriter("resources/unsaved.sandbox"))) {
                                         /*
                                          * Since for some reason BufferedWriter
-                                         * can
-                                         * only write one line at a time, we
-                                         * just
-                                         * loop over the string separated by
-                                         * newlines
+                                         * can only write one line at a time,
+                                         * we just loop over the string
+                                         * separated by newlines
                                          */
                                         for (String s : tempSandboxFile.split("\n")) {
                                             buffer.write(s);
@@ -436,10 +472,13 @@ public class Snake extends Application implements Loggable {
                             try {
                                 /*
                                  * Here we save the booleans for background
-                                 * music,
-                                 * sound fx, and night mode in the settings.snk
-                                 * file
-                                 * every 30th frame
+                                 * music, sound fx, and night mode in the
+                                 * settings.snk file every 30th frame (1 second)
+                                 *
+                                 * Settings.snk just makes the "user experience"
+                                 * smoother by saving their preferred volume and
+                                 * graphics options in a file accessed on
+                                 * initialization.
                                  */
                                 FileWriter creator;
                                 try (PrintWriter printer = new PrintWriter(settingsLocation, "UTF-8")) {
@@ -459,7 +498,20 @@ public class Snake extends Application implements Loggable {
                             }
                         }
 
-                        // Make sure the Board object is consistent with the MainMenu object
+                        /*
+                         * MainMenu is a class that used to be a lot more
+                         * important than it is now, back when the menu screens
+                         * were images loaded from a file, and each permutation
+                         * of music and sfx being on/off was in a different
+                         * file. MainMenu stored all four menu images (onon,
+                         * onoff, offon, and offoff) in an ArrayList and calling
+                         * getCurrent() would return the proper image. Now the
+                         * menu screens are drawn by the board class
+                         * dynamically, so now MainMenu's only purpose is
+                         * holding the boolean values for whether music and sfx
+                         * are currently on.
+                         */
+                        // Make sure the Board object is up-to-date with the MainMenu object in regards to sound effects
                         board.setSFX(MENU.getSFX());
 
                         // Make sure the background music is consistent with the MainMenu object
@@ -472,94 +524,90 @@ public class Snake extends Application implements Loggable {
                         /*
                          * Since the board displays most of the graphics, it
                          * naturally follows that it should manage night mode,
-                         * hence
-                         * we grab it from the Board object here
+                         * hence we grab it from the Board object here
                          */
                         nightMode = board.getNightTheme();
+
+                        // this might be the biggest method in the project, a close second is probably grid.update()
                         updateScreen(primaryStage, root, scene, HELP_IV);
                     }
                 }
             }
-        }
-                .
-                start();
+        }.start();
 
-        scene.setOnScroll(
-                (ScrollEvent event) -> {
-                    events += "Scroll | ";
-                    board.zoom(event.getDeltaY());
-                }
-        );
+        scene.setOnScroll((ScrollEvent event) -> {
+            events += "Scroll | ";
+            board.zoom(event.getDeltaY());
+        });
 
         // Input handling
-        scene.setOnMousePressed(
-                (MouseEvent event) -> {
-                    events += "Mouse clk at (" + event.getX() + ", " + event.getY() + ") | ";
-                    if (VM.get3dMode()) {
-                        //Save start points
-                        anchorX = event.getSceneX();
-                        anchorY = event.getSceneY();
-                        //Save current rotation angle
-                        anchorAngleX = angleX.get();
-                        anchorAngleY = angleY.get();
-                        if (event.isMiddleButtonDown()) {
-                            angleX.set(0);
-                            angleY.set(0);
-                        }
-                    }
-                    board.mouseClicked(event);
-                }
-        );
+        scene.setOnMousePressed((MouseEvent event) -> {
+            events += "Mouse clk at (" + event.getX() + ", " + event.getY() + ") | ";
+            if (VM.get3dMode()) {
 
-        scene.setOnMouseDragged(
-                (MouseEvent event) -> {
-                    board.mouseDragged(event);
-                    if (VM.get3dMode()) {
-                        /*
-                         * event.getSceneY() gives current Y value. Find how
-                         * much
-                         * far away it is from saved anchorY point.
-                         */
-                        angleX.set(anchorAngleX - (anchorY - event.getSceneY()));
-                        angleY.set(anchorAngleY + anchorX - event.getSceneX());
-                    }
+                /*
+                 * Here's the disclaimer that the mouse rotation code is not my
+                 * own, it's blatantly copied from stackoverflow.com or the
+                 * like, I honestly don't remember which website it was
+                 * exactly, but literally this exact code is on several
+                 * websites so does it really matter? I don't think so. I think
+                 * it's kind of like that class action lawsuit against
+                 * Warner/Chappell inc. where the judge ruled that they couldn't
+                 * receive royalties off of the song "Happy Birthday" because
+                 * the origin was muddy and unclear, making it an "orphaned
+                 * work"
+                 */
+                //Save start points
+                anchorX = event.getSceneX();
+                anchorY = event.getSceneY();
+                //Save current rotation angle
+                anchorAngleX = angleX.get();
+                anchorAngleY = angleY.get();
+                if (event.isMiddleButtonDown()) {
+                    angleX.set(0);
+                    angleY.set(0);
                 }
-        );
+            }
+            board.mouseClicked(event);
+        });
 
-        scene.setOnMouseReleased(
-                (MouseEvent event) -> {
-                    events += "Mouse released | ";
-                    board.mouseReleased(event);
+        scene.setOnMouseDragged((MouseEvent event) -> {
+            board.mouseDragged(event);
+            if (VM.get3dMode()) {
+                angleX.set(anchorAngleX - (anchorY - event.getSceneY()));
+                angleY.set(anchorAngleY + anchorX - event.getSceneX());
+            }
+        });
+
+        scene.setOnMouseReleased((MouseEvent event) -> {
+            events += "Mouse released | ";
+            board.mouseReleased(event);
+        });
+
+        scene.setOnKeyPressed((KeyEvent eventa) -> {
+            if (eventa.getCode() == KeyCode.F11) {
+                if (fullscreen) {
+                    turnOffFullscreen(primaryStage, board, root);
+                } else {
+                    turnOnFullscreen(primaryStage, root);
                 }
-        );
-
-        scene.setOnKeyPressed(
-                (KeyEvent eventa) -> {
-
-                    if (eventa.getCode() == KeyCode.F11) {
-                        if (fullscreen) {
-                            turnOffFullscreen(primaryStage, board, root);
-                        } else {
-                            turnOnFullscreen(primaryStage, root);
-                        }
-                        if (frame < 298) {
-                            updateScreen(primaryStage, root, scene, HELP_IV);
-                        }
-                    } else if (eventa.getCode() == KeyCode.ESCAPE && fullscreen) {
-                        turnOffFullscreen(primaryStage, board, root);
-                        updateScreen(primaryStage, root, scene, HELP_IV);
-                    } else if (eventa.getCode() == KeyCode.ENTER && MM.getCurrent() == 4) {
-                        anchorAngleX = 0;
-                        anchorAngleY = 0;
-                        anchorX = 0;
-                        anchorY = 0;
-                        angleX.set(0);
-                        angleY.set(0);
-                    } else {
-                        board.keyPressed(eventa);
-                    }
+                if (frame < 298) {
+                    updateScreen(primaryStage, root, scene, HELP_IV);
                 }
-        );
+            } else if (eventa.getCode() == KeyCode.ESCAPE && fullscreen) {
+                turnOffFullscreen(primaryStage, board, root);
+                updateScreen(primaryStage, root, scene, HELP_IV);
+            } else if (eventa.getCode() == KeyCode.ENTER && MM.getCurrent() == 4) {
+                anchorAngleX = 0;
+                anchorAngleY = 0;
+                anchorX = 0;
+                anchorY = 0;
+                angleX.set(0);
+                angleY.set(0);
+            } else {
+                board.keyPressed(eventa);
+            }
+        });
     }
 
     /**
@@ -1019,7 +1067,7 @@ public class Snake extends Application implements Loggable {
     }
 
     /**
-     * Returns the major events that happened while this class was initialized
+     * Returns the major events that happened while this class was running
      *
      * @return String of events
      */
@@ -1029,7 +1077,7 @@ public class Snake extends Application implements Loggable {
     }
 
     /**
-     * Mutes the background music
+     * Mutes the background music (Woah no way)
      */
     public void muteBG() {
         for (Sound s : bgMusic) {
@@ -1056,7 +1104,8 @@ public class Snake extends Application implements Loggable {
     }
 
     /**
-     * Checks all of the songs and if none are playing it plays the next one
+     * Checks all of the songs in the previously loaded ArrayList and if none
+     * are playing it plays the next one, repeating as necessary via playBG()
      */
     public void loopBG() {
         for (Sound s : bgMusic) {
@@ -1134,6 +1183,8 @@ public class Snake extends Application implements Loggable {
     }
 
     /**
+     * Converts the filepath of an image to an ImageView object which can be
+     * used by many objects
      *
      * @param filename
      * @return
@@ -1155,6 +1206,9 @@ public class Snake extends Application implements Loggable {
     }
 
     /**
+     * This method takes a myriad of variables and converts them to a somewhat
+     * organized mess of 1s and 0s that this class can read in from a file or
+     * the like later on
      *
      * @param edgeKills
      * @param frmSpd
@@ -1191,6 +1245,9 @@ public class Snake extends Application implements Loggable {
     }
 
     /**
+     * This is the method that can convert the organized mess of 1s and 0s
+     * mentioned in compileToSandboxFile() to a Grid object. Basically a fancy
+     * constructor.
      *
      * @param content
      * @return
@@ -1407,6 +1464,8 @@ public class Snake extends Application implements Loggable {
     }
 
     /**
+     * This does the same as loadSandboxFile(String content) but with the added
+     * convenience of loading the file object for you
      *
      * @param sandboxFile
      * @return
@@ -1488,6 +1547,7 @@ public class Snake extends Application implements Loggable {
     }
 
     /**
+     * This literally copies a file.f
      *
      * @param srcName
      * @param destName
@@ -1511,6 +1571,10 @@ public class Snake extends Application implements Loggable {
         return true;
     }
 
+    /*
+     * This grabs high scores from their respective files and puts them in the
+     * highscores list
+     */
     private static void getScores() {
         scores = new ArrayList<>();
         names = new ArrayList<>();
@@ -1533,6 +1597,8 @@ public class Snake extends Application implements Loggable {
     }
 
     /**
+     * This takes a filepath and returns the highscore and the highscorer
+     * encoded in that file
      *
      * @param fileName
      * @return
@@ -1567,6 +1633,7 @@ public class Snake extends Application implements Loggable {
     }
 
     /**
+     * Distance formula but in a non-euclidean environment, in this case a grid
      *
      * @param targetXPos
      * @param targetYPos
@@ -1657,6 +1724,8 @@ public class Snake extends Application implements Loggable {
     }
 
     /**
+     * This is an AI helper method that determines how to best get to the apple
+     * with possible obstacles in the way
      *
      * @param excludeLeft
      * @param excludeFront
@@ -1832,6 +1901,7 @@ public class Snake extends Application implements Loggable {
     }
 
     /**
+     * Checks if a file exists
      *
      * @param filename
      * @return
@@ -1846,6 +1916,7 @@ public class Snake extends Application implements Loggable {
     }
 
     /**
+     * Writes an encoded score and a name into a file
      *
      * @param filename destination file path
      * @param score    raw score
@@ -1868,6 +1939,7 @@ public class Snake extends Application implements Loggable {
     }
 
     /**
+     * Overlays an image with text
      *
      * @param filename
      * @param newFilename
@@ -1900,6 +1972,7 @@ public class Snake extends Application implements Loggable {
     }
 
     /**
+     * Overlays an image with another image and saves it to an entirely new one
      *
      * @param filename
      * @param newFilename

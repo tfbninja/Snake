@@ -63,7 +63,7 @@ public class Logger {
      * @param x integer to convert
      * @return String of length 2 properly formatted
      */
-    public String twoDigit(int x) {
+    public static String twoDigit(int x) {
         String o = String.valueOf(x);
         if (o.length() == 1) {
             o = "0" + o;
@@ -74,11 +74,11 @@ public class Logger {
     /**
      * Returns a string of length len containing the input int
      *
-     * @param x integer to convert
+     * @param x   integer to convert
      * @param len desired length of output string
      * @return String of length len properly formatted
      */
-    public String xDigit(int x, int len) {
+    public static String xDigit(int x, int len) {
         String o = String.valueOf(x);
         while (o.length() < len) {
             o = "0" + o;
@@ -92,9 +92,9 @@ public class Logger {
      * @return The date and time as a String in a consistent format
      */
     public String formatDateTime() {
-        return LocalDateTime.now().getMonth().getValue() + "/"
-                + LocalDateTime.now().getDayOfMonth() + "/"
-                + LocalDateTime.now().getYear() + " "
+        return twoDigit(LocalDateTime.now().getMonth().getValue()) + "/"
+                + twoDigit(LocalDateTime.now().getDayOfMonth()) + "/"
+                + twoDigit(LocalDateTime.now().getYear()) + " "
                 + twoDigit(LocalDateTime.now().getHour()) + ":"
                 + twoDigit(LocalDateTime.now().getMinute()) + ":"
                 + twoDigit(LocalDateTime.now().getSecond()) + "."

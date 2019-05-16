@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" java-vm-args="-Xmx1g "  href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="Snake.jar" size="38682458" download="eager" />
+    <jar href="Snake.jar" size="37622437" download="eager" />
     <jar href="lib\AbsoluteLayout.jar" size="2903" download="eager" />
   </resources>
   <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="Snake" >
