@@ -464,6 +464,12 @@ public class Board implements Loggable {
         gc.setFill(MENU.getSFX() ? Color.web("40ac4a") : Color.web("7f7f7f"));
         gc.fillText("SFX", 85 / 430.0 * size, 26 / 430.0 * size);
 //</editor-fold>
+
+        if (Snake.eagleGamesMode) {
+            gc.setFont(new Font("Impact", 24 / 430.0 * size));
+            gc.setFill(Color.RED);
+            gc.fillText("EAGLE GAMES MODE", 220 / 430.0 * size, 190 / 430.0 * size);
+        }
         return c;
     }
 
@@ -1086,6 +1092,9 @@ public class Board implements Loggable {
         if (e.getCode() == KeyCode.P && MM.getCurrent() == 4) {
             VM.toggle();
         }
+        if (e.getCode() == KeyCode.E) {
+            Snake.eagleGamesMode = !Snake.eagleGamesMode;
+        }
         if ((e.getCode() == KeyCode.R || e.getCode() == KeyCode.SPACE) && MM.getCurrent() == 3) {
             events += "reset | ";
             reset();
@@ -1217,11 +1226,13 @@ public class Board implements Loggable {
                 Snake.initSandboxFile();
                 sandbox = new int[grid.getWidth()][grid.getLength()];
                 events += "loaded sandbox file | ";
-                toolFrame.setVisible(true);
-                toolFrame.requestFocus(); // bring this to front
-                toolPanel.setCurrentTool(0);
-                toolPanel.setGrid(grid);
-                toolPanel.updateControls();
+                if (!Snake.eagleGamesMode) {
+                    toolFrame.setVisible(true);
+                    toolFrame.requestFocus(); // bring this to front
+                    toolPanel.setCurrentTool(0);
+                    toolPanel.setGrid(grid);
+                    toolPanel.updateControls();
+                }
                 primaryStage.requestFocus(); // but we want this one in focus still
                 MM.setCurrent(4);
                 GS.setToPreGame();
@@ -1426,7 +1437,7 @@ public class Board implements Loggable {
 
         if (leftClick) {
             // sandbox mode editing
-            if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0 && xVal >= 0 && xVal < grid.getWidth() && yVal >= 0 && yVal < grid.getLength()) {
+            if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0 && xVal >= 0 && xVal < grid.getWidth() && yVal >= 0 && yVal < grid.getLength() && !VM.get3dMode()) {
 
                 int tool = toolPanel.getCurrentTool();
                 switch (tool) {
@@ -1509,7 +1520,7 @@ public class Board implements Loggable {
             }
 
             // sandbox mode editing
-            if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0 && xVal >= 0 && xVal < grid.getWidth() && yVal >= 0 && yVal < grid.getLength()) {
+            if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0 && xVal >= 0 && xVal < grid.getWidth() && yVal >= 0 && yVal < grid.getLength() && !VM.get3dMode()) {
                 int tool = toolPanel.getCurrentTool();
                 switch (tool) {
                     case 2:

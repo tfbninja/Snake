@@ -126,11 +126,13 @@ public class Snake extends Application implements Loggable {
     private static final DoubleProperty angleX = new SimpleDoubleProperty(0);
     private static final DoubleProperty angleY = new SimpleDoubleProperty(0);
 
-    int framestop = 0;
-    ImageView freezeframe = null;
-    boolean introLoadedSuccessfully = true;
-//</editor-fold>
+    private int framestop = 0;
+    private ImageView freezeframe = null;
+    private boolean introLoadedSuccessfully = true;
 
+    public static boolean eagleGamesMode = false;
+
+//</editor-fold>
     @Override
     public void start(Stage primaryStage) {
         //<editor-fold defaultstate="collapsed" desc="initialization">
@@ -140,6 +142,10 @@ public class Snake extends Application implements Loggable {
             System.out.println("FATAL ERROR: RESOURCES FOLDER NOT FOUND, EXITING PROGRAM.");
             new ErrorMessage("FATAL ERROR: RESOURCES FOLDER NOT FOUND, EXITING PROGRAM.");
             System.exit(404);
+        }
+        File eagleGames = new File("resources/eaglegamesmode.snk");
+        if (eagleGames.exists()) {
+            eagleGamesMode = true;
         }
 
         setupBGMusic();
@@ -357,9 +363,7 @@ public class Snake extends Application implements Loggable {
                 toolboxFrame.setState(JFrame.NORMAL);
                 toolboxFrame.toFront();
             }
-        }
-        );
-
+        });
         primaryStage.show();
 
         toolboxFrame.setLocation((int) primaryStage.getX() - toolPanel.getWidth() - 20, (int) primaryStage.getY());
@@ -1489,10 +1493,48 @@ public class Snake extends Application implements Loggable {
     public static void initSandboxFile() {
         events += "Initializing sandbox file... ";
         try {
-            sandbox = new File(SANDBOXLOCATION);
-            Scanner reader = new Scanner(sandbox);
-            reader.useDelimiter("2049jg0324u0j2m0352035");
-            board.getGrid().overwrite(loadSandboxFile(reader.next()));
+            if (eagleGamesMode) {
+                Grid eagleGamesGrid = new Grid(25, 25, 12, 12);
+                eagleGamesGrid.addGameState(GS);
+                eagleGamesGrid.addMainMenu(MENU);
+                eagleGamesGrid.addToolPanel(toolPanel);
+                eagleGamesGrid.setFrameSpeed(4);
+                eagleGamesGrid.setEdgeKills(false);
+                eagleGamesGrid.setExtremeStyleWarp(false);
+                eagleGamesGrid.setGrowBy(1);
+                eagleGamesGrid.setInitialSize(5);
+                eagleGamesGrid.setPos(12, 12);
+                eagleGamesGrid.setDiffLevel(0);
+                //following code is auto-generated with shift + "="
+                eagleGamesGrid.setCell(2, 2, 4);
+                eagleGamesGrid.setCell(3, 2, 4);
+                eagleGamesGrid.setCell(21, 2, 4);
+                eagleGamesGrid.setCell(22, 2, 4);
+                eagleGamesGrid.setCell(2, 3, 4);
+                eagleGamesGrid.setCell(3, 3, 4);
+                eagleGamesGrid.setCell(21, 3, 4);
+                eagleGamesGrid.setCell(22, 3, 4);
+                eagleGamesGrid.setCell(5, 5, 12);
+                eagleGamesGrid.setCell(19, 5, 10);
+                eagleGamesGrid.setCell(12, 12, 1);
+                eagleGamesGrid.setCell(8, 16, 3);
+                eagleGamesGrid.setCell(5, 19, 10);
+                eagleGamesGrid.setCell(19, 19, 12);
+                eagleGamesGrid.setCell(2, 21, 4);
+                eagleGamesGrid.setCell(3, 21, 4);
+                eagleGamesGrid.setCell(21, 21, 4);
+                eagleGamesGrid.setCell(22, 21, 4);
+                eagleGamesGrid.setCell(2, 22, 4);
+                eagleGamesGrid.setCell(3, 22, 4);
+                eagleGamesGrid.setCell(21, 22, 4);
+                eagleGamesGrid.setCell(22, 22, 4);
+                board.getGrid().overwrite(eagleGamesGrid);
+            } else {
+                sandbox = new File(SANDBOXLOCATION);
+                Scanner reader = new Scanner(sandbox);
+                reader.useDelimiter("2049jg0324u0j2m0352035");
+                board.getGrid().overwrite(loadSandboxFile(reader.next()));
+            }
             events += "finished and grid overwritten";
         } catch (FileNotFoundException x) {
             System.out.println("Cannot find sandbox file in " + SANDBOXLOCATION + ", try setting the working dir to src/snake.");
@@ -1503,7 +1545,7 @@ public class Snake extends Application implements Loggable {
     /**
      *
      * @param size side length of the imaginary square bounding the high score
-     *             screen
+     * screen
      * @return Canvas with high scores drawn on
      */
     public static Canvas drawHighScoreScreen(double size) {
@@ -1919,7 +1961,7 @@ public class Snake extends Application implements Loggable {
      * Writes an encoded score and a name into a file
      *
      * @param filename destination file path
-     * @param score    raw score
+     * @param score raw score
      * @param username name of scorer
      */
     public static void writeEncodedScore(String filename, int score, String username) {
