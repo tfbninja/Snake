@@ -131,6 +131,7 @@ public class Snake extends Application implements Loggable {
     private boolean introLoadedSuccessfully = true;
 
     public static boolean eagleGamesMode = false;
+    public static int eagleGamesHighScore = 0;
 
 //</editor-fold>
     @Override
@@ -547,6 +548,7 @@ public class Snake extends Application implements Loggable {
         // Input handling
         scene.setOnMousePressed((MouseEvent event) -> {
             events += "Mouse clk at (" + event.getX() + ", " + event.getY() + ") | ";
+            System.out.println(event.getX() + ", " + event.getY());
             if (VM.get3dMode()) {
 
                 /*
@@ -572,6 +574,7 @@ public class Snake extends Application implements Loggable {
                     angleY.set(0);
                 }
             }
+            System.out.println("telling board");
             board.mouseClicked(event);
         });
 
@@ -1545,7 +1548,7 @@ public class Snake extends Application implements Loggable {
     /**
      *
      * @param size side length of the imaginary square bounding the high score
-     * screen
+     *             screen
      * @return Canvas with high scores drawn on
      */
     public static Canvas drawHighScoreScreen(double size) {
@@ -1961,7 +1964,7 @@ public class Snake extends Application implements Loggable {
      * Writes an encoded score and a name into a file
      *
      * @param filename destination file path
-     * @param score raw score
+     * @param score    raw score
      * @param username name of scorer
      */
     public static void writeEncodedScore(String filename, int score, String username) {

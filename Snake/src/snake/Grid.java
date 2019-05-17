@@ -132,7 +132,8 @@ public final class Grid extends squares implements Updateable, Loggable {
 
     /**
      * Adds the 3d mode controller so the grid can interact with it
-     * @param vm 
+     *
+     * @param vm
      */
     public void addViewManager(ViewManager vm) {
         VM = vm;
@@ -1376,6 +1377,9 @@ public final class Grid extends squares implements Updateable, Loggable {
             if (this.snakeSize < 1) {
                 die();
                 return;
+            }
+            if (this.applesEaten > Snake.eagleGamesHighScore && Snake.eagleGamesMode) {
+                Snake.eagleGamesHighScore = applesEaten;
             }
 
             if (tempDirs.size() > 0 && this.direction != tempDirs.get(0)) {
