@@ -130,9 +130,6 @@ public class Snake extends Application implements Loggable {
     private ImageView freezeframe = null;
     private boolean introLoadedSuccessfully = true;
 
-    public static boolean eagleGamesMode = false;
-    public static int eagleGamesHighScore = 0;
-
 //</editor-fold>
     @Override
     public void start(Stage primaryStage) {
@@ -143,10 +140,6 @@ public class Snake extends Application implements Loggable {
             System.out.println("FATAL ERROR: RESOURCES FOLDER NOT FOUND, EXITING PROGRAM.");
             new ErrorMessage("FATAL ERROR: RESOURCES FOLDER NOT FOUND, EXITING PROGRAM.");
             System.exit(404);
-        }
-        File eagleGames = new File("resources/eaglegamesmode.snk");
-        if (eagleGames.exists()) {
-            eagleGamesMode = true;
         }
 
         setupBGMusic();
@@ -355,12 +348,12 @@ public class Snake extends Application implements Loggable {
             if (primaryStage.isIconified()) {
                 pause = true;
                 // When the main game window is hidden we don't want the toolbox shown
-                System.out.println("hiding toolframe");
+                //System.out.println("hiding toolframe");
                 toolboxFrame.setState(JFrame.ICONIFIED);
             } else {
                 pause = false;
                 // If the user minimized the main window and maximized it again, bring up the toolbox
-                System.out.println("restoring toolframe");
+                //System.out.println("restoring toolframe");
                 toolboxFrame.setState(JFrame.NORMAL);
                 toolboxFrame.toFront();
             }
@@ -544,10 +537,10 @@ public class Snake extends Application implements Loggable {
             events += "Scroll | ";
             board.zoom(event.getDeltaY());
         });
-        
+
         scene.setOnMouseClicked((MouseEvent event) -> {
             events += "Mouse clk at (" + event.getX() + ", " + event.getY() + ") | ";
-            System.out.println(event.getX() + ", " + event.getY());
+            //System.out.println(event.getX() + ", " + event.getY());
             if (VM.get3dMode()) {
 
                 /*
@@ -573,44 +566,9 @@ public class Snake extends Application implements Loggable {
                     angleY.set(0);
                 }
             }
-            System.out.println("telling board");
+            //System.out.println("telling board");
             board.mouseClicked(event);
         });
-
-        // Input handling
-        /*
-        scene.setOnMousePressed((MouseEvent event) -> {
-            events += "Mouse clk at (" + event.getX() + ", " + event.getY() + ") | ";
-            System.out.println(event.getX() + ", " + event.getY());
-            if (VM.get3dMode()) {
-*/
-                /*
-                 * Here's the disclaimer that the mouse rotation code is not my
-                 * own, it's blatantly copied from stackoverflow.com or the
-                 * like, I honestly don't remember which website it was
-                 * exactly, but literally this exact code is on several
-                 * websites so does it really matter? I don't think so. I think
-                 * it's kind of like that class action lawsuit against
-                 * Warner/Chappell inc. where the judge ruled that they couldn't
-                 * receive royalties off of the song "Happy Birthday" because
-                 * the origin was muddy and unclear, making it an "orphaned
-                 * work"
-                 */
-        /*
-                //Save start points
-                anchorX = event.getSceneX();
-                anchorY = event.getSceneY();
-                //Save current rotation angle
-                anchorAngleX = angleX.get();
-                anchorAngleY = angleY.get();
-                if (event.isMiddleButtonDown()) {
-                    angleX.set(0);
-                    angleY.set(0);
-                }
-            }
-            System.out.println("telling board");
-            board.mouseClicked(event);
-        });*/
 
         scene.setOnMouseDragged((MouseEvent event) -> {
             board.mouseDragged(event);
@@ -1532,48 +1490,10 @@ public class Snake extends Application implements Loggable {
     public static void initSandboxFile() {
         events += "Initializing sandbox file... ";
         try {
-            if (eagleGamesMode) {
-                Grid eagleGamesGrid = new Grid(25, 25, 12, 12);
-                eagleGamesGrid.addGameState(GS);
-                eagleGamesGrid.addMainMenu(MENU);
-                eagleGamesGrid.addToolPanel(toolPanel);
-                eagleGamesGrid.setFrameSpeed(4);
-                eagleGamesGrid.setEdgeKills(false);
-                eagleGamesGrid.setExtremeStyleWarp(false);
-                eagleGamesGrid.setGrowBy(1);
-                eagleGamesGrid.setInitialSize(5);
-                eagleGamesGrid.setPos(12, 12);
-                eagleGamesGrid.setDiffLevel(0);
-                //following code is auto-generated with shift + "="
-                eagleGamesGrid.setCell(2, 2, 4);
-                eagleGamesGrid.setCell(3, 2, 4);
-                eagleGamesGrid.setCell(21, 2, 4);
-                eagleGamesGrid.setCell(22, 2, 4);
-                eagleGamesGrid.setCell(2, 3, 4);
-                eagleGamesGrid.setCell(3, 3, 4);
-                eagleGamesGrid.setCell(21, 3, 4);
-                eagleGamesGrid.setCell(22, 3, 4);
-                eagleGamesGrid.setCell(5, 5, 12);
-                eagleGamesGrid.setCell(19, 5, 10);
-                eagleGamesGrid.setCell(12, 12, 1);
-                eagleGamesGrid.setCell(8, 16, 3);
-                eagleGamesGrid.setCell(5, 19, 10);
-                eagleGamesGrid.setCell(19, 19, 12);
-                eagleGamesGrid.setCell(2, 21, 4);
-                eagleGamesGrid.setCell(3, 21, 4);
-                eagleGamesGrid.setCell(21, 21, 4);
-                eagleGamesGrid.setCell(22, 21, 4);
-                eagleGamesGrid.setCell(2, 22, 4);
-                eagleGamesGrid.setCell(3, 22, 4);
-                eagleGamesGrid.setCell(21, 22, 4);
-                eagleGamesGrid.setCell(22, 22, 4);
-                board.getGrid().overwrite(eagleGamesGrid);
-            } else {
-                sandbox = new File(SANDBOXLOCATION);
-                Scanner reader = new Scanner(sandbox);
-                reader.useDelimiter("2049jg0324u0j2m0352035");
-                board.getGrid().overwrite(loadSandboxFile(reader.next()));
-            }
+            sandbox = new File(SANDBOXLOCATION);
+            Scanner reader = new Scanner(sandbox);
+            reader.useDelimiter("2049jg0324u0j2m0352035");
+            board.getGrid().overwrite(loadSandboxFile(reader.next()));
             events += "finished and grid overwritten";
         } catch (FileNotFoundException x) {
             System.out.println("Cannot find sandbox file in " + SANDBOXLOCATION + ", try setting the working dir to src/snake.");
