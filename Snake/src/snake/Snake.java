@@ -544,9 +544,8 @@ public class Snake extends Application implements Loggable {
             events += "Scroll | ";
             board.zoom(event.getDeltaY());
         });
-
-        // Input handling
-        scene.setOnMousePressed((MouseEvent event) -> {
+        
+        scene.setOnMouseClicked((MouseEvent event) -> {
             events += "Mouse clk at (" + event.getX() + ", " + event.getY() + ") | ";
             System.out.println(event.getX() + ", " + event.getY());
             if (VM.get3dMode()) {
@@ -577,6 +576,41 @@ public class Snake extends Application implements Loggable {
             System.out.println("telling board");
             board.mouseClicked(event);
         });
+
+        // Input handling
+        /*
+        scene.setOnMousePressed((MouseEvent event) -> {
+            events += "Mouse clk at (" + event.getX() + ", " + event.getY() + ") | ";
+            System.out.println(event.getX() + ", " + event.getY());
+            if (VM.get3dMode()) {
+*/
+                /*
+                 * Here's the disclaimer that the mouse rotation code is not my
+                 * own, it's blatantly copied from stackoverflow.com or the
+                 * like, I honestly don't remember which website it was
+                 * exactly, but literally this exact code is on several
+                 * websites so does it really matter? I don't think so. I think
+                 * it's kind of like that class action lawsuit against
+                 * Warner/Chappell inc. where the judge ruled that they couldn't
+                 * receive royalties off of the song "Happy Birthday" because
+                 * the origin was muddy and unclear, making it an "orphaned
+                 * work"
+                 */
+        /*
+                //Save start points
+                anchorX = event.getSceneX();
+                anchorY = event.getSceneY();
+                //Save current rotation angle
+                anchorAngleX = angleX.get();
+                anchorAngleY = angleY.get();
+                if (event.isMiddleButtonDown()) {
+                    angleX.set(0);
+                    angleY.set(0);
+                }
+            }
+            System.out.println("telling board");
+            board.mouseClicked(event);
+        });*/
 
         scene.setOnMouseDragged((MouseEvent event) -> {
             board.mouseDragged(event);
@@ -1132,8 +1166,10 @@ public class Snake extends Application implements Loggable {
     public String getState() {
         return "[Frame: " + frame + ", "
                 + "AI: " + AI + ", "
+                + "fullscreen: " + fullscreen + ", "
                 + "Board is not null: " + (board != null) + ", "
                 + "Grid is not null: " + (board.getGrid() != null) + ", "
+                + "Scene: " + scene + ", "
                 + "Won: " + won + ", "
                 + "Scores overwritten: " + scoresOverwritten + ", "
                 + "sfxOn: " + sfxOn + ", "
@@ -1548,7 +1584,7 @@ public class Snake extends Application implements Loggable {
     /**
      *
      * @param size side length of the imaginary square bounding the high score
-     *             screen
+     * screen
      * @return Canvas with high scores drawn on
      */
     public static Canvas drawHighScoreScreen(double size) {
@@ -1964,7 +2000,7 @@ public class Snake extends Application implements Loggable {
      * Writes an encoded score and a name into a file
      *
      * @param filename destination file path
-     * @param score    raw score
+     * @param score raw score
      * @param username name of scorer
      */
     public static void writeEncodedScore(String filename, int score, String username) {

@@ -133,11 +133,11 @@ public class Board implements Loggable {
 //</editor-fold>
     /**
      *
-     * @param w       the horizontal width
-     * @param h       the vertical height
-     * @param mm      the MenuManager object
-     * @param menu    the Menu object
-     * @param gs      the GameState object
+     * @param w the horizontal width
+     * @param h the vertical height
+     * @param mm the MenuManager object
+     * @param menu the Menu object
+     * @param gs the GameState object
      * @param vm
      * @param primary the stage object holding the various graphical components
      */
@@ -248,7 +248,7 @@ public class Board implements Loggable {
     /**
      *
      * @param size the dimension defining the side length of the imaginary
-     *             square around the menu screen
+     * square around the menu screen
      * @return A Canvas object with graphics displaying the menu
      */
     public Canvas getFullScreenMenu(double size) {
@@ -601,7 +601,7 @@ public class Board implements Loggable {
      * Either this or turnOffFullscreen(w,h) MUST be called during
      * initialization of Board for it to properly initialize graphics variables
      *
-     * @param screenWidth  Width of the screen
+     * @param screenWidth Width of the screen
      * @param screenHeight Height of the screen
      */
     public void setFullscreen(double screenWidth, double screenHeight) {
@@ -1392,7 +1392,7 @@ public class Board implements Loggable {
     /**
      *
      * @return the lowest int starting from ten that has no corresponding pair
-     *         in the grid
+     * in the grid
      */
     public int findUnusedPortalNum() {
         int num = 10;
@@ -1514,7 +1514,7 @@ public class Board implements Loggable {
         mouseX -= outsideMargin;
         int mX = (int) mouseX;
         int mY = (int) mouseY;
-        lastClicks.add(new Pair<>(mX, mY));
+
         // top right:
         // margin * x + xPos + (blockSize * (x-1)) : += blockSize
         //solve: margin * (x+1)) + (blockSize * (x-1)) = z, z = margin * x + xPos + margin + blockSize * x - blockSize, z = x(margin + blockSize) + xPos + margin - blockSize, (z + blockSize - margin)/(margin + blockSize) = x
@@ -1536,13 +1536,12 @@ public class Board implements Loggable {
         mouseX -= outsideMargin;
         int mX = (int) mouseX;
         int mY = (int) mouseY;
-        System.out.println(fullscreen);
-        System.out.println(MM.getCurrent());
         if (fullscreen && MM.getCurrent() == 0) {
-            System.out.println("click compensation");
             mX -= Math.max(screenW - screenH, 0) / 2 - 10;
             mY -= Math.max(screenH - screenW, 0) / 2;
+            System.out.println("" + Math.abs(mX - impButton.getX()) + ", " + Math.abs(mY - impButton.getY()));
         }
+        lastClicks.add(new Pair<>(mX, mY));
         // top right:
         // margin * x + xPos + (blockSize * (x-1)) : += blockSize
         //solve:
