@@ -209,6 +209,10 @@ public class Sound {
         clip.stop();
     }
 
+    /**
+     * Returns the filename used by this Sound object
+     * @return
+     */
     @Override
     public String toString() {
         return filename;

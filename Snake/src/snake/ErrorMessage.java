@@ -3,11 +3,15 @@ package snake;
 import javax.swing.JOptionPane;
 
 /**
- *
+ * This class is boilerplate code for displaying an error message
  * @author Tim Barber
  */
 public class ErrorMessage {
 
+    /**
+     * Opens a message pane with the error message
+     * @param message
+     */
     public ErrorMessage(String message) {
         JOptionPane.showMessageDialog(null, message);
     }

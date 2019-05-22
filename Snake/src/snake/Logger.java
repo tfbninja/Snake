@@ -169,6 +169,10 @@ public class Logger {
         }
     }
 
+    /**
+     * Returns all object's variables
+     * @return
+     */
     @Override
     public String toString() {
         return objs.toString();

@@ -5,7 +5,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 /**
- *
+ * This class takes care of boilerplate code for drawing rectangles
  * @author Tim Barber
  */
 public class Block implements Locatable {
@@ -208,6 +208,10 @@ public class Block implements Locatable {
         return this.color;
     }
 
+    /**
+     *
+     * @return This block's variables
+     */
     @Override
     public String toString() {
         return "X: " + this.xPos + ", Y: " + this.yPos + ", Width: " + this.width + ", Height: " + this.height + ", Color: " + this.color;

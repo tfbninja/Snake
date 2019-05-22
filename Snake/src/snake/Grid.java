@@ -271,8 +271,7 @@ public final class Grid extends squares implements Updateable, Loggable {
 
     /**
      *
-     * @param amt The number of frames that should be between every update
-     * cycle
+     * @param amt The number of frames that should be between every update cycle
      * @param level The difficulty level to change
      */
     public void setFrameSpeed(int amt, int level) {
@@ -1955,10 +1954,13 @@ public final class Grid extends squares implements Updateable, Loggable {
         return countVal(0) == super.getWidth() * super.getLength();
     }
 
+    /**
+     * Returns the play area
+     * @return
+     */
     @Override
     public String toString() {
-        String output = "Grid: " + Arrays.deepToString(playArea);
-        return output;
+        return "Grid: " + Arrays.deepToString(playArea);
     }
 }
 /*

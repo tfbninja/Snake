@@ -1,7 +1,7 @@
 package snake;
 
 /**
- *
+ * This class maintains coordinates for rectangular buttons
  * @author Tim Barber
  */
 public class Button {
@@ -144,6 +144,10 @@ public class Button {
         return mX >= getX() && mY >= getY() && mX <= getX() + getW() && mY <= getY() + getH();
     }
 
+    /**
+     *
+     * @return This button's variables
+     */
     @Override
     public String toString() {
         return "Button{" + "x=" + x + ", y=" + y + ", w=" + w + ", h=" + h + ", scale=" + scale + "}";

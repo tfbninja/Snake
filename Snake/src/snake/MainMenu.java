@@ -4,8 +4,9 @@ import javafx.scene.image.ImageView;
 import static snake.Snake.getImageView;
 
 /**
- * This class controls background music and SFX, and correspondingly which
- * version of the main menu to show
+ * This class controls background music and SFX, back when the menu graphics
+ * were images this class also maintained ImageView objects and returned them to
+ * the main class as necessary.
  *
  * @author Tim Barber
  */
@@ -13,6 +14,7 @@ public class MainMenu extends Controller {
 
     private boolean music = true;
     private boolean sfx = true;
+
     /**
      * Initializes the ImageView objects for the 4 menu screens
      */
@@ -38,7 +40,6 @@ public class MainMenu extends Controller {
     /**
      * Sets all vars to false
      */
-
     @Override
     public void turnOff() {
         music = false;

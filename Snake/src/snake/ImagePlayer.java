@@ -8,7 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 /**
- *
+ * This class plays a sequence of images from a folder.
  * @author Tim Barber
  */
 public class ImagePlayer {

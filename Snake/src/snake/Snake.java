@@ -25,6 +25,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -75,10 +76,6 @@ public class Snake extends Application implements Loggable {
     private static String[] funnyDefaultNames = {"ERR", "OOF", "RIP"};
 
     private boolean scoresOverwritten = false;
-
-    /**
-     *
-     */
     public static String tempName = "";
 
     private File settings;
@@ -393,7 +390,7 @@ public class Snake extends Application implements Loggable {
                      * things
                      */
                     frame++;
-                    if (introLoadedSuccessfully && intro.getImages().size() > 0 && frame < framestop) {
+                    if (intro != null && introLoadedSuccessfully && intro.getImages().size() > 0 && frame < framestop) {
                         /*
                          * If
                          * 1) we have loaded the intro without heap overflow
@@ -416,6 +413,8 @@ public class Snake extends Application implements Loggable {
                         intro.getImages().remove(0); // delete it for the sake of memory and now we can get the next one just by grabbing the first element
                     } else if (introLoadedSuccessfully && frame < 400) { // if we have reached the image we want to freeze on, just display it
                         root.setTop(freezeframe);
+                    } else if (frame == 400) {
+                        intro = null;
                     } else { // intro is done / never played at all and we can display the game
                         if (frame % 30 == 0) { // ~every second
                             loopBG(); // this method makes sure background music is always playing, see method for more details
@@ -541,6 +540,8 @@ public class Snake extends Application implements Loggable {
         scene.setOnMouseClicked((MouseEvent event) -> {
             events += "Mouse clk at (" + event.getX() + ", " + event.getY() + ") | ";
             //System.out.println(event.getX() + ", " + event.getY());
+            pause = false;
+
             if (VM.get3dMode()) {
 
                 /*
@@ -568,6 +569,13 @@ public class Snake extends Application implements Loggable {
             }
             //System.out.println("telling board");
             board.mouseClicked(event);
+        });
+
+        root.setOnMouseDragged((MouseEvent event) -> {
+            if (fullscreen) {
+                // using scene.setOnMouseDragged wasn't getting called in fullscreen for some reason
+                board.mouseDragged(event);
+            }
         });
 
         scene.setOnMouseDragged((MouseEvent event) -> {

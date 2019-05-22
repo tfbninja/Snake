@@ -976,8 +976,10 @@ public class Board implements Loggable {
                     gc.fillText(sandboxButtonsFSNames[i], (toolButtonX + xAdd[i]) / 430.0 * scl, (toolButtonY + (toolButtonSpace * i) + (toolButtonSize * i) + (toolButtonSize / 2) + 2) / 430.0 * scl);
                 }
             }
-            gc.setFill(Color.BLUEVIOLET);
-            gc.setLineWidth(1 / 430.0 * scl);
+
+            // draws a border around the current tool
+            gc.setStroke(Color.FIREBRICK);
+            gc.setLineWidth(1 * scl / 430.0);
             gc.strokeRect((toolButtonX - 1) / 430.0 * scl, (toolButtonY + (toolButtonSpace * fullScreenToolNumber(toolPanel.getCurrentTool()) + (toolButtonSize * fullScreenToolNumber(toolPanel.getCurrentTool()))) - 1) / 430.0 * scl, (toolButtonSize + 2) / 430.0 * scl, (toolButtonSize + 2) / 430.0 * scl);
         }
     }
@@ -1092,6 +1094,7 @@ public class Board implements Loggable {
         if (e.getCode() == KeyCode.P && MM.getCurrent() == 4) {
             VM.toggle();
         }
+
         if ((e.getCode() == KeyCode.R || e.getCode() == KeyCode.SPACE) && MM.getCurrent() == 3) {
             events += "reset | ";
             reset();
@@ -1405,56 +1408,63 @@ public class Board implements Loggable {
      * @param e MouseEvent holding information of the mouse drag
      */
     public void mouseDragged(MouseEvent e) {
-        double mouseX = e.getX();
-        double mouseY = e.getY();
-        // account for border outside of canvas
-        mouseY -= outsideMargin;
-        mouseX -= outsideMargin;
-        int mX = (int) mouseX;
-        int mY = (int) mouseY;
-        // top right:
-        // margin * x + xPos + (blockSize * (x-1)) : += blockSize
-        //solve:
-        //margin * (x+1)) + (blockSize * (x-1)) = z, z = margin * x + xPos + margin + blockSize * x - blockSize, z = x(margin + blockSize) + xPos + margin - blockSize, (z + blockSize - margin)/(margin + blockSize) = x
-        int xVal = (mX + blockSize - XMARGIN) / (margin + blockSize) - 1;
-        int yVal = (mY + blockSize - YMARGIN) / (margin + blockSize) - 1;
+        if (grid.getDiffLevel() == 0) {
+            System.out.println("dragged");
+            double mouseX = e.getX();
+            double mouseY = e.getY();
+            // account for border outside of canvas
+            mouseY -= outsideMargin;
+            mouseX -= outsideMargin;
+            int mX = (int) mouseX;
+            int mY = (int) mouseY;
+            if (fullscreen) {
+                mX -= 10;
+                mY -= 10;
+            }
+            // top right:
+            // margin * x + xPos + (blockSize * (x-1)) : += blockSize
+            //solve:
+            //margin * (x+1)) + (blockSize * (x-1)) = z, z = margin * x + xPos + margin + blockSize * x - blockSize, z = x(margin + blockSize) + xPos + margin - blockSize, (z + blockSize - margin)/(margin + blockSize) = x
+            int xVal = (mX + blockSize - XMARGIN) / (margin + blockSize) - 1;
+            int yVal = (mY + blockSize - YMARGIN) / (margin + blockSize) - 1;
 
-        boolean leftClick = e.getButton() == MouseButton.PRIMARY;
-        boolean rightClick = e.getButton() == MouseButton.SECONDARY;
-        if (rightClick) {
-            try {
-                grid.setCell(xVal, yVal, 0);
-            } catch (ArrayIndexOutOfBoundsException x) {
+            boolean leftClick = e.getButton() == MouseButton.PRIMARY;
+            boolean rightClick = e.getButton() == MouseButton.SECONDARY;
+            if (rightClick) {
+                try {
+                    grid.setCell(xVal, yVal, 0);
+                } catch (ArrayIndexOutOfBoundsException x) {
+                    return;
+                }
                 return;
             }
-            return;
-        }
 
-        if (leftClick) {
-            // sandbox mode editing
-            if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0 && xVal >= 0 && xVal < grid.getWidth() && yVal >= 0 && yVal < grid.getLength() && !VM.get3dMode()) {
+            if (leftClick) {
+                // sandbox mode editing
+                if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0 && xVal >= 0 && xVal < grid.getWidth() && yVal >= 0 && yVal < grid.getLength() && !VM.get3dMode()) {
 
-                int tool = toolPanel.getCurrentTool();
-                switch (tool) {
-                    case 2:
-                        // apple is second in list b/c no body tool
-                        tool = 3;
-                        break;
-                    case 3:
-                        // rock is third
-                        tool = 4;
-                        break;
-                    case 4: // portal is fourth
-                        tool = 5;
-                        break;
-                    default:
-                        break;
-                }
-                switch (tool) {
-                    case 4:
-                    case 3:
-                    case 0:
-                        grid.setCell(xVal, yVal, tool);
+                    int tool = toolPanel.getCurrentTool();
+                    switch (tool) {
+                        case 2:
+                            // apple is second in list b/c no body tool
+                            tool = 3;
+                            break;
+                        case 3:
+                            // rock is third
+                            tool = 4;
+                            break;
+                        case 4: // portal is fourth
+                            tool = 5;
+                            break;
+                        default:
+                            break;
+                    }
+                    switch (tool) {
+                        case 4:
+                        case 3:
+                        case 0:
+                            grid.setCell(xVal, yVal, tool);
+                    }
                 }
             }
         }
@@ -1497,13 +1507,9 @@ public class Board implements Loggable {
         if (fullscreen && MM.getCurrent() == 0) {
             mX -= Math.max(screenW - screenH, 0) / 2;
             mY -= Math.max(screenH - screenW, 0) / 2;
-            //System.out.println(impButtonFS);
-            //System.out.println("" + Math.abs(mX - impButtonFS.getX()) + ", " + Math.abs(mY - impButtonFS.getY()));
-            //System.out.println(impButtonFS.inBounds(mX, mY));
-        } else if (!fullscreen && MM.getCurrent() == 0) {
-            //System.out.println(impButton);
-            //System.out.println("" + Math.abs(mX - impButton.getX()) + ", " + Math.abs(mY - impButton.getY()));
-            //System.out.println(impButton.inBounds(mX, mY));
+        } else if (fullscreen && MM.getCurrent() == 4) {
+            mX -= 10;
+            mY -= 10;
         }
         lastClicks.add(new Pair<>(mX, mY));
         // top right:
@@ -1658,8 +1664,12 @@ public class Board implements Loggable {
         return canvas;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String toString() {
-        return "Board: [" + width + ", " + height + ", " + GRIDSIZE + "]";
+        return getState();
     }
 }
