@@ -134,11 +134,11 @@ public class Board implements Loggable {
 //</editor-fold>
     /**
      *
-     * @param w the horizontal width
-     * @param h the vertical height
-     * @param mm the MenuManager object
-     * @param menu the Menu object
-     * @param gs the GameState object
+     * @param w       the horizontal width
+     * @param h       the vertical height
+     * @param mm      the MenuManager object
+     * @param menu    the Menu object
+     * @param gs      the GameState object
      * @param vm
      * @param primary the stage object holding the various graphical components
      */
@@ -249,7 +249,7 @@ public class Board implements Loggable {
     /**
      *
      * @param size the dimension defining the side length of the imaginary
-     * square around the menu screen
+     *             square around the menu screen
      * @return A Canvas object with graphics displaying the menu
      */
     public Canvas getFullScreenMenu(double size) {
@@ -587,7 +587,7 @@ public class Board implements Loggable {
      * Either this or turnOffFullscreen(w,h) MUST be called during
      * initialization of Board for it to properly initialize graphics variables
      *
-     * @param screenWidth Width of the screen
+     * @param screenWidth  Width of the screen
      * @param screenHeight Height of the screen
      */
     public void setFullscreen(double screenWidth, double screenHeight) {
@@ -1353,7 +1353,7 @@ public class Board implements Loggable {
     /**
      *
      * @return the lowest int starting from ten that has no corresponding pair
-     * in the grid
+     *         in the grid
      */
     public int findUnusedPortalNum() {
         int num = 10;
@@ -1434,6 +1434,7 @@ public class Board implements Loggable {
                 try {
                     grid.setCell(xVal, yVal, 0);
                 } catch (ArrayIndexOutOfBoundsException x) {
+                    System.out.println("couldn't erase on right click");
                     return;
                 }
                 return;
@@ -1520,6 +1521,7 @@ public class Board implements Loggable {
         int yVal = (mY + blockSize - YMARGIN) / (margin + blockSize) - 1;
 
         boolean leftClick = e.getButton() == MouseButton.PRIMARY;
+        boolean rightClick = e.getButton() == MouseButton.SECONDARY;
         if (leftClick) {
             // left click
 
@@ -1646,7 +1648,7 @@ public class Board implements Loggable {
                     tmpClp.setContents(tmpSel, null);
                 }
             }
-        } else if (e.isSecondaryButtonDown()) {
+        } else if (rightClick) {
             // right click
             if (MM.getCurrent() == 4 && grid.getDiffLevel() == 0) {
                 grid.safeSetCell(xVal, yVal, 0);

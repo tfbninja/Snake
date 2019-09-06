@@ -94,7 +94,7 @@ public class Logger {
     public String formatDateTime() {
         return twoDigit(LocalDateTime.now().getMonth().getValue()) + "/"
                 + twoDigit(LocalDateTime.now().getDayOfMonth()) + "/"
-                + twoDigit(LocalDateTime.now().getYear()) + " "
+                + twoDigit(LocalDateTime.now().getYear() % 100) + " "
                 + twoDigit(LocalDateTime.now().getHour()) + ":"
                 + twoDigit(LocalDateTime.now().getMinute()) + ":"
                 + twoDigit(LocalDateTime.now().getSecond()) + "."

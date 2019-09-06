@@ -25,7 +25,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -49,12 +48,12 @@ public class Snake extends Application implements Loggable {
 
     //<editor-fold defaultstate="collapsed" desc="instance vars">
     private static final int CANVAS_MARGIN = 10;
-    private static final int canvasW = 430;
-    private static final int canvasH = 430;
+    private static final int CANVAS_WIDTH = 430;
+    private static final int CANVAS_HEIGHT = 430;
     private final int WIDTH = 430 + CANVAS_MARGIN * 2;
     private final int HEIGHT = 430 + CANVAS_MARGIN * 2;
     private static Scene scene;
-    private static final Random random = new Random(System.currentTimeMillis());
+    private static final Random RANDOM = new Random(System.currentTimeMillis());
     private ImagePlayer intro;
 
     // secondary sandbox tool window
@@ -120,8 +119,8 @@ public class Snake extends Application implements Loggable {
     private static double anchorAngleX = 0;
     private static double anchorAngleY = 0;
     //We will update these after drag. Using JavaFX property to bind with object
-    private static final DoubleProperty angleX = new SimpleDoubleProperty(0);
-    private static final DoubleProperty angleY = new SimpleDoubleProperty(0);
+    private static final DoubleProperty ANGLE_X = new SimpleDoubleProperty(0);
+    private static final DoubleProperty ANGLE_Y = new SimpleDoubleProperty(0);
 
     private int framestop = 0;
     private ImageView freezeframe = null;
@@ -129,13 +128,14 @@ public class Snake extends Application implements Loggable {
 
 //</editor-fold>
     @Override
+    @SuppressWarnings("UseSpecificCatch")
     public void start(Stage primaryStage) {
         //<editor-fold defaultstate="collapsed" desc="initialization">
         //Assert resources folder
         File resourcesFolder = new File("resources/");
         if (!resourcesFolder.exists()) {
             System.out.println("FATAL ERROR: RESOURCES FOLDER NOT FOUND, EXITING PROGRAM.");
-            new ErrorMessage("FATAL ERROR: RESOURCES FOLDER NOT FOUND, EXITING PROGRAM.");
+            ErrorMessage ResourcesFolder = new ErrorMessage("FATAL ERROR: RESOURCES FOLDER NOT FOUND, EXITING PROGRAM.");
             System.exit(404);
         }
 
@@ -144,13 +144,13 @@ public class Snake extends Application implements Loggable {
         DAWON = new Sound("resources/sounds/DAWON.mp3");
 
         // Create Board of block objects
-        board = new Board(canvasW, canvasH, MM, MENU, GS, VM, primaryStage);
+        board = new Board(CANVAS_WIDTH, CANVAS_HEIGHT, MM, MENU, GS, VM, primaryStage);
         board.setOutsideMargin(CANVAS_MARGIN);
 
         log.add(board);
         log.add(board.getGrid());
 
-        // if log files are from last month or last week, delete
+        // if log files are older than a week, delete
         File logFolder = new File("resources/logs");
         File[] directoryListing = logFolder.listFiles();
 
@@ -280,7 +280,7 @@ public class Snake extends Application implements Loggable {
 
         // A Scene object tells a Stage object what to display
         scene = new Scene(root, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
-        board.turnOffFullscreen(canvasW, canvasH);
+        board.turnOffFullscreen(CANVAS_WIDTH, CANVAS_HEIGHT);
         board.initBoxes();
 
         // Get the Canvas used by Board ready to display when the user selects a difficulty level
@@ -299,12 +299,12 @@ public class Snake extends Application implements Loggable {
                 yRotate = new Rotate(0, Rotate.Y_AXIS)
         );
         /*
-         * Bind Double property angleX/angleY with corresponding transformation.
-         * When we update angleX / angleY, the transform will also be auto
+         * Bind Double property ANGLE_X/angleY with corresponding transformation.
+         * When we update ANGLE_X / ANGLE_Y, the transform will also be auto
          * updated.
          */
-        xRotate.angleProperty().bind(angleX);
-        yRotate.angleProperty().bind(angleY);
+        xRotate.angleProperty().bind(ANGLE_X);
+        yRotate.angleProperty().bind(ANGLE_Y);
 
         /*
          * Here we are checking if the computer is allocating enough memory to
@@ -560,11 +560,11 @@ public class Snake extends Application implements Loggable {
                 anchorX = event.getSceneX();
                 anchorY = event.getSceneY();
                 //Save current rotation angle
-                anchorAngleX = angleX.get();
-                anchorAngleY = angleY.get();
+                anchorAngleX = ANGLE_X.get();
+                anchorAngleY = ANGLE_Y.get();
                 if (event.isMiddleButtonDown()) {
-                    angleX.set(0);
-                    angleY.set(0);
+                    ANGLE_X.set(0);
+                    ANGLE_Y.set(0);
                 }
             }
             //System.out.println("telling board");
@@ -581,8 +581,8 @@ public class Snake extends Application implements Loggable {
         scene.setOnMouseDragged((MouseEvent event) -> {
             board.mouseDragged(event);
             if (VM.get3dMode()) {
-                angleX.set(anchorAngleX - (anchorY - event.getSceneY()));
-                angleY.set(anchorAngleY + anchorX - event.getSceneX());
+                ANGLE_X.set(anchorAngleX - (anchorY - event.getSceneY()));
+                ANGLE_Y.set(anchorAngleY + anchorX - event.getSceneX());
             }
         });
 
@@ -609,8 +609,8 @@ public class Snake extends Application implements Loggable {
                 anchorAngleY = 0;
                 anchorX = 0;
                 anchorY = 0;
-                angleX.set(0);
-                angleY.set(0);
+                ANGLE_X.set(0);
+                ANGLE_Y.set(0);
             } else {
                 board.keyPressed(eventa);
             }
@@ -632,22 +632,22 @@ public class Snake extends Application implements Loggable {
                 xRotate = new Rotate(0, pivotX, pivotY, 0, Rotate.X_AXIS),
                 yRotate = new Rotate(0, pivotX, pivotY, 0, Rotate.Y_AXIS)
         );
-        xRotate.angleProperty().bind(angleX);
-        yRotate.angleProperty().bind(angleY);
+        xRotate.angleProperty().bind(ANGLE_X);
+        yRotate.angleProperty().bind(ANGLE_Y);
 
         scene.setOnMousePressed(event -> {
             if (VM.get3dMode()) {
                 anchorX = event.getSceneX();
                 anchorY = event.getSceneY();
-                anchorAngleX = angleX.get();
-                anchorAngleY = angleY.get();
+                anchorAngleX = ANGLE_X.get();
+                anchorAngleY = ANGLE_Y.get();
             }
         });
 
         scene.setOnMouseDragged(event -> {
             if (VM.get3dMode()) {
-                angleX.set(anchorAngleX - (anchorY - event.getSceneY()));
-                angleY.set(anchorAngleY + anchorX - event.getSceneX());
+                ANGLE_X.set(anchorAngleX - (anchorY - event.getSceneY()));
+                ANGLE_Y.set(anchorAngleY + anchorX - event.getSceneX());
             }
         });
     }
@@ -689,7 +689,7 @@ public class Snake extends Application implements Loggable {
         primaryStage.setFullScreen(fullscreen);
         double w = primaryStage.getWidth();
         double h = primaryStage.getHeight();
-        board.turnOffFullscreen(canvasW, canvasH);
+        board.turnOffFullscreen(CANVAS_WIDTH, CANVAS_HEIGHT);
         root.setPadding(new Insets(CANVAS_MARGIN, CANVAS_MARGIN, CANVAS_MARGIN, CANVAS_MARGIN));
     }
 
@@ -724,6 +724,7 @@ public class Snake extends Application implements Loggable {
      * @param scene
      * @param HELP_IV
      */
+    @SuppressWarnings({"SleepWhileInLoop", "ManualArrayToCollectionCopy"})
     public void updateScreen(Stage primaryStage, BorderPane root, Scene scene, ImageView HELP_IV) {
         if (primaryStage.isMaximized()) {
             primaryStage.setMaximized(false);
@@ -1152,16 +1153,16 @@ public class Snake extends Application implements Loggable {
 
     /**
      *
-     * @param len Length of the random string
-     * @return random len-character string
+     * @param len Length of the RANDOM string
+     * @return RANDOM len-character string
      */
     public static String randomStr(int len) {
         String out = "";
         for (int i = 0; i < len; i++) {
-            out += (char) (65 + (random.nextInt(26)));
+            out += (char) (65 + (RANDOM.nextInt(26)));
         }
-        if (random.nextInt(7) == random.nextInt(7)) {
-            out = funnyDefaultNames[random.nextInt(funnyDefaultNames.length - 1)];
+        if (RANDOM.nextInt(7) == RANDOM.nextInt(7)) {
+            out = funnyDefaultNames[RANDOM.nextInt(funnyDefaultNames.length - 1)];
         }
         return out;
     }
