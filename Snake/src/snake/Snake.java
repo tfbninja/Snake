@@ -325,7 +325,7 @@ public class Snake extends Application implements Loggable {
                 System.out.println(Runtime.getRuntime().maxMemory());
                 throw new IOException("Not enough heap space, run with -Xmx1g");
             }
-        } catch (Exception e) { // yes this might not be best practice but see my dissertation near line 186
+        } catch (Exception e) { // yes this might not be best practice but see my dissertation near line 194
             events += "Could not load intro + " + e.getMessage() + " | ";
             System.out.println("could not load intro due to " + e.getMessage());
             introLoadedSuccessfully = false;
